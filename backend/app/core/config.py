@@ -24,7 +24,9 @@ class Settings(BaseSettings):
     app_name: str = "clashfree-api"
     database_url: str
     cors_origins: str = (
-        "http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:4173,http://localhost:4173"
+        "http://127.0.0.1:5173,http://localhost:5173,"
+        "http://127.0.0.1:4173,http://localhost:4173,"
+        "http://127.0.0.1:4174,http://localhost:4174"
     )
     session_secret: str = "clashfree-dev-session-secret-change-me"
     session_ttl_hours: int = 12

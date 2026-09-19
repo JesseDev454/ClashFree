@@ -70,6 +70,7 @@ jobs:
       - run: uv sync --group dev
       - run: uv run alembic upgrade head
       - run: uv run python -m app.cli seed_phase2
+      - run: uv run python -m app.cli seed_phase3
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest
@@ -128,6 +129,66 @@ jobs:
         if: failure()
         with:
           name: playwright-auth-output
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+
+  academic-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: clashfree
+          POSTGRES_PASSWORD: clashfree
+          POSTGRES_DB: clashfree
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clashfree -d clashfree"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://clashfree:clashfree@127.0.0.1:5432/clashfree
+      AUTH_DEBUG: "true"
+      VITE_API_BASE_URL: ""
+      SESSION_SECRET: ci-session-secret
+      COOKIE_SECURE: "false"
+      APP_ORIGIN: http://127.0.0.1:4174
+      SEED_PASSWORD: ClashFree!dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Migrate and seed API
+        working-directory: backend
+        run: |
+          uv sync --group dev
+          uv run alembic upgrade head
+          uv run python -m app.cli seed_phase2
+          uv run python -m app.cli seed_phase3
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright
+        working-directory: frontend
+        run: npx playwright install chromium --with-deps
+      - name: Run academic e2e
+        working-directory: frontend
+        run: npm run test:e2e:academic
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-academic-output
           path: |
             frontend/playwright-report
             frontend/test-results

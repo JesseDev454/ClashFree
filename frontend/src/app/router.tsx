@@ -1,9 +1,17 @@
+import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 import { RequireAuth } from '../components/RequireAuth'
 import { ForbiddenPage } from '../pages/ForbiddenPage'
 import { HomeRedirect } from '../pages/HomeRedirect'
 import { NotFoundPage } from '../pages/NotFoundPage'
+import { AcademicSessionsPage } from '../pages/admin/AcademicSessionsPage'
 import { AdminHomePage } from '../pages/admin/AdminHomePage'
+import { CourseAssignmentsPage } from '../pages/admin/CourseAssignmentsPage'
+import { CoursesPage } from '../pages/admin/CoursesPage'
+import { FacultiesDepartmentsPage } from '../pages/admin/FacultiesDepartmentsPage'
+import { LecturersPage } from '../pages/admin/LecturersPage'
+import { RoomsFacilitiesPage } from '../pages/admin/RoomsFacilitiesPage'
+import { StudentCohortsPage } from '../pages/admin/StudentCohortsPage'
 import { ForgotPasswordPage } from '../pages/auth/ForgotPasswordPage'
 import { LoginPage } from '../pages/auth/LoginPage'
 import { ResetPasswordPage } from '../pages/auth/ResetPasswordPage'
@@ -16,6 +24,10 @@ import { AdminDashboardPage } from '../pages/preview/AdminDashboardPage'
 import { ComponentGalleryPage } from '../pages/preview/ComponentGalleryPage'
 import { AppUnavailablePage, UnavailablePage } from '../pages/preview/UnavailablePage'
 import { StudentHomePage } from '../pages/student/StudentHomePage'
+
+function AdminRoute({ children }: { children: ReactNode }) {
+  return <RequireAuth roles={['timetable_administrator']}>{children}</RequireAuth>
+}
 
 export function AppRouter() {
   return (
@@ -30,9 +42,65 @@ export function AppRouter() {
       <Route
         path="/admin/dashboard"
         element={
-          <RequireAuth roles={['timetable_administrator']}>
+          <AdminRoute>
             <AdminHomePage />
-          </RequireAuth>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/academic-sessions"
+        element={
+          <AdminRoute>
+            <AcademicSessionsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/faculties-departments"
+        element={
+          <AdminRoute>
+            <FacultiesDepartmentsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/courses"
+        element={
+          <AdminRoute>
+            <CoursesPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/student-cohorts"
+        element={
+          <AdminRoute>
+            <StudentCohortsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/lecturers"
+        element={
+          <AdminRoute>
+            <LecturersPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/rooms-facilities"
+        element={
+          <AdminRoute>
+            <RoomsFacilitiesPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/course-assignments"
+        element={
+          <AdminRoute>
+            <CourseAssignmentsPage />
+          </AdminRoute>
         }
       />
       <Route

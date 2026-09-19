@@ -36,12 +36,14 @@ type AdminDashboardContentProps = {
   reportsHref: string
   welcomeName?: string
   helperText: string
+  metrics?: typeof dashboardMetrics
 }
 
 export function AdminDashboardContent({
   reportsHref,
   welcomeName = 'Timetable Administrator',
   helperText,
+  metrics = dashboardMetrics,
 }: AdminDashboardContentProps) {
   return (
     <>
@@ -55,7 +57,7 @@ export function AdminDashboardContent({
         }
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
-        {dashboardMetrics.map((metric) => (
+        {metrics.map((metric) => (
           <MetricCard
             key={metric.id}
             label={metric.label}

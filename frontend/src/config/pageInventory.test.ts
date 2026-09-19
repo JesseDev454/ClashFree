@@ -55,6 +55,16 @@ describe('page inventory', () => {
     expect(getPreviewHref('admin-courses')).toBe('/preview/unavailable/admin-courses')
     expect(getAppHref('admin-dashboard')).toBe('/admin/dashboard')
     expect(getAppHref('lecturer-dashboard')).toBe('/lecturer/dashboard')
-    expect(getAppHref('admin-courses')).toBe('/unavailable/admin-courses')
+    expect(getAppHref('admin-courses')).toBe('/admin/courses')
+    expect(getAppHref('admin-academic-sessions')).toBe('/admin/academic-sessions')
+    expect(getAppHref('admin-faculties-departments')).toBe('/admin/faculties-departments')
+    expect(getAppHref('admin-student-cohorts')).toBe('/admin/student-cohorts')
+    expect(getAppHref('admin-lecturers')).toBe('/admin/lecturers')
+    expect(getAppHref('admin-rooms-facilities')).toBe('/admin/rooms-facilities')
+    expect(getAppHref('admin-course-assignments')).toBe('/admin/course-assignments')
+    expect(getAppHref('facilities-rooms')).toBe('/unavailable/facilities-rooms')
+    expect(getPreviewHref('admin-rooms-facilities')).toBe(
+      '/preview/unavailable/admin-rooms-facilities',
+    )
   })
 })

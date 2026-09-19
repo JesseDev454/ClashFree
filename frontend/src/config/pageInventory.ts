@@ -1064,9 +1064,22 @@ export function getPreviewHref(pageId: string): string {
   return `/preview/unavailable/${pageId}`
 }
 
+const PHASE3_ADMIN_PAGES = new Set([
+  'admin-academic-sessions',
+  'admin-faculties-departments',
+  'admin-courses',
+  'admin-student-cohorts',
+  'admin-lecturers',
+  'admin-rooms-facilities',
+  'admin-course-assignments',
+])
+
 export function getAppHref(pageId: string): string {
   const page = getPageById(pageId)
-  if (page && pageId.endsWith('-dashboard')) {
+  if (!page) {
+    return `/unavailable/${pageId}`
+  }
+  if (pageId.endsWith('-dashboard') || PHASE3_ADMIN_PAGES.has(pageId)) {
     return page.route
   }
   return `/unavailable/${pageId}`

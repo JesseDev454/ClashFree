@@ -2,7 +2,7 @@
 
 Disruption-aware, constraint-based university timetable optimisation and repair.
 
-Phase 2 adds email/password authentication, httpOnly session cookies, five role-guarded accounts, and API **403** enforcement. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Academic CRUD, the solver, and Resend remain later phases.
+Phase 3 adds administrator academic CRUD (sessions, faculties, courses, cohorts, lecturers, rooms, assignments) on top of Phase 2 email/password auth. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. The solver and Resend remain later phases.
 
 ## Local setup
 
@@ -17,6 +17,7 @@ uv sync --group dev
 Copy-Item .env.example .env
 uv run alembic upgrade head
 uv run python -m app.cli seed_phase2
+uv run python -m app.cli seed_phase3
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -53,7 +54,9 @@ Then open:
 - http://localhost:5173/preview/admin/dashboard — unauthenticated design lab
 - http://localhost:5173/preview/components
 
-The preview banner reports **API connected** when FastAPI and Postgres are running. Dashboard numbers remain sample fixtures. Generate, repair and publish stay disabled in the UI; non-admins receive **403** if they POST the stub endpoints, and the administrator receives **501** until Phase 5.
+The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures. Production `/admin/dashboard` loads course, lecturer, cohort and room counts from `/api/academic/summary`. Generate, repair and publish stay disabled in the UI; non-admins receive **403** if they POST the stub endpoints, and the administrator receives **501** until Phase 5.
+
+Signed-in administrators can open `/admin/courses` and the other six Phase 3 screens. Preview hrefs stay on `/preview/unavailable/...`.
 
 ## Checks
 
@@ -69,6 +72,7 @@ npm run build
 npx playwright install chromium
 npm run test:e2e
 npm run test:e2e:auth
+npm run test:e2e:academic
 ```
 
 Backend, from `backend/`:
@@ -82,7 +86,9 @@ uv run pytest
 
 `test:e2e` builds the production bundle and exercises preview routes. It mocks `/health` and `/api/me`, so Playwright does not need the API running.
 
-`test:e2e:auth` starts FastAPI (with `AUTH_DEBUG=true`) and runs the real-API login spec. Postgres must be up and seeded.
+`test:e2e:auth` starts FastAPI (with `AUTH_DEBUG=true`) and runs the real-API login spec. Postgres must be up and seeded with `seed_phase2`.
+
+`test:e2e:academic` starts FastAPI and runs the administrator Courses CRUD spec. Postgres must also be seeded with `seed_phase3`.
 
 ## Documentation
 
@@ -94,6 +100,7 @@ uv run pytest
 - [Phase 0 handoff](docs/phase-0-handoff.md)
 - [Phase 1 handoff](docs/phase-1-handoff.md)
 - [Phase 2 handoff](docs/phase-2-handoff.md)
+- [Phase 3 handoff](docs/phase-3-handoff.md)
 
 Reference mockups live in `docs/design-references/` and are not served by the Vite app.
 

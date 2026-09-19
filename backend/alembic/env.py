@@ -3,7 +3,20 @@ from logging.config import fileConfig
 from alembic import context
 from app.core.config import get_settings
 from app.core.database import Base
-from app.models import Department, EmailToken, HealthProbe, Session, User  # noqa: F401
+from app.models import (  # noqa: F401
+    AcademicSession,
+    Cohort,
+    Course,
+    CourseAssignment,
+    Department,
+    EmailToken,
+    Faculty,
+    HealthProbe,
+    Lecturer,
+    Room,
+    Session,
+    User,
+)
 from sqlalchemy import engine_from_config, pool
 
 config = context.config
