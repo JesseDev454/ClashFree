@@ -1,0 +1,42 @@
+[project]
+name = "clashfree-backend"
+version = "0.1.0"
+description = "ClashFree FastAPI service, database access and later timetable solver host."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.16.4",
+    "fastapi>=0.116.1",
+    "psycopg[binary]>=3.2.9",
+    "pydantic-settings>=2.10.1",
+    "sqlalchemy>=2.0.43",
+    "uvicorn[standard]>=0.35.0",
+    "pwdlib[argon2]>=0.2.1",
+    "email-validator>=2.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.4.1",
+    "ruff>=0.12.11",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "UP"]
+ignore = ["B008"]
+
+[tool.ruff.format]
+quote-style = "double"

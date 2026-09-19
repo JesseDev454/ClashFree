@@ -1,0 +1,91 @@
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+:root {
+  --sidebar: #0d223b;
+  --sidebar-accent: #0e2642;
+  --sidebar-foreground: #d7e3f2;
+  --sidebar-muted: #8aa0b8;
+  --primary: #126bd3;
+  --primary-foreground: #ffffff;
+  --background: #f5f8fc;
+  --foreground: #0f172a;
+  --muted-foreground: #5c6b80;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --ring: #1575e5;
+  --success: #0f9f6e;
+  --warning: #b45309;
+  --danger: #e11d48;
+  --info: #2563eb;
+  --tint-blue: #f2f8ff;
+  --tint-green: #f1fbf6;
+  --tint-purple: #f5f1ff;
+  --tint-lavender: #f8f6ff;
+  --tint-amber: #fff8ee;
+  --tint-rose: #fff4f5;
+  --sidebar-width: 16.5rem;
+  --topbar-height: 4rem;
+  --page-padding: 1.5rem;
+  --card-padding: 1.25rem;
+  --radius: 0.9rem;
+  --radius-sm: 0.55rem;
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.04);
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-tint-blue: var(--tint-blue);
+  --color-tint-green: var(--tint-green);
+  --color-tint-purple: var(--tint-purple);
+  --color-tint-lavender: var(--tint-lavender);
+  --color-tint-amber: var(--tint-amber);
+  --color-tint-rose: var(--tint-rose);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-md: var(--radius-sm);
+  --shadow-card: var(--shadow-card);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

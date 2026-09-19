@@ -1,0 +1,560 @@
+{
+  "total": 78,
+  "counts": {
+    "01_Authentication": 5,
+    "02_Timetable_Admin": 26,
+    "03_Department_Coordinator": 15,
+    "04_Lecturer": 12,
+    "05_Facilities_Manager": 14,
+    "06_Student": 6
+  },
+  "duplicates": {},
+  "files": [
+    {
+      "role": "01_Authentication",
+      "file": "login.png",
+      "width": 1182,
+      "height": 1144,
+      "sha256": "5f8ed1a190c0fdb0fb351cfc97b929249631d87525bfc5faed24d7e86666a071"
+    },
+    {
+      "role": "01_Authentication",
+      "file": "forgot-password.png",
+      "width": 778,
+      "height": 924,
+      "sha256": "45c45c33888d1a2e27f334f59680629f8f42d106122bdff65decbec74c7065d7"
+    },
+    {
+      "role": "01_Authentication",
+      "file": "verify-email.png",
+      "width": 778,
+      "height": 924,
+      "sha256": "d1f7e211417c2e5f531c9f8abb8e005857f45de04e5cf1ed63168f87b70e9dbe"
+    },
+    {
+      "role": "01_Authentication",
+      "file": "reset-password.png",
+      "width": 778,
+      "height": 924,
+      "sha256": "c5d31eb4d2faf7c75ec308b901c27c2e26806af5cdc6c3f033610d3b36565a99"
+    },
+    {
+      "role": "01_Authentication",
+      "file": "reset-success.png",
+      "width": 780,
+      "height": 924,
+      "sha256": "f38f45cd9062074b079d37fa26749188aae6d58d6a3678de6a32d0e5eed7e491"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "academic-sessions.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "52270fe505af9d2bce11e80ee3ca62304883058ead30f0521896c2b3778a77b1"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "audit-log.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "295119567f4edd4e4c2c9fbbd2860bfdf8e358a42872e3b9452b845a024ab13d"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "change-review.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "1d19246bbc73ae6384aa05fb4df7a51ad23b292f51861a949ee8428292a0055a"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "conflict-monitor.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "3f2e7b2629b305dcd0fb7e7169baf54b9c4f2c7350c6bc508c55300da9f0526a"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "constraint-weights.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "adf6a7d532f52998c9976cd674af79a3b42d18e53b02d41c844b9cef884829d7"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "course-assignments.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "433ee93420bb1dfb39c25ee0f5a04384781c32bcaa0d1ea8b4c0dcfc6022d8bb"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "courses.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "985874be304bc0ed6f3298dfc3243fa8cc187d32d0cc302a18775715df4fb7de"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "dashboard.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "d15bb49d2760a88f7edd5bfef1f5f66537a251bbe55a72a1936ecf3ddd818361"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "disruption-centre.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "24fd3b2c8d64bb7e30e22ac125bbfe95cd35c61f0160b9fe29f3c01ce5439cbe"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "faculties-departments.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "e70372c9d4f50b5e760c39134d9d671613036183cdabc789eeae17f1d0161dcb"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "generate-timetable.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "73e52116518289ba910c9a74b8d192d458b712199b16048dc378571408492409"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "generation-results.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "1a5b3f22cf89ab5d7d0c1f3f771517387bdfe4f84fbd6e9d167a40b52b5c19b8"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "help-support.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "8641d44a5d1b460d2d4c1a36857b656c5bf681d1bea8733df540df23f1bbeab9"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "lecturers.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "ec151b5df77b28f20c5f1d0620b596615f5aee25e71e1fbfac9f68eca1e7c57d"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "master-timetable.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "8439cc40a3e44c38c8a38413b5363144692a001f10f0cd16e14845ccbeea6f56"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "notifications.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "d96bd4a41a10bfc51de52a6a80b27a9c887e0e410f900c2ed441cb24c91b9bd9"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "publish-timetable.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "a9db302263fbce0c90d526d418c44469f7b1103bc20f3ed0554cc4473fdae83b"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "repair-comparison.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "9b47f4adfed7c3b0e03b497b694ce5420cba3c2ae1339f987057dd1f0c993403"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "repair-timetable.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "b606078fb42ce8b1de95410682c099cf1cfca6cdb7b0350a7103a91101c2bbac"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "reports-analytics.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "db3cc60aff84eddbcbdeb1112f7c9e2df8d73149852a584af2bace995e9af659"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "rooms-facilities.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "f855483394c1ca08643ccd5f6563dd31b43f55cdbf5caf4d796f994416ba2eaf"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "scheduling-constraints.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "af3d0b4591569e53699231caf586ee0d8dbe5c2093cb92dcbcbdde1374e2db7e"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "settings.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "65468ac3436f20b4b079cd155847b43e7c8bcaff336526ba03fe59bb90d21371"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "student-cohorts.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "77cc5ceefafd3f383623c280151ef222a2f68bfeb19a68bdbc47bcc763b2b20c"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "timetable-versions.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "e1af7eecf27acae1501577e685a376922491a6f2c1ffb5323752482f0ce39c40"
+    },
+    {
+      "role": "02_Timetable_Admin",
+      "file": "users-roles.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "69eb03fa129cae98c27f5044422a27757ee7a6c73be969aade55f4b706e1c73b"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "dashboard.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "2543a826d66d5ab59984ab4b89141bc08aa9f8747af271b81cec5b0ba4bca4a2"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "department-courses.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "01c94f6349f1e5809fcaa5bb914da8a09a4c855fd2a3dcac0cd01520de6152af"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "course-assignments.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "0a078774b8844796accfb3469f2eeb39b01dda652907be5622b6b46df96891c2"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "student-cohorts.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "c99c0e285d643cbba28ad7a7d98ff1162d78c22166af48a6c3d59b000856d540"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "lecturer-availability.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "e09e35d8363969364007b1e0937999d4baff46c4661c2d905bf47766e8e06d5f"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "department-constraints.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "41416ec7f89eb9c1538b99cc4dfc9cec5d940dac80cd878aeb0613d78dd870c3"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "scheduling-requests.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "202662104531f84e662fc2443d6cba303c348c24819d0bc0f3e0a443110be6b6"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "department-timetable.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "330834d5b24c628e8904424965199d36ee6eebea4974e55cdade59c44c8fb68a"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "conflict-review.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "88802ca143d0665758db6c99ef719485af0bab480b0f4259f3dbb694a757f96a"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "change-requests.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "a096158880fffa85a72973fbe986b4dc16cc4cc9fe810fc92322905fcea9fdb4"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "reports-analytics.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "ca5a57e36cb157aaf893c460e1920fd32b2d268528ed1069d7b45f7a5ecc20dd"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "notifications.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "676888840914fd5b2eec471c34574c5f5c19da7a3cc9b90f2e8d82d415580865"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "profile.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "d59e04a2a2a8bf5e24b9cdb089e1e1ead381ba0d6f42fa5d2018fa08ef8591d2"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "settings.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "08dc146b44aa800b7a163e781318efe78c4cf8c54c01e4a02bb1164b3362d961"
+    },
+    {
+      "role": "03_Department_Coordinator",
+      "file": "help-support.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "d3b566b0554e245a195b89c9529299f37f1a7bc91f2828b4e30d28d1d7d198e9"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "dashboard.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "b1e38e877490cc9bfcaea921bb9839d57d755bc912800aaf0d20d4faeedd0ef9"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "my-timetable.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "1603b99d330168638666702787894942c30981f4b81039023ec35019bbe6bf80"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "my-courses.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "1565617847ba12d65608edb2184fe97c011782fff3e611b2f8533ea36d56c92d"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "availability.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "70c510fcba66f02ffc17fab8e1d8d9b13be8465198279e17114162fb15f2e6a3"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "scheduling-preferences.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "b4afde196cf0150cee5e9cbdf13542e3a9609a26256ec7b1fd9959741d2e79fc"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "report-unavailability.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "b1c09c452ac3f240e65f98bc569419d18854faa98c813c663dfc9a03ce1aacb7"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "change-requests.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "9e9d3f8cd807104561fb293247672711a9f0218918c8cc712547411c7b121b38"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "timetable-changes.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "d0587204088157579717c84dbba6858fbbf65578f7f6176698046b96d6b3525b"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "notifications.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "fd0b8aad44c57822d480f91361ca102d1f37f80c4b128a1d151da33f3f2d5dcb"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "profile.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "ab80e8b3bf368133820c99cbc7dac2c783d1b3c647ebc426b1d8cdbb709ce4dd"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "settings.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "dd5034dca28bba9d11e4275cb8740c822ed22a2961da4a5c0b7166ab97522ee3"
+    },
+    {
+      "role": "04_Lecturer",
+      "file": "help-support.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "f602ba0e1345cbd8321255ea2698de8a2f88f3fa50d08f0dafd1e9fa7477b4c9"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "dashboard.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "fd45ed2aee171dece7d57abdf8eae34231169cd6fa815ccdb7de15a5edabbedd"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "rooms.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "03da130e61a7fff791c4ca988fb07cbd7888b74d273ce6fb6cc1cd4a30b3bf0d"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "add-edit-room.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "4b98a809dcd38307dd4ef2f64aeec4a09cd5a2d40517bfa5dd643bedb124f6db"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "room-availability.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "f81955631eaab8cd72450828c78f61f9728a63c103aa3c6d1528f334ea782423"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "room-status.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "2011008dd13113092fb398cc84ed7a73156f10c419906d1ac17872ac19a04fe5"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "report-disruption.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "03e5dc99057111c17e3bd15229e9a6117bdfc76024f331b531bc0e728af6ad09"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "affected-classes.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "077b95b370c5e3848666f76f9eb8886eafa87f9355e96510d6a3f97b7a48d7ba"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "maintenance-schedule.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "70daadf8b1a34ee8254c8e2f20a823333d292a9f5e72206634d2e2987989e782"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "room-utilization.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "7dc669ede6e43240e2144b776ee7620e0e3875ff8bace80f2ee5c94d7e8fd374"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "facility-history.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "38fb1f072d422b87a5c57ee5f32a776abd8c5536a7fb4b527852ee5e55314e45"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "notifications.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "7d9ec38cec6a7f06c8c7aa96ae2685665babcbb99c1a861646e5e6cad3597f5b"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "profile.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "ca1d72e0514596cf31ebceeca43f784e91a9d7fa367bd0dc9e7f915ab56783c3"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "settings.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "7934e453376c13f63bf3367a9e93386145bc657a0e6b9bae52c22136486973e8"
+    },
+    {
+      "role": "05_Facilities_Manager",
+      "file": "help-support.png",
+      "width": 1600,
+      "height": 1000,
+      "sha256": "9568e9ba743d986f3b2297181a1633c992e853cadf75b4768a8cac96b459bd37"
+    },
+    {
+      "role": "06_Student",
+      "file": "dashboard.png",
+      "width": 1586,
+      "height": 992,
+      "sha256": "ebf187f96d778cd1629e4c0899aece113dc21ed8b87105c39d1a6a3612b2f6f1"
+    },
+    {
+      "role": "06_Student",
+      "file": "my-timetable.png",
+      "width": 1586,
+      "height": 992,
+      "sha256": "05a785b14c709b713267ee0f0fbcc8961aa8228d9a30e251b669a6d659cc9d48"
+    },
+    {
+      "role": "06_Student",
+      "file": "todays-schedule.png",
+      "width": 1586,
+      "height": 992,
+      "sha256": "96429488cb7ff58ad494b04fc25162103a69fcd5907ecde4d386cbb277d963bc"
+    },
+    {
+      "role": "06_Student",
+      "file": "course-schedule.png",
+      "width": 1586,
+      "height": 992,
+      "sha256": "9402739e8a847b6a7273ac95bc0441e6722b747ffd201a9f99e519c6d7218c11"
+    },
+    {
+      "role": "06_Student",
+      "file": "timetable-changes.png",
+      "width": 1586,
+      "height": 992,
+      "sha256": "f2f51766d21c96b275bddbe495ac86d003bb105119402c4f03a5fc67596b47db"
+    },
+    {
+      "role": "06_Student",
+      "file": "notifications.png",
+      "width": 1586,
+      "height": 992,
+      "sha256": "ebe312259be5dae20df71160d69af400e05320acb76c8c62378528be5548e581"
+    }
+  ]
+}

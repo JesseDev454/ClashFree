@@ -1,0 +1,92 @@
+ClashFree Final Image Package
+=============================
+
+Total images: 78
+01_Authentication: 5
+02_Timetable_Admin: 26
+03_Department_Coordinator: 15
+04_Lecturer: 12
+05_Facilities_Manager: 14
+06_Student: 6
+
+Files:
+01_Authentication/login.png — 1182x1144
+01_Authentication/forgot-password.png — 778x924
+01_Authentication/verify-email.png — 778x924
+01_Authentication/reset-password.png — 778x924
+01_Authentication/reset-success.png — 780x924
+02_Timetable_Admin/academic-sessions.png — 1600x1000
+02_Timetable_Admin/audit-log.png — 1600x1000
+02_Timetable_Admin/change-review.png — 1600x1000
+02_Timetable_Admin/conflict-monitor.png — 1600x1000
+02_Timetable_Admin/constraint-weights.png — 1600x1000
+02_Timetable_Admin/course-assignments.png — 1600x1000
+02_Timetable_Admin/courses.png — 1600x1000
+02_Timetable_Admin/dashboard.png — 1600x1000
+02_Timetable_Admin/disruption-centre.png — 1600x1000
+02_Timetable_Admin/faculties-departments.png — 1600x1000
+02_Timetable_Admin/generate-timetable.png — 1600x1000
+02_Timetable_Admin/generation-results.png — 1600x1000
+02_Timetable_Admin/help-support.png — 1600x1000
+02_Timetable_Admin/lecturers.png — 1600x1000
+02_Timetable_Admin/master-timetable.png — 1600x1000
+02_Timetable_Admin/notifications.png — 1600x1000
+02_Timetable_Admin/publish-timetable.png — 1600x1000
+02_Timetable_Admin/repair-comparison.png — 1600x1000
+02_Timetable_Admin/repair-timetable.png — 1600x1000
+02_Timetable_Admin/reports-analytics.png — 1600x1000
+02_Timetable_Admin/rooms-facilities.png — 1600x1000
+02_Timetable_Admin/scheduling-constraints.png — 1600x1000
+02_Timetable_Admin/settings.png — 1600x1000
+02_Timetable_Admin/student-cohorts.png — 1600x1000
+02_Timetable_Admin/timetable-versions.png — 1600x1000
+02_Timetable_Admin/users-roles.png — 1600x1000
+03_Department_Coordinator/dashboard.png — 1600x1000
+03_Department_Coordinator/department-courses.png — 1600x1000
+03_Department_Coordinator/course-assignments.png — 1600x1000
+03_Department_Coordinator/student-cohorts.png — 1600x1000
+03_Department_Coordinator/lecturer-availability.png — 1600x1000
+03_Department_Coordinator/department-constraints.png — 1600x1000
+03_Department_Coordinator/scheduling-requests.png — 1600x1000
+03_Department_Coordinator/department-timetable.png — 1600x1000
+03_Department_Coordinator/conflict-review.png — 1600x1000
+03_Department_Coordinator/change-requests.png — 1600x1000
+03_Department_Coordinator/reports-analytics.png — 1600x1000
+03_Department_Coordinator/notifications.png — 1600x1000
+03_Department_Coordinator/profile.png — 1600x1000
+03_Department_Coordinator/settings.png — 1600x1000
+03_Department_Coordinator/help-support.png — 1600x1000
+04_Lecturer/dashboard.png — 1600x1000
+04_Lecturer/my-timetable.png — 1600x1000
+04_Lecturer/my-courses.png — 1600x1000
+04_Lecturer/availability.png — 1600x1000
+04_Lecturer/scheduling-preferences.png — 1600x1000
+04_Lecturer/report-unavailability.png — 1600x1000
+04_Lecturer/change-requests.png — 1600x1000
+04_Lecturer/timetable-changes.png — 1600x1000
+04_Lecturer/notifications.png — 1600x1000
+04_Lecturer/profile.png — 1600x1000
+04_Lecturer/settings.png — 1600x1000
+04_Lecturer/help-support.png — 1600x1000
+05_Facilities_Manager/dashboard.png — 1600x1000
+05_Facilities_Manager/rooms.png — 1600x1000
+05_Facilities_Manager/add-edit-room.png — 1600x1000
+05_Facilities_Manager/room-availability.png — 1600x1000
+05_Facilities_Manager/room-status.png — 1600x1000
+05_Facilities_Manager/report-disruption.png — 1600x1000
+05_Facilities_Manager/affected-classes.png — 1600x1000
+05_Facilities_Manager/maintenance-schedule.png — 1600x1000
+05_Facilities_Manager/room-utilization.png — 1600x1000
+05_Facilities_Manager/facility-history.png — 1600x1000
+05_Facilities_Manager/notifications.png — 1600x1000
+05_Facilities_Manager/profile.png — 1600x1000
+05_Facilities_Manager/settings.png — 1600x1000
+05_Facilities_Manager/help-support.png — 1600x1000
+06_Student/dashboard.png — 1586x992
+06_Student/my-timetable.png — 1586x992
+06_Student/todays-schedule.png — 1586x992
+06_Student/course-schedule.png — 1586x992
+06_Student/timetable-changes.png — 1586x992
+06_Student/notifications.png — 1586x992
+
+Exact duplicate file hashes: NONE

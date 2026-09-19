@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: clashfree
+      POSTGRES_PASSWORD: clashfree
+      POSTGRES_DB: clashfree
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clashfree -d clashfree"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

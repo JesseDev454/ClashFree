@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/.venv/
+
+# Builds
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+frontend/blob-report/
+frontend/playwright/.cache/
+frontend/.playwright-browsers/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+backend/.pytest_cache/
+backend/.ruff_cache/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Coverage
+coverage/
+frontend/coverage/
+
+# TypeScript
+*.tsbuildinfo
+frontend/*.tsbuildinfo
