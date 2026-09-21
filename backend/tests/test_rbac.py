@@ -58,5 +58,21 @@ def test_unauthenticated_capability_routes_are_401(client: TestClient) -> None:
         "/api/timetables/generate",
         "/api/timetables/publish",
         "/api/timetables/repair",
+        "/api/disruptions",
     ):
         assert client.post(path).status_code == 401
+
+
+def test_disruption_post_is_forbidden_for_coordinator(client: TestClient) -> None:
+    login(client, "coordinator@clashfree.test")
+    response = client.post(
+        "/api/disruptions",
+        json={
+            "kind": "room",
+            "room_id": 1,
+            "reason": "blocked",
+            "starts_on": "2026-09-22",
+            "ends_on": "2026-09-23",
+        },
+    )
+    assert response.status_code == 403

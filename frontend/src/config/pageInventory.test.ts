@@ -80,6 +80,21 @@ describe('page inventory', () => {
     expect(getAppHref('admin-publish-timetable')).toBe('/admin/publish-timetable')
     expect(getAppHref('admin-timetable-versions')).toBe('/admin/timetable-versions')
     expect(getAppHref('admin-change-review')).toBe('/admin/change-review')
+    expect(getAppHref('admin-disruption-centre')).toBe('/admin/disruption-centre')
+    expect(getAppHref('lecturer-report-unavailability')).toBe(
+      '/lecturer/report-unavailability',
+    )
+    expect(getAppHref('facilities-report-disruption')).toBe(
+      '/facilities/report-disruption',
+    )
+    expect(getAppHref('facilities-room-status')).toBe('/facilities/room-status')
+    expect(getAppHref('facilities-affected-classes')).toBe('/facilities/affected-classes')
+    expect(getAppHref('facilities-maintenance-schedule')).toBe(
+      '/facilities/maintenance-schedule',
+    )
+    expect(getAppHref('admin-repair-timetable')).toBe(
+      '/unavailable/admin-repair-timetable',
+    )
     expect(getPreviewHref('admin-generate-timetable')).toBe(
       '/preview/unavailable/admin-generate-timetable',
     )

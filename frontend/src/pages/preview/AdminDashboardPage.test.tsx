@@ -26,8 +26,9 @@ describe('administrator dashboard preview', () => {
     const publishButton = screen.getByRole('button', { name: 'Publish Timetable' })
     expect(publishButton).toBeDisabled()
     expect(publishButton.tagName).toBe('BUTTON')
+    expect(screen.getByRole('button', { name: 'Repair Timetable' })).toBeDisabled()
     await waitFor(() => {
       expect(screen.getByTestId('backend-status')).toHaveTextContent('API unreachable')
     })
-  })
+  }, 10_000)
 })

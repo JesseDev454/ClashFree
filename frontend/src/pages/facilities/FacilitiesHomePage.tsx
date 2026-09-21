@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchRooms } from '../../api/academic'
+import { fetchDisruptionSummary } from '../../api/disruptions'
 import { ThinDashboardPage } from '../role/ThinDashboardPage'
 
 export function FacilitiesHomePage() {
@@ -7,11 +8,16 @@ export function FacilitiesHomePage() {
     value: '—',
     hint: 'Loading catalogue',
   })
+  const [disruptionStats, setDisruptionStats] = useState({
+    active: '—',
+    scheduled: '—',
+    classes: '—',
+  })
 
   useEffect(() => {
     let cancelled = false
-    void fetchRooms()
-      .then((rooms) => {
+    void Promise.all([fetchRooms(), fetchDisruptionSummary().catch(() => null)])
+      .then(([rooms, summary]) => {
         if (cancelled) {
           return
         }
@@ -19,6 +25,13 @@ export function FacilitiesHomePage() {
           value: String(rooms.length),
           hint: 'Teaching spaces in catalogue',
         })
+        if (summary) {
+          setDisruptionStats({
+            active: String(summary.active),
+            scheduled: String(summary.scheduled),
+            classes: String(summary.classes_affected),
+          })
+        }
       })
       .catch(() => {
         if (!cancelled) {
@@ -45,22 +58,22 @@ export function FacilitiesHomePage() {
         {
           id: 'maintenance',
           label: 'Maintenance windows',
-          value: '4',
-          hint: 'This week',
+          value: disruptionStats.scheduled,
+          hint: 'Scheduled room disruptions',
           tint: 'amber',
         },
         {
           id: 'disruptions',
           label: 'Active disruptions',
-          value: '1',
-          hint: 'Engineering LT2',
+          value: disruptionStats.active,
+          hint: 'Open and in review',
           tint: 'rose',
         },
         {
           id: 'affected',
           label: 'Affected classes',
-          value: '4',
-          hint: 'Awaiting repair',
+          value: disruptionStats.classes,
+          hint: 'Published meetings',
           tint: 'blue',
         },
       ]}

@@ -11,6 +11,7 @@ export default defineConfig({
     '**/constraints.spec.ts',
     '**/solver.spec.ts',
     '**/publish.spec.ts',
+    '**/disruptions.spec.ts',
   ],
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

@@ -2,7 +2,7 @@
 
 Disruption-aware, constraint-based university timetable optimisation and repair.
 
-Phase 6 freezes a CP-SAT **draft** into an immutable published version for the active academic session, with version history and a pre-publish diff. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Repair and Resend remain later phases.
+Phase 7 records post-publication room and lecturer disruptions against the current published timetable, with computed impact. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Repair and Resend remain later phases.
 
 ## Local setup
 
@@ -21,6 +21,7 @@ uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
 uv run python -m app.cli seed_phase6
+uv run python -m app.cli seed_phase7
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -57,9 +58,9 @@ Then open:
 - http://localhost:5173/preview/admin/dashboard — unauthenticated design lab
 - http://localhost:5173/preview/components
 
-The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures and keeps Generate and Publish disabled. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary` and enables Generate (links to `/admin/generate-timetable`) and Publish (links to `/admin/publish-timetable`). Repair stays disabled; that endpoint remains **501**.
+The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures and keeps Generate and Publish disabled. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary`, live disruption rows from `/api/disruptions`, and enables Generate (links to `/admin/generate-timetable`) and Publish (links to `/admin/publish-timetable`). Repair stays disabled; that endpoint remains **501**.
 
-Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable`, `/admin/conflict-monitor`, `/admin/publish-timetable`, `/admin/timetable-versions` and `/admin/change-review` as well as the Phase 3–4 catalogue and rules screens. Lecturers can open `/lecturer/availability` and `/lecturer/scheduling-preferences`. Facilities managers can open `/facilities/room-availability`. Preview hrefs stay on `/preview/unavailable/...`.
+Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable`, `/admin/conflict-monitor`, `/admin/publish-timetable`, `/admin/timetable-versions`, `/admin/change-review` and `/admin/disruption-centre` as well as the Phase 3–4 catalogue and rules screens. Lecturers can open `/lecturer/availability`, `/lecturer/scheduling-preferences` and `/lecturer/report-unavailability`. Facilities managers can open `/facilities/room-availability`, `/facilities/room-status`, `/facilities/report-disruption`, `/facilities/affected-classes` and `/facilities/maintenance-schedule`. Preview hrefs stay on `/preview/unavailable/...`.
 
 ## Checks
 
@@ -79,6 +80,7 @@ npm run test:e2e:academic
 npm run test:e2e:constraints
 npm run test:e2e:solver
 npm run test:e2e:publish
+npm run test:e2e:disruptions
 ```
 
 Backend, from `backend/`:
@@ -102,6 +104,8 @@ uv run pytest
 
 `test:e2e:publish` starts FastAPI and runs the publish/versions spec on port **4177**. Postgres must also be seeded with `seed_phase6`.
 
+`test:e2e:disruptions` starts FastAPI and runs the disruption report/impact spec on port **4178**. Postgres must also be seeded with `seed_phase7`.
+
 ## Documentation
 
 - [Scope](docs/scope.md)
@@ -116,6 +120,7 @@ uv run pytest
 - [Phase 4 handoff](docs/phase-4-handoff.md)
 - [Phase 5 handoff](docs/phase-5-handoff.md)
 - [Phase 6 handoff](docs/phase-6-handoff.md)
+- [Phase 7 handoff](docs/phase-7-handoff.md)
 
 Reference mockups live in `docs/design-references/` and are not served by the Vite app.
 
