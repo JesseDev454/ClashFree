@@ -6,13 +6,24 @@ from app.core.database import get_db
 from app.models.identity import User
 from app.models.timetable import TimetableConflict, TimetableRun, TimetableSolution
 from app.schemas.timetable import (
+    ChangeOut,
     ConflictOut,
     DraftOut,
     GenerateIn,
     PreflightOut,
+    PublishIn,
     RunOut,
     SlotOut,
     SolutionOut,
+    VersionOut,
+)
+from app.services.publish import (
+    PublishError,
+    current_version,
+    list_changes,
+    list_versions,
+    load_version,
+    publish_draft,
 )
 from app.services.timetable import (
     active_session,
@@ -26,6 +37,7 @@ from app.services.timetable import (
 
 admin_only = require_roles("timetable_administrator")
 generate_cap = require_capability("generate")
+publish_cap = require_capability("publish")
 
 router = APIRouter(prefix="/api/timetables", tags=["timetables"])
 
@@ -79,6 +91,28 @@ def slot_out(slot) -> SlotOut:
         department_id=department.id if department is not None else None,
         department_name=department.name if department is not None else None,
         building=slot.room.building if slot.room is not None else None,
+    )
+
+
+def version_out(row, include_slots: bool = True) -> VersionOut:
+    return VersionOut(
+        id=row.id,
+        session_id=row.session_id,
+        solution_id=row.solution_id,
+        run_id=row.run_id,
+        version_number=row.version_number,
+        status=row.status,
+        is_current=row.is_current,
+        notes=row.notes,
+        published_at=row.published_at,
+        published_by=row.published_by,
+        publisher_name=row.publisher.full_name if row.publisher is not None else None,
+        session_label=row.session.label if row.session is not None else None,
+        slot_count=row.slot_count,
+        hard_violations=row.hard_violations,
+        soft_penalty=row.soft_penalty,
+        room_utilization_percent=row.room_utilization_percent,
+        slots=[slot_out(slot) for slot in row.slots] if include_slots else [],
     )
 
 
@@ -246,9 +280,62 @@ def repair(_user: User = Depends(require_capability("approveRepair"))) -> None:
     )
 
 
-@router.post("/publish")
-def publish(_user: User = Depends(require_capability("publish"))) -> None:
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Timetable publishing is not implemented until Phase 6.",
-    )
+@router.post("/publish", response_model=VersionOut)
+def publish(
+    payload: PublishIn = PublishIn(),
+    db: Session = Depends(get_db),
+    user: User = Depends(publish_cap),
+) -> VersionOut:
+    try:
+        row = publish_draft(db, user.id, payload.notes)
+    except PublishError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    return version_out(row)
+
+
+@router.get("/published", response_model=VersionOut)
+def get_published(
+    db: Session = Depends(get_db),
+    _user: User = Depends(admin_only),
+) -> VersionOut:
+    session = active_session(db)
+    row = current_version(db, session.id if session is not None else None)
+    if row is None:
+        not_found("Published timetable")
+        raise AssertionError
+    return version_out(row)
+
+
+@router.get("/versions", response_model=list[VersionOut])
+def get_versions(
+    db: Session = Depends(get_db),
+    _user: User = Depends(admin_only),
+) -> list[VersionOut]:
+    return [version_out(row, include_slots=False) for row in list_versions(db)]
+
+
+@router.get("/versions/{version_id}", response_model=VersionOut)
+def get_version(
+    version_id: int,
+    db: Session = Depends(get_db),
+    _user: User = Depends(admin_only),
+) -> VersionOut:
+    row = load_version(db, version_id)
+    if row is None:
+        not_found("Timetable version")
+        raise AssertionError
+    return version_out(row)
+
+
+@router.get("/changes", response_model=list[ChangeOut])
+def get_changes(
+    from_version_id: int | None = None,
+    to_version_id: int | None = None,
+    db: Session = Depends(get_db),
+    _user: User = Depends(admin_only),
+) -> list[ChangeOut]:
+    try:
+        rows = list_changes(db, from_version_id, to_version_id)
+    except PublishError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    return [ChangeOut.model_validate(item) for item in rows]

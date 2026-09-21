@@ -14,7 +14,7 @@ def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(
         title="ClashFree API",
-        version="0.5.0",
+        version="0.6.0",
         summary="University timetable optimisation and repair service.",
     )
     application.add_middleware(

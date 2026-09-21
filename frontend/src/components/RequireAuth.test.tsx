@@ -85,6 +85,22 @@ function renderGuarded(path: string, user: AuthUser | null) {
             }
           />
           <Route
+            path="/admin/publish-timetable"
+            element={
+              <RequireAuth roles={['timetable_administrator']}>
+                <p>Publish timetable</p>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/change-review"
+            element={
+              <RequireAuth roles={['timetable_administrator']}>
+                <p>Change review</p>
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/lecturer/availability"
             element={
               <RequireAuth roles={['lecturer']}>
@@ -135,6 +151,18 @@ describe('RequireAuth', () => {
     renderGuarded('/admin/generate-timetable', lecturer)
     expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
     expect(screen.queryByText('Generate timetable')).not.toBeInTheDocument()
+  })
+
+  it('sends a lecturer away from publish timetable', () => {
+    renderGuarded('/admin/publish-timetable', lecturer)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Publish timetable')).not.toBeInTheDocument()
+  })
+
+  it('sends a lecturer away from change review', () => {
+    renderGuarded('/admin/change-review', lecturer)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Change review')).not.toBeInTheDocument()
   })
 
   it('lets a lecturer stay on availability', () => {

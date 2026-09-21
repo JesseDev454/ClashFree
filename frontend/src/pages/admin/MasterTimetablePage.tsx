@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
-import { fetchDraft, type TimetableSlot } from '../../api/timetables'
+import {
+  fetchDraft,
+  fetchPublished,
+  type DraftTimetable,
+  type TimetableVersion,
+} from '../../api/timetables'
 import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { PageHeader } from '../../components/PageHeader'
@@ -9,59 +14,16 @@ import { Select } from '../../components/Select'
 import { StatusBadge } from '../../components/StatusBadge'
 import { TimetableGrid } from '../../components/TimetableGrid'
 import { useReload } from '../../hooks/useReload'
-import { PERIODS, WEEKDAY_FULL, type Period, type Weekday } from '../../lib/schedule'
-import type { TimetableEntry } from '../../types/timetable'
+import { slotsToEntries } from '../../lib/timetableEntries'
 
 const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-const GRID_PERIOD: Record<string, string> = {
-  '08-10': '08:00-10:00',
-  '10-12': '10:00-12:00',
-  '12-14': '12:00-14:00',
-  '14-16': '14:00-16:00',
-  '16-18': '16:00-18:00',
-}
-const COLORS: Array<NonNullable<TimetableEntry['color']>> = [
-  'blue',
-  'green',
-  'purple',
-  'amber',
-  'rose',
-]
 
-function occupiedPeriods(slot: TimetableSlot): string[] {
-  const start = PERIODS.indexOf(slot.start_period as Period)
-  const end = PERIODS.indexOf(slot.end_period as Period)
-  if (start < 0) {
-    return [slot.start_period]
-  }
-  const finish = end < start ? start : end
-  return PERIODS.slice(start, finish + 1)
-}
-
-function slotsToEntries(slots: TimetableSlot[]): TimetableEntry[] {
-  const colorFor = new Map<string, NonNullable<TimetableEntry['color']>>()
-  return slots.flatMap((slot) => {
-    const code = slot.course_code ?? `assignment-${slot.assignment_id}`
-    if (!colorFor.has(code)) {
-      colorFor.set(code, COLORS[colorFor.size % COLORS.length])
-    }
-    const day = WEEKDAY_FULL[slot.weekday as Weekday] ?? slot.weekday
-    return occupiedPeriods(slot).map((period) => ({
-      id: `${slot.id}-${period}`,
-      courseCode: code,
-      courseTitle: slot.course_title ?? '',
-      day,
-      period: GRID_PERIOD[period] ?? period,
-      room: slot.room_code ?? '',
-      lecturer: slot.lecturer_name ?? '',
-      cohort: slot.cohort_code ?? '',
-      color: colorFor.get(code),
-    }))
-  })
-}
+type Source = 'draft' | 'published'
 
 export function MasterTimetablePage() {
-  const [slots, setSlots] = useState<TimetableSlot[]>([])
+  const [draft, setDraft] = useState<DraftTimetable | null>(null)
+  const [published, setPublished] = useState<TimetableVersion | null>(null)
+  const [source, setSource] = useState<Source>('draft')
   const [state, setState] = useState<'loading' | 'empty' | 'error' | 'ready'>('loading')
   const [department, setDepartment] = useState('all')
   const [cohort, setCohort] = useState('all')
@@ -71,13 +33,17 @@ export function MasterTimetablePage() {
   async function load() {
     setState('loading')
     try {
-      const draft = await fetchDraft()
-      if (!draft) {
-        setSlots([])
+      const [nextDraft, nextPublished] = await Promise.all([
+        fetchDraft(),
+        fetchPublished(),
+      ])
+      setDraft(nextDraft)
+      setPublished(nextPublished)
+      if (!nextDraft && !nextPublished) {
         setState('empty')
         return
       }
-      setSlots(draft.slots)
+      setSource(nextPublished ? 'published' : 'draft')
       setState('ready')
     } catch {
       setState('error')
@@ -85,6 +51,11 @@ export function MasterTimetablePage() {
   }
 
   useReload(load, [])
+
+  const slots = useMemo(
+    () => (source === 'published' ? (published?.slots ?? []) : (draft?.slots ?? [])),
+    [source, published, draft],
+  )
 
   const departments = useMemo(
     () => [
@@ -143,16 +114,58 @@ export function MasterTimetablePage() {
     return true
   })
 
+  const badge =
+    source === 'published' && published
+      ? `Published v${published.version_number}`
+      : 'Draft'
+
   return (
     <RoleShell>
       <PageHeader
         title="Master Timetable"
-        description="Draft university timetable for the selected solver solution. Publishing is Phase 6."
-        actions={<StatusBadge variant="warning">Draft</StatusBadge>}
+        description={
+          published
+            ? 'University timetable for the active session. Switch to the selected draft when you need to inspect unpublished work.'
+            : 'Draft university timetable for the selected solver solution.'
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge variant={source === 'published' ? 'success' : 'warning'}>
+              {badge}
+            </StatusBadge>
+            {draft && published ? (
+              <div
+                className="flex rounded-full border border-border bg-card p-1"
+                role="group"
+                aria-label="Timetable source"
+              >
+                <Button
+                  size="sm"
+                  variant={source === 'draft' ? 'primary' : 'ghost'}
+                  aria-pressed={source === 'draft'}
+                  onClick={() => setSource('draft')}
+                >
+                  Draft
+                </Button>
+                <Button
+                  size="sm"
+                  variant={source === 'published' ? 'primary' : 'ghost'}
+                  aria-pressed={source === 'published'}
+                  onClick={() => setSource('published')}
+                >
+                  Published
+                </Button>
+              </div>
+            ) : null}
+            <Button variant="outline" asChild>
+              <Link to="/admin/publish-timetable">Publish Timetable</Link>
+            </Button>
+          </div>
+        }
       />
       {state === 'error' ? (
         <p className="rounded-md bg-tint-rose px-3 py-2 text-sm text-danger" role="alert">
-          The draft timetable could not be loaded.
+          The timetable could not be loaded.
         </p>
       ) : null}
       {state === 'empty' ? (
@@ -197,7 +210,11 @@ export function MasterTimetablePage() {
             ) : (
               <TimetableGrid
                 entries={slotsToEntries(filtered)}
-                caption="Draft master timetable"
+                caption={
+                  source === 'published'
+                    ? 'Published master timetable'
+                    : 'Draft master timetable'
+                }
                 days={WEEKDAYS}
               />
             )}

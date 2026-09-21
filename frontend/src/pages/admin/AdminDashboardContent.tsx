@@ -35,6 +35,7 @@ const solverUnavailableId = 'solver-unavailable-help'
 type AdminDashboardContentProps = {
   reportsHref: string
   generateHref?: string
+  publishHref?: string
   welcomeName?: string
   helperText: string
   metrics?: typeof dashboardMetrics
@@ -44,6 +45,7 @@ type AdminDashboardContentProps = {
 export function AdminDashboardContent({
   reportsHref,
   generateHref,
+  publishHref,
   welcomeName = 'Timetable Administrator',
   helperText,
   metrics = dashboardMetrics,
@@ -109,9 +111,15 @@ export function AdminDashboardContent({
             <Button variant="outline" disabled aria-describedby={solverUnavailableId}>
               Repair Timetable
             </Button>
-            <Button variant="outline" disabled aria-describedby={solverUnavailableId}>
-              Publish Timetable
-            </Button>
+            {publishHref ? (
+              <Button variant="outline" asChild>
+                <Link to={publishHref}>Publish Timetable</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" disabled aria-describedby={solverUnavailableId}>
+                Publish Timetable
+              </Button>
+            )}
             <Button variant="outline" asChild>
               <Link to={reportsHref}>View Reports</Link>
             </Button>

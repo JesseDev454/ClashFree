@@ -6,6 +6,7 @@ import { HomeRedirect } from '../pages/HomeRedirect'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { AcademicSessionsPage } from '../pages/admin/AcademicSessionsPage'
 import { AdminHomePage } from '../pages/admin/AdminHomePage'
+import { ChangeReviewPage } from '../pages/admin/ChangeReviewPage'
 import { ConflictMonitorPage } from '../pages/admin/ConflictMonitorPage'
 import { ConstraintWeightsPage } from '../pages/admin/ConstraintWeightsPage'
 import { CourseAssignmentsPage } from '../pages/admin/CourseAssignmentsPage'
@@ -15,9 +16,11 @@ import { GenerateTimetablePage } from '../pages/admin/GenerateTimetablePage'
 import { GenerationResultsPage } from '../pages/admin/GenerationResultsPage'
 import { LecturersPage } from '../pages/admin/LecturersPage'
 import { MasterTimetablePage } from '../pages/admin/MasterTimetablePage'
+import { PublishTimetablePage } from '../pages/admin/PublishTimetablePage'
 import { RoomsFacilitiesPage } from '../pages/admin/RoomsFacilitiesPage'
 import { SchedulingConstraintsPage } from '../pages/admin/SchedulingConstraintsPage'
 import { StudentCohortsPage } from '../pages/admin/StudentCohortsPage'
+import { TimetableVersionsPage } from '../pages/admin/TimetableVersionsPage'
 import { ForgotPasswordPage } from '../pages/auth/ForgotPasswordPage'
 import { LoginPage } from '../pages/auth/LoginPage'
 import { ResetPasswordPage } from '../pages/auth/ResetPasswordPage'
@@ -157,6 +160,30 @@ export function AppRouter() {
         element={
           <AdminRoute>
             <ConflictMonitorPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/publish-timetable"
+        element={
+          <AdminRoute>
+            <PublishTimetablePage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/timetable-versions"
+        element={
+          <AdminRoute>
+            <TimetableVersionsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/change-review"
+        element={
+          <AdminRoute>
+            <ChangeReviewPage />
           </AdminRoute>
         }
       />

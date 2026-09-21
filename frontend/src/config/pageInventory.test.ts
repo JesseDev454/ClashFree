@@ -77,8 +77,14 @@ describe('page inventory', () => {
     expect(getAppHref('admin-generation-results')).toBe('/admin/generation-results')
     expect(getAppHref('admin-master-timetable')).toBe('/admin/master-timetable')
     expect(getAppHref('admin-conflict-monitor')).toBe('/admin/conflict-monitor')
+    expect(getAppHref('admin-publish-timetable')).toBe('/admin/publish-timetable')
+    expect(getAppHref('admin-timetable-versions')).toBe('/admin/timetable-versions')
+    expect(getAppHref('admin-change-review')).toBe('/admin/change-review')
     expect(getPreviewHref('admin-generate-timetable')).toBe(
       '/preview/unavailable/admin-generate-timetable',
+    )
+    expect(getPreviewHref('admin-publish-timetable')).toBe(
+      '/preview/unavailable/admin-publish-timetable',
     )
     expect(getAppHref('facilities-rooms')).toBe('/unavailable/facilities-rooms')
     expect(getPreviewHref('admin-rooms-facilities')).toBe(

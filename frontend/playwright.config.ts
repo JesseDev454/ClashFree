@@ -10,6 +10,7 @@ export default defineConfig({
     '**/academic.spec.ts',
     '**/constraints.spec.ts',
     '**/solver.spec.ts',
+    '**/publish.spec.ts',
   ],
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

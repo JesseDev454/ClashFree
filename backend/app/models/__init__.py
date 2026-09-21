@@ -23,6 +23,8 @@ from app.models.timetable import (
     TimetableRun,
     TimetableSlot,
     TimetableSolution,
+    TimetableVersion,
+    TimetableVersionSlot,
 )
 
 __all__ = [
@@ -48,5 +50,7 @@ __all__ = [
     "TimetableRun",
     "TimetableSlot",
     "TimetableSolution",
+    "TimetableVersion",
+    "TimetableVersionSlot",
     "User",
 ]

@@ -1089,6 +1089,12 @@ const PHASE5_PAGES = new Set([
   'admin-conflict-monitor',
 ])
 
+const PHASE6_PAGES = new Set([
+  'admin-publish-timetable',
+  'admin-timetable-versions',
+  'admin-change-review',
+])
+
 export function getAppHref(pageId: string): string {
   const page = getPageById(pageId)
   if (!page) {
@@ -1098,7 +1104,8 @@ export function getAppHref(pageId: string): string {
     pageId.endsWith('-dashboard') ||
     PHASE3_ADMIN_PAGES.has(pageId) ||
     PHASE4_PAGES.has(pageId) ||
-    PHASE5_PAGES.has(pageId)
+    PHASE5_PAGES.has(pageId) ||
+    PHASE6_PAGES.has(pageId)
   ) {
     return page.route
   }

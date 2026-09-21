@@ -54,6 +54,7 @@ class SoftFlags:
     daily_balance: bool = True
     building_movement: bool = True
     room_utilization: bool = True
+    preserve_published: bool = False
 
 
 @dataclass
@@ -63,6 +64,7 @@ class Weights:
     daily_balance: int = 4
     building_movement: int = 3
     room_utilization: int = 6
+    schedule_stability: int = 9
 
 
 @dataclass
@@ -76,6 +78,7 @@ class SolverSnapshot:
     time_limit_seconds: int = 30
     alternative_count: int = 1
     random_seed: int | None = None
+    published: dict[tuple[int, int], tuple[str, str, int]] = field(default_factory=dict)
 
 
 @dataclass
@@ -244,6 +247,7 @@ def score_placements(
     waste = 0
     demand = 0
     preference_hits = 0
+    preserve_hits = 0
     for placement in placements:
         meeting = meetings[(placement.assignment_id, placement.meeting_index)]
         room = rooms[placement.room_id]
@@ -270,6 +274,15 @@ def score_placements(
                 )
                 // 20
             )
+        if snapshot.flags.preserve_published:
+            published = snapshot.published.get((placement.assignment_id, placement.meeting_index))
+            if published is not None and published != (
+                placement.weekday,
+                placement.start_period,
+                placement.room_id,
+            ):
+                preserve_hits += 1
+                soft += snapshot.weights.schedule_stability
 
     if preference_hits and snapshot.flags.lecturer_preferences:
         conflicts.append(
@@ -278,6 +291,17 @@ def score_placements(
                 severity="soft",
                 title="Lecturer preferences",
                 detail=f"{preference_hits} placements sit outside preferred windows.",
+                assignment_ids=[],
+            )
+        )
+
+    if preserve_hits and snapshot.flags.preserve_published:
+        conflicts.append(
+            ConflictDraft(
+                kind="stability",
+                severity="soft",
+                title="Published assignment moved",
+                detail=f"{preserve_hits} meetings left their published slot.",
                 assignment_ids=[],
             )
         )
@@ -582,6 +606,10 @@ def _solve_once(
             if snapshot.flags.room_utilization:
                 waste = max(0, room.capacity - meeting.expected_size)
                 cost += snapshot.weights.room_utilization * waste // 20
+            if snapshot.flags.preserve_published:
+                published = snapshot.published.get((meeting.assignment_id, meeting.meeting_index))
+                if published is not None and published != (weekday, period, room_id):
+                    cost += snapshot.weights.schedule_stability
             if cost:
                 penalties.append((var, cost))
 

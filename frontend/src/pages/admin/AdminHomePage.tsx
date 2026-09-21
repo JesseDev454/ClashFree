@@ -85,7 +85,8 @@ export function AdminHomePage() {
         welcomeName={user?.full_name ?? 'Timetable Administrator'}
         reportsHref="/unavailable/admin-reports-analytics"
         generateHref="/admin/generate-timetable"
-        helperText="Generate runs the CP-SAT solver for the active session. Repair and publishing remain later phases. Course, lecturer, cohort and room counts come from the academic catalogue."
+        publishHref="/admin/publish-timetable"
+        helperText="Generate and Publish are live for the active session. Repair is Phase 8. Course, lecturer, cohort and room counts come from the academic catalogue."
         metrics={metrics}
         classChart={classChart}
       />

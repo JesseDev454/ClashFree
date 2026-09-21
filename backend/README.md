@@ -1,7 +1,8 @@
 """FastAPI backend for ClashFree.
 
-Phase 5 adds a CP-SAT generator that writes draft timetable runs,
-solutions, slots and conflicts. Publish and repair stay later.
+Phase 6 publishes a selected CP-SAT draft into immutable version
+snapshots. Repair stays later.
+
 
 ## Setup
 
@@ -20,6 +21,7 @@ uv run python -m app.cli seed_phase2
 uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
+uv run python -m app.cli seed_phase6
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 

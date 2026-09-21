@@ -99,3 +99,42 @@ class DraftOut(BaseModel):
     solution: SolutionOut
     slots: list[SlotOut]
     conflicts: list[ConflictOut]
+
+
+class PublishIn(BaseModel):
+    notes: str | None = Field(default=None, max_length=500)
+
+
+class VersionOut(BaseModel):
+    id: int
+    session_id: int
+    solution_id: int
+    run_id: int
+    version_number: int
+    status: str
+    is_current: bool
+    notes: str | None
+    published_at: datetime
+    published_by: int
+    publisher_name: str | None = None
+    session_label: str | None = None
+    slot_count: int
+    hard_violations: int
+    soft_penalty: int
+    room_utilization_percent: int
+    slots: list[SlotOut] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ChangeOut(BaseModel):
+    kind: str
+    assignment_id: int
+    meeting_index: int
+    course_code: str | None = None
+    from_weekday: str | None = None
+    from_start_period: str | None = None
+    from_room_code: str | None = None
+    to_weekday: str | None = None
+    to_start_period: str | None = None
+    to_room_code: str | None = None

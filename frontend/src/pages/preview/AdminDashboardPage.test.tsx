@@ -23,6 +23,9 @@ describe('administrator dashboard preview', () => {
       screen.queryByText(/timetable generated successfully/i),
     ).not.toBeInTheDocument()
     expect(screen.getByText(/workflows are unavailable/i)).toBeInTheDocument()
+    const publishButton = screen.getByRole('button', { name: 'Publish Timetable' })
+    expect(publishButton).toBeDisabled()
+    expect(publishButton.tagName).toBe('BUTTON')
     await waitFor(() => {
       expect(screen.getByTestId('backend-status')).toHaveTextContent('API unreachable')
     })

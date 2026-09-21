@@ -20,6 +20,8 @@ from app.models.timetable import (
     TimetableRun,
     TimetableSlot,
     TimetableSolution,
+    TimetableVersion,
+    TimetableVersionSlot,
 )
 from app.services.solver import (
     LecturerOption,
@@ -251,6 +253,7 @@ def build_snapshot(
             daily_balance=profile.daily_balance,
             building_movement=profile.building_movement,
             room_utilization=profile.room_utilization,
+            schedule_stability=profile.schedule_stability,
         )
     flags = SoftFlags(
         idle_gaps="minimize_student_idle_gaps" in soft_codes,
@@ -258,7 +261,27 @@ def build_snapshot(
         daily_balance="balance_classes_across_week" in soft_codes,
         building_movement="minimize_building_movement" in soft_codes,
         room_utilization=True,
+        preserve_published="preserve_published_assignments" in soft_codes,
     )
+    published: dict[tuple[int, int], tuple[str, str, int]] = {}
+    if flags.preserve_published:
+        current = (
+            db.query(TimetableVersion)
+            .filter(TimetableVersion.is_current.is_(True))
+            .order_by(TimetableVersion.id.desc())
+            .first()
+        )
+        if current is not None:
+            for slot in (
+                db.query(TimetableVersionSlot)
+                .filter(TimetableVersionSlot.version_id == current.id)
+                .all()
+            ):
+                published[(slot.assignment_id, slot.meeting_index)] = (
+                    slot.weekday,
+                    slot.start_period,
+                    slot.room_id,
+                )
     return SolverSnapshot(
         meetings=meetings,
         rooms=room_options,
@@ -269,6 +292,7 @@ def build_snapshot(
         time_limit_seconds=time_limit_seconds,
         alternative_count=alternative_count,
         random_seed=random_seed,
+        published=published,
     )
 
 
@@ -368,6 +392,7 @@ def select_solution(db: Session, solution: TimetableSolution) -> TimetableSoluti
     if run is None:
         return solution
     clear_selected_for_session(db, run.session_id)
+    db.expire(solution, ["is_selected"])
     solution.is_selected = True
     return solution
 

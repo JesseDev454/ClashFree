@@ -7,7 +7,7 @@
 - Idempotent seed CLI: `uv run python -m app.cli seed_phase5` (calls Phase 4 seed first). Adds Science Lab (`lab`, capacity 120) and raises ICT Lab 1 to 90 so the sample is feasible.
 - REST under `/api/timetables/...` with session cookies. Generate is administrator + `generate` capability. Unauthenticated callers receive **401**; non-admins receive **403**.
 - Four production screens: Generate Timetable, Generation Results, Master Timetable (draft of the selected solution), Conflict Monitor (validation of that draft).
-- Production dashboard **Generate** buttons link to `/admin/generate-timetable`. Repair and Publish stay disabled. Preview `/preview/admin/dashboard` Generate buttons stay disabled and fixture-based.
+- Production dashboard **Generate** buttons link to `/admin/generate-timetable`. Repair stays disabled. Preview `/preview/admin/dashboard` Generate buttons stay disabled and fixture-based.
 - Constraint Weights Soft Penalty / Hard Violations read from the selected draft when one exists.
 - Pytest solver coverage, Vitest `getAppHref` / generate loading / results empty-error / route guards, Playwright `solver.spec.ts`, CI `seed_phase5` and `solver-e2e`.
 
@@ -24,7 +24,7 @@ Assignments with no lecturer (`GST 203`, `CSC 201`) are skipped. They appear on 
 
 Hard constraints are always enforced (matching the locked seed rules): no lecturer/room/cohort clash, capacity `room.capacity >= max(course.expected_size, cohort.size)`, room type, lecturer and room unavailability, rooms with catalogue status `unavailable` or `maintenance` excluded (LT2, ICT Lab 2).
 
-Soft penalties apply only when the corresponding `scheduling_constraints.enabled` row is true, using the current weight profile (0–10): preferred slots, idle gaps, daily balance, building movement, room-fit waste. `preserve_published_assignments` is a no-op until Phase 6.
+Soft penalties apply only when the corresponding `scheduling_constraints.enabled` row is true, using the current weight profile (0–10): preferred slots, idle gaps, daily balance, building movement, room-fit waste. `preserve_published_assignments` is wired in Phase 6 using `schedule_stability`.
 
 Candidates: CP-SAT runs up to `alternative_solutions` (1–3) with distinct random seeds. The lowest-objective feasible candidate is selected as draft. Time limit default **30s** (UI 10/30/120). Generation is synchronous.
 
@@ -60,7 +60,7 @@ Password for seed accounts remains `ClashFree!dev`.
 - `GET /api/timetables/draft` (`404` if none)
 - `GET /api/timetables/conflicts?solution_id=`
 - `POST /api/timetables/validate` recomputes conflicts for the selected draft
-- `POST /api/timetables/repair` and `POST /api/timetables/publish` stay **501**
+- `POST /api/timetables/repair` stays **501**. Publish is implemented in Phase 6.
 
 409 if there is no active session or no current weight profile. 422 for time limit outside 5–120 or alternative count outside 1–3.
 
@@ -68,7 +68,7 @@ Password for seed accounts remains `ClashFree!dev`.
 
 These remain later phases and are not on the production screens:
 
-- Publish, versions, change review (Phase 6) — Master Timetable badge is `Draft`, not `Published v2.1`
+- Publish, versions, change review (Phase 6) — see [phase-6-handoff.md](phase-6-handoff.md)
 - Repair / comparison (Phase 8) — omit Resolve / Apply / Open Repair Timetable
 - Faculty/department-scoped generation (Phase 9) — dropdowns stay All and disabled
 - Export / Print
@@ -79,7 +79,6 @@ These remain later phases and are not on the production screens:
 
 ## Remaining later phases
 
-- Publish / versions / change review (Phase 6)
 - Disruptions (Phase 7)
 - Repair / comparison (Phase 8)
 - Full coordinator / lecturer / facilities / student portals and Users & Roles CRUD (Phase 9)

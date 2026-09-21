@@ -31,8 +31,10 @@ CONFLICT_KINDS = (
     "balance",
     "movement",
     "utilization",
+    "stability",
 )
 CONFLICT_SEVERITIES = ("high", "medium", "soft")
+VERSION_STATUSES = ("published", "superseded")
 
 
 class TimetableRun(Base):
@@ -147,3 +149,82 @@ class TimetableConflict(Base):
     assignment_ids: Mapped[list[int]] = mapped_column(JSONB, nullable=False, default=list)
 
     solution: Mapped[TimetableSolution] = relationship(back_populates="conflicts")
+
+
+class TimetableVersion(Base):
+    __tablename__ = "timetable_versions"
+    __table_args__ = (
+        UniqueConstraint(
+            "session_id",
+            "version_number",
+            name="uq_timetable_version_session_number",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    session_id: Mapped[int] = mapped_column(
+        ForeignKey("academic_sessions.id"),
+        index=True,
+        nullable=False,
+    )
+    solution_id: Mapped[int] = mapped_column(
+        ForeignKey("timetable_solutions.id"),
+        nullable=False,
+    )
+    run_id: Mapped[int] = mapped_column(
+        ForeignKey("timetable_runs.id"),
+        nullable=False,
+    )
+    version_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
+    is_current: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, index=True)
+    notes: Mapped[str | None] = mapped_column(Text)
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    published_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    slot_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    hard_violations: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    soft_penalty: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    room_utilization_percent: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    session: Mapped[AcademicSession] = relationship()
+    solution: Mapped[TimetableSolution] = relationship()
+    run: Mapped[TimetableRun] = relationship()
+    publisher: Mapped[User] = relationship()
+    slots: Mapped[list["TimetableVersionSlot"]] = relationship(
+        back_populates="version",
+        cascade="all, delete-orphan",
+    )
+
+
+class TimetableVersionSlot(Base):
+    __tablename__ = "timetable_version_slots"
+    __table_args__ = (
+        UniqueConstraint(
+            "version_id",
+            "weekday",
+            "start_period",
+            "room_id",
+            name="uq_timetable_version_slot_room_period",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    version_id: Mapped[int] = mapped_column(
+        ForeignKey("timetable_versions.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    assignment_id: Mapped[int] = mapped_column(
+        ForeignKey("course_assignments.id"),
+        index=True,
+        nullable=False,
+    )
+    meeting_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    weekday: Mapped[str] = mapped_column(String(8), nullable=False)
+    start_period: Mapped[str] = mapped_column(String(8), nullable=False)
+    end_period: Mapped[str] = mapped_column(String(8), nullable=False)
+    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"), nullable=False)
+
+    version: Mapped[TimetableVersion] = relationship(back_populates="slots")
+    assignment: Mapped[CourseAssignment] = relationship()
+    room: Mapped[Room] = relationship()

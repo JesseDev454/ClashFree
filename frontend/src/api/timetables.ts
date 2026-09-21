@@ -147,3 +147,76 @@ export function validateDraft() {
     method: 'POST',
   })
 }
+
+export type TimetableVersion = {
+  id: number
+  session_id: number
+  solution_id: number
+  run_id: number
+  version_number: number
+  status: string
+  is_current: boolean
+  notes: string | null
+  published_at: string
+  published_by: number
+  publisher_name: string | null
+  session_label: string | null
+  slot_count: number
+  hard_violations: number
+  soft_penalty: number
+  room_utilization_percent: number
+  slots: TimetableSlot[]
+}
+
+export type TimetableChange = {
+  kind: string
+  assignment_id: number
+  meeting_index: number
+  course_code: string | null
+  from_weekday: string | null
+  from_start_period: string | null
+  from_room_code: string | null
+  to_weekday: string | null
+  to_start_period: string | null
+  to_room_code: string | null
+}
+
+export async function fetchPublished(): Promise<TimetableVersion | null> {
+  const response = await apiFetch('/api/timetables/published')
+  if (response.status === 404) {
+    return null
+  }
+  if (!response.ok) {
+    throw new ApiError(response.status, await readError(response))
+  }
+  return (await response.json()) as TimetableVersion
+}
+
+export function fetchVersions() {
+  return requestJson<TimetableVersion[]>('/api/timetables/versions')
+}
+
+export function fetchVersion(id: number) {
+  return requestJson<TimetableVersion>(`/api/timetables/versions/${id}`)
+}
+
+export function publishTimetable(notes?: string) {
+  return requestJson<TimetableVersion>('/api/timetables/publish', {
+    method: 'POST',
+    body: JSON.stringify({ notes: notes || null }),
+  })
+}
+
+export function fetchChanges(fromVersionId?: number, toVersionId?: number) {
+  const params = new URLSearchParams()
+  if (fromVersionId) {
+    params.set('from_version_id', String(fromVersionId))
+  }
+  if (toVersionId) {
+    params.set('to_version_id', String(toVersionId))
+  }
+  const query = params.toString()
+  return requestJson<TimetableChange[]>(
+    `/api/timetables/changes${query ? `?${query}` : ''}`,
+  )
+}

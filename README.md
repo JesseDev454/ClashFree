@@ -2,7 +2,7 @@
 
 Disruption-aware, constraint-based university timetable optimisation and repair.
 
-Phase 5 runs a CP-SAT generator over the academic catalogue and constraint/availability rules, then stores a **draft** university timetable. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Publish, repair and Resend remain later phases.
+Phase 6 freezes a CP-SAT **draft** into an immutable published version for the active academic session, with version history and a pre-publish diff. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Repair and Resend remain later phases.
 
 ## Local setup
 
@@ -20,6 +20,7 @@ uv run python -m app.cli seed_phase2
 uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
+uv run python -m app.cli seed_phase6
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -56,9 +57,9 @@ Then open:
 - http://localhost:5173/preview/admin/dashboard — unauthenticated design lab
 - http://localhost:5173/preview/components
 
-The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures and keeps Generate disabled. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary` and enables Generate (links to `/admin/generate-timetable`). Repair and publish stay disabled in the UI; those endpoints remain **501**.
+The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures and keeps Generate and Publish disabled. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary` and enables Generate (links to `/admin/generate-timetable`) and Publish (links to `/admin/publish-timetable`). Repair stays disabled; that endpoint remains **501**.
 
-Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable` and `/admin/conflict-monitor` as well as the Phase 3–4 catalogue and rules screens. Lecturers can open `/lecturer/availability` and `/lecturer/scheduling-preferences`. Facilities managers can open `/facilities/room-availability`. Preview hrefs stay on `/preview/unavailable/...`.
+Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable`, `/admin/conflict-monitor`, `/admin/publish-timetable`, `/admin/timetable-versions` and `/admin/change-review` as well as the Phase 3–4 catalogue and rules screens. Lecturers can open `/lecturer/availability` and `/lecturer/scheduling-preferences`. Facilities managers can open `/facilities/room-availability`. Preview hrefs stay on `/preview/unavailable/...`.
 
 ## Checks
 
@@ -77,6 +78,7 @@ npm run test:e2e:auth
 npm run test:e2e:academic
 npm run test:e2e:constraints
 npm run test:e2e:solver
+npm run test:e2e:publish
 ```
 
 Backend, from `backend/`:
@@ -98,6 +100,8 @@ uv run pytest
 
 `test:e2e:solver` starts FastAPI and runs the generate/master-timetable spec. Postgres must also be seeded with `seed_phase5`.
 
+`test:e2e:publish` starts FastAPI and runs the publish/versions spec on port **4177**. Postgres must also be seeded with `seed_phase6`.
+
 ## Documentation
 
 - [Scope](docs/scope.md)
@@ -111,6 +115,7 @@ uv run pytest
 - [Phase 3 handoff](docs/phase-3-handoff.md)
 - [Phase 4 handoff](docs/phase-4-handoff.md)
 - [Phase 5 handoff](docs/phase-5-handoff.md)
+- [Phase 6 handoff](docs/phase-6-handoff.md)
 
 Reference mockups live in `docs/design-references/` and are not served by the Vite app.
 

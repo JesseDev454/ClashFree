@@ -26,6 +26,8 @@ from app.models import (  # noqa: F401
     TimetableRun,
     TimetableSlot,
     TimetableSolution,
+    TimetableVersion,
+    TimetableVersionSlot,
     User,
 )
 from sqlalchemy import engine_from_config, pool

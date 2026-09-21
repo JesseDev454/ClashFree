@@ -98,7 +98,7 @@ export function ConflictMonitorPage() {
     <RoleShell>
       <PageHeader
         title="Conflict Monitor"
-        description="Validate the selected draft. Repair and publishing are later phases."
+        description="Validates the selected draft. Publishing is on Publish Timetable."
         actions={
           <Button onClick={() => void onValidate()} disabled={!hasDraft || validating}>
             {validating ? 'Validating…' : 'Run Validation'}
@@ -166,7 +166,11 @@ export function ConflictMonitorPage() {
         </Card>
       ) : null}
       <p className="mt-4 rounded-xl border border-border bg-tint-blue px-4 py-3 text-sm text-muted-foreground">
-        Draft only — publishing is Phase 6.
+        Validates the selected draft. Publishing is on{' '}
+        <Link className="font-medium text-primary" to="/admin/publish-timetable">
+          Publish Timetable
+        </Link>
+        .
       </p>
     </RoleShell>
   )
