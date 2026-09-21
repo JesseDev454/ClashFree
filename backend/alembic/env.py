@@ -6,6 +6,7 @@ from app.core.database import Base
 from app.models import (  # noqa: F401
     AcademicSession,
     Cohort,
+    ConstraintWeightProfile,
     Course,
     CourseAssignment,
     Department,
@@ -13,8 +14,18 @@ from app.models import (  # noqa: F401
     Faculty,
     HealthProbe,
     Lecturer,
+    LecturerAvailabilityException,
+    LecturerAvailabilitySlot,
+    LecturerPreference,
     Room,
+    RoomAvailabilityBlock,
+    RoomAvailabilitySlot,
+    SchedulingConstraint,
     Session,
+    TimetableConflict,
+    TimetableRun,
+    TimetableSlot,
+    TimetableSolution,
     User,
 )
 from sqlalchemy import engine_from_config, pool

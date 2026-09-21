@@ -34,27 +34,46 @@ const solverUnavailableId = 'solver-unavailable-help'
 
 type AdminDashboardContentProps = {
   reportsHref: string
+  generateHref?: string
   welcomeName?: string
   helperText: string
   metrics?: typeof dashboardMetrics
+  classChart?: typeof classesPerDay
 }
 
 export function AdminDashboardContent({
   reportsHref,
+  generateHref,
   welcomeName = 'Timetable Administrator',
   helperText,
   metrics = dashboardMetrics,
+  classChart = classesPerDay,
 }: AdminDashboardContentProps) {
+  const generateButton = generateHref ? (
+    <Button asChild>
+      <Link to={generateHref}>Generate Timetable</Link>
+    </Button>
+  ) : (
+    <Button disabled aria-describedby={solverUnavailableId}>
+      Generate Timetable
+    </Button>
+  )
+  const generateQuickAction = generateHref ? (
+    <Button asChild>
+      <Link to={generateHref}>Generate Timetable</Link>
+    </Button>
+  ) : (
+    <Button disabled aria-describedby={solverUnavailableId}>
+      Generate Timetable
+    </Button>
+  )
+
   return (
     <>
       <PageHeader
         title={`Welcome back, ${welcomeName}`}
         description="Manage academic resources, generate clash-free timetables, and keep the university on schedule."
-        actions={
-          <Button disabled aria-describedby={solverUnavailableId}>
-            Generate Timetable
-          </Button>
-        }
+        actions={generateButton}
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-6">
         {metrics.map((metric) => (
@@ -72,7 +91,7 @@ export function AdminDashboardContent({
           <ChartCard
             kind="bar"
             title="Classes per Day"
-            data={classesPerDay.map((item) => ({ label: item.day, value: item.classes }))}
+            data={classChart.map((item) => ({ label: item.day, value: item.classes }))}
           />
         </div>
         <div className="xl:col-span-4">
@@ -86,9 +105,7 @@ export function AdminDashboardContent({
         <Card className="xl:col-span-3">
           <h2 className="mb-4 text-[0.95rem] font-semibold">Quick Actions</h2>
           <div className="grid gap-2">
-            <Button disabled aria-describedby={solverUnavailableId}>
-              Generate Timetable
-            </Button>
+            {generateQuickAction}
             <Button variant="outline" disabled aria-describedby={solverUnavailableId}>
               Repair Timetable
             </Button>

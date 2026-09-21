@@ -18,7 +18,7 @@ def test_summary_matches_seed(client: TestClient) -> None:
     assert body["courses"] == 8
     assert body["lecturers"] == 5
     assert body["cohorts"] == 4
-    assert body["rooms"] == 6
+    assert body["rooms"] == 7
     assert body["faculties"] == 1
     assert body["departments"] == 2
     assert body["active_session_label"] == "2026/2027"

@@ -46,7 +46,7 @@ These remain later phases and are not on the production screens:
 
 - Import CSV / Export / Copy previous semester
 - Lecturer weekly availability editor and “Send reminder”
-- Scheduling constraints and constraint weights (Phase 4)
+- Scheduling constraints and constraint weights (Phase 4) — see [phase-4-handoff.md](phase-4-handoff.md)
 - Published version and room utilisation % (shown as — until a timetable exists)
 - Coordinator department-scoped editors
 - Facilities rooms UI
@@ -54,7 +54,6 @@ These remain later phases and are not on the production screens:
 
 ## Remaining later phases
 
-- Scheduling constraints and lecturer availability (Phase 4)
 - Solver generate / repair / publish (Phases 5–8)
 - Full coordinator / lecturer / facilities / student portals and Users & Roles CRUD (Phase 9)
 - Resend email (Phase 10)

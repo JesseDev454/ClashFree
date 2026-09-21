@@ -6,11 +6,17 @@ import { HomeRedirect } from '../pages/HomeRedirect'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { AcademicSessionsPage } from '../pages/admin/AcademicSessionsPage'
 import { AdminHomePage } from '../pages/admin/AdminHomePage'
+import { ConflictMonitorPage } from '../pages/admin/ConflictMonitorPage'
+import { ConstraintWeightsPage } from '../pages/admin/ConstraintWeightsPage'
 import { CourseAssignmentsPage } from '../pages/admin/CourseAssignmentsPage'
 import { CoursesPage } from '../pages/admin/CoursesPage'
 import { FacultiesDepartmentsPage } from '../pages/admin/FacultiesDepartmentsPage'
+import { GenerateTimetablePage } from '../pages/admin/GenerateTimetablePage'
+import { GenerationResultsPage } from '../pages/admin/GenerationResultsPage'
 import { LecturersPage } from '../pages/admin/LecturersPage'
+import { MasterTimetablePage } from '../pages/admin/MasterTimetablePage'
 import { RoomsFacilitiesPage } from '../pages/admin/RoomsFacilitiesPage'
+import { SchedulingConstraintsPage } from '../pages/admin/SchedulingConstraintsPage'
 import { StudentCohortsPage } from '../pages/admin/StudentCohortsPage'
 import { ForgotPasswordPage } from '../pages/auth/ForgotPasswordPage'
 import { LoginPage } from '../pages/auth/LoginPage'
@@ -19,7 +25,10 @@ import { ResetSuccessPage } from '../pages/auth/ResetSuccessPage'
 import { VerifyEmailPage } from '../pages/auth/VerifyEmailPage'
 import { CoordinatorHomePage } from '../pages/coordinator/CoordinatorHomePage'
 import { FacilitiesHomePage } from '../pages/facilities/FacilitiesHomePage'
+import { RoomAvailabilityPage } from '../pages/facilities/RoomAvailabilityPage'
+import { LecturerAvailabilityPage } from '../pages/lecturer/LecturerAvailabilityPage'
 import { LecturerHomePage } from '../pages/lecturer/LecturerHomePage'
+import { LecturerPreferencesPage } from '../pages/lecturer/LecturerPreferencesPage'
 import { AdminDashboardPage } from '../pages/preview/AdminDashboardPage'
 import { ComponentGalleryPage } from '../pages/preview/ComponentGalleryPage'
 import { AppUnavailablePage, UnavailablePage } from '../pages/preview/UnavailablePage'
@@ -104,6 +113,54 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/admin/scheduling-constraints"
+        element={
+          <AdminRoute>
+            <SchedulingConstraintsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/constraint-weights"
+        element={
+          <AdminRoute>
+            <ConstraintWeightsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/generate-timetable"
+        element={
+          <AdminRoute>
+            <GenerateTimetablePage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/generation-results"
+        element={
+          <AdminRoute>
+            <GenerationResultsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/master-timetable"
+        element={
+          <AdminRoute>
+            <MasterTimetablePage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/conflict-monitor"
+        element={
+          <AdminRoute>
+            <ConflictMonitorPage />
+          </AdminRoute>
+        }
+      />
+      <Route
         path="/coordinator/dashboard"
         element={
           <RequireAuth roles={['department_coordinator']}>
@@ -120,10 +177,34 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/lecturer/availability"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <LecturerAvailabilityPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/scheduling-preferences"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <LecturerPreferencesPage />
+          </RequireAuth>
+        }
+      />
+      <Route
         path="/facilities/dashboard"
         element={
           <RequireAuth roles={['facilities_manager']}>
             <FacilitiesHomePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/room-availability"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <RoomAvailabilityPage />
           </RequireAuth>
         }
       />

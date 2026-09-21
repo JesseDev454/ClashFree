@@ -2,12 +2,17 @@ import argparse
 
 from app.core.database import get_session_factory
 from app.services.academic_seed import seed_phase3
+from app.services.constraints_seed import seed_phase4
 from app.services.seed import seed_phase2
+from app.services.timetable_seed import seed_phase5
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m app.cli")
-    parser.add_argument("command", choices=["seed_phase2", "seed_phase3"])
+    parser.add_argument(
+        "command",
+        choices=["seed_phase2", "seed_phase3", "seed_phase4", "seed_phase5"],
+    )
     args = parser.parse_args(argv)
     session = get_session_factory()()
     try:
@@ -17,6 +22,12 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "seed_phase3":
             seed_phase3(session)
             print("Seeded Phase 3 academic data.")
+        elif args.command == "seed_phase4":
+            seed_phase4(session)
+            print("Seeded Phase 4 constraints and availability.")
+        elif args.command == "seed_phase5":
+            seed_phase5(session)
+            print("Seeded Phase 5 solver catalogue tweaks.")
     finally:
         session.close()
     return 0

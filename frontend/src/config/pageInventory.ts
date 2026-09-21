@@ -1074,12 +1074,32 @@ const PHASE3_ADMIN_PAGES = new Set([
   'admin-course-assignments',
 ])
 
+const PHASE4_PAGES = new Set([
+  'admin-scheduling-constraints',
+  'admin-constraint-weights',
+  'lecturer-availability',
+  'lecturer-scheduling-preferences',
+  'facilities-room-availability',
+])
+
+const PHASE5_PAGES = new Set([
+  'admin-generate-timetable',
+  'admin-generation-results',
+  'admin-master-timetable',
+  'admin-conflict-monitor',
+])
+
 export function getAppHref(pageId: string): string {
   const page = getPageById(pageId)
   if (!page) {
     return `/unavailable/${pageId}`
   }
-  if (pageId.endsWith('-dashboard') || PHASE3_ADMIN_PAGES.has(pageId)) {
+  if (
+    pageId.endsWith('-dashboard') ||
+    PHASE3_ADMIN_PAGES.has(pageId) ||
+    PHASE4_PAGES.has(pageId) ||
+    PHASE5_PAGES.has(pageId)
+  ) {
     return page.route
   }
   return `/unavailable/${pageId}`

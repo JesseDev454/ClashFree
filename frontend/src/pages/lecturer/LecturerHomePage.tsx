@@ -1,6 +1,37 @@
+import { useEffect, useState } from 'react'
+import { fetchMyAvailability } from '../../api/constraints'
 import { ThinDashboardPage } from '../role/ThinDashboardPage'
 
 export function LecturerHomePage() {
+  const [availability, setAvailability] = useState({
+    value: '—',
+    hint: 'Loading weekly grid',
+  })
+
+  useEffect(() => {
+    let cancelled = false
+    void fetchMyAvailability()
+      .then((body) => {
+        if (cancelled) {
+          return
+        }
+        setAvailability({
+          value: body.submitted ? 'Submitted' : 'Missing',
+          hint: body.submitted
+            ? `${body.coverage_percent}% coverage`
+            : 'No weekly grid saved',
+        })
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAvailability({ value: 'Missing', hint: 'Could not load availability' })
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   return (
     <ThinDashboardPage
       title="Teaching workspace"
@@ -30,8 +61,8 @@ export function LecturerHomePage() {
         {
           id: 'availability',
           label: 'Availability',
-          value: 'Submitted',
-          hint: 'This semester',
+          value: availability.value,
+          hint: availability.hint,
           tint: 'purple',
         },
       ]}
