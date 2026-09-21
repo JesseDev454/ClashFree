@@ -3,7 +3,33 @@ from logging.config import fileConfig
 from alembic import context
 from app.core.config import get_settings
 from app.core.database import Base
-from app.models import Department, EmailToken, HealthProbe, Session, User  # noqa: F401
+from app.models import (  # noqa: F401
+    AcademicSession,
+    Cohort,
+    ConstraintWeightProfile,
+    Course,
+    CourseAssignment,
+    Department,
+    EmailToken,
+    Faculty,
+    HealthProbe,
+    Lecturer,
+    LecturerAvailabilityException,
+    LecturerAvailabilitySlot,
+    LecturerPreference,
+    Room,
+    RoomAvailabilityBlock,
+    RoomAvailabilitySlot,
+    SchedulingConstraint,
+    Session,
+    TimetableConflict,
+    TimetableRun,
+    TimetableSlot,
+    TimetableSolution,
+    TimetableVersion,
+    TimetableVersionSlot,
+    User,
+)
 from sqlalchemy import engine_from_config, pool
 
 config = context.config

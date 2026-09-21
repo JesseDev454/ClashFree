@@ -60,7 +60,8 @@ Do not implement Neon Managed Auth in this phase. Keep storing ClashFree roles o
 
 ## Remaining later phases
 
-- Academic CRUD (Phase 3)
+- Academic CRUD (Phase 3) — see [phase-3-handoff.md](phase-3-handoff.md)
+- Scheduling constraints and lecturer availability (Phase 4)
 - Solver generate / repair / publish (Phases 5–8)
 - Full coordinator / lecturer / facilities / student portals and Users & Roles CRUD (Phase 9)
 - Resend email (Phase 10)

@@ -1,9 +1,13 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+
+if TYPE_CHECKING:
+    from app.models.academic import Cohort, Course, Faculty, Lecturer
 
 
 class Department(Base):
@@ -12,8 +16,13 @@ class Department(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     code: Mapped[str] = mapped_column(String(32), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(128), nullable=False)
+    faculty_id: Mapped[int | None] = mapped_column(ForeignKey("faculties.id"))
 
+    faculty: Mapped["Faculty | None"] = relationship(back_populates="departments")
     users: Mapped[list["User"]] = relationship(back_populates="department")
+    courses: Mapped[list["Course"]] = relationship(back_populates="department")
+    cohorts: Mapped[list["Cohort"]] = relationship(back_populates="department")
+    lecturers: Mapped[list["Lecturer"]] = relationship(back_populates="department")
 
 
 class User(Base):

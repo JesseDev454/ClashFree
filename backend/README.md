@@ -1,7 +1,8 @@
 """FastAPI backend for ClashFree.
 
-Phase 2 delivers email/password authentication, httpOnly sessions and RBAC
-guards. Health probes from Phase 1 remain. The OR-Tools solver is later.
+Phase 6 publishes a selected CP-SAT draft into immutable version
+snapshots. Repair stays later.
+
 
 ## Setup
 
@@ -17,6 +18,10 @@ Start a local database on host port **5433** (or put a Neon `DATABASE_URL` in `.
 docker compose up -d db
 uv run alembic upgrade head
 uv run python -m app.cli seed_phase2
+uv run python -m app.cli seed_phase3
+uv run python -m app.cli seed_phase4
+uv run python -m app.cli seed_phase5
+uv run python -m app.cli seed_phase6
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 

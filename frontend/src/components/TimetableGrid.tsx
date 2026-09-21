@@ -21,11 +21,13 @@ const colorClass = {
 type TimetableGridProps = {
   entries: TimetableEntry[]
   caption?: string
+  days?: string[]
 }
 
 export function TimetableGrid({
   entries,
   caption = 'Weekly timetable',
+  days = DAYS,
 }: TimetableGridProps) {
   return (
     <div className="grid gap-4">
@@ -40,7 +42,7 @@ export function TimetableGrid({
               >
                 Period
               </th>
-              {DAYS.map((day) => (
+              {days.map((day) => (
                 <th
                   key={day}
                   scope="col"
@@ -60,7 +62,7 @@ export function TimetableGrid({
                 >
                   {period}
                 </th>
-                {DAYS.map((day) => {
+                {days.map((day) => {
                   const cellEntries = entries.filter(
                     (entry) => entry.day === day && entry.period === period,
                   )

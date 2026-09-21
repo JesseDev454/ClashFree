@@ -2,7 +2,7 @@
 
 Disruption-aware, constraint-based university timetable optimisation and repair.
 
-Phase 2 adds email/password authentication, httpOnly session cookies, five role-guarded accounts, and API **403** enforcement. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Academic CRUD, the solver, and Resend remain later phases.
+Phase 6 freezes a CP-SAT **draft** into an immutable published version for the active academic session, with version history and a pre-publish diff. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Repair and Resend remain later phases.
 
 ## Local setup
 
@@ -17,6 +17,10 @@ uv sync --group dev
 Copy-Item .env.example .env
 uv run alembic upgrade head
 uv run python -m app.cli seed_phase2
+uv run python -m app.cli seed_phase3
+uv run python -m app.cli seed_phase4
+uv run python -m app.cli seed_phase5
+uv run python -m app.cli seed_phase6
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -53,7 +57,9 @@ Then open:
 - http://localhost:5173/preview/admin/dashboard — unauthenticated design lab
 - http://localhost:5173/preview/components
 
-The preview banner reports **API connected** when FastAPI and Postgres are running. Dashboard numbers remain sample fixtures. Generate, repair and publish stay disabled in the UI; non-admins receive **403** if they POST the stub endpoints, and the administrator receives **501** until Phase 5.
+The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures and keeps Generate and Publish disabled. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary` and enables Generate (links to `/admin/generate-timetable`) and Publish (links to `/admin/publish-timetable`). Repair stays disabled; that endpoint remains **501**.
+
+Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable`, `/admin/conflict-monitor`, `/admin/publish-timetable`, `/admin/timetable-versions` and `/admin/change-review` as well as the Phase 3–4 catalogue and rules screens. Lecturers can open `/lecturer/availability` and `/lecturer/scheduling-preferences`. Facilities managers can open `/facilities/room-availability`. Preview hrefs stay on `/preview/unavailable/...`.
 
 ## Checks
 
@@ -69,6 +75,10 @@ npm run build
 npx playwright install chromium
 npm run test:e2e
 npm run test:e2e:auth
+npm run test:e2e:academic
+npm run test:e2e:constraints
+npm run test:e2e:solver
+npm run test:e2e:publish
 ```
 
 Backend, from `backend/`:
@@ -82,7 +92,15 @@ uv run pytest
 
 `test:e2e` builds the production bundle and exercises preview routes. It mocks `/health` and `/api/me`, so Playwright does not need the API running.
 
-`test:e2e:auth` starts FastAPI (with `AUTH_DEBUG=true`) and runs the real-API login spec. Postgres must be up and seeded.
+`test:e2e:auth` starts FastAPI (with `AUTH_DEBUG=true`) and runs the real-API login spec. Postgres must be up and seeded with `seed_phase2`.
+
+`test:e2e:academic` starts FastAPI and runs the administrator Courses CRUD spec. Postgres must also be seeded with `seed_phase3`.
+
+`test:e2e:constraints` starts FastAPI and runs the constraints/availability spec. Postgres must also be seeded with `seed_phase4`.
+
+`test:e2e:solver` starts FastAPI and runs the generate/master-timetable spec. Postgres must also be seeded with `seed_phase5`.
+
+`test:e2e:publish` starts FastAPI and runs the publish/versions spec on port **4177**. Postgres must also be seeded with `seed_phase6`.
 
 ## Documentation
 
@@ -94,6 +112,10 @@ uv run pytest
 - [Phase 0 handoff](docs/phase-0-handoff.md)
 - [Phase 1 handoff](docs/phase-1-handoff.md)
 - [Phase 2 handoff](docs/phase-2-handoff.md)
+- [Phase 3 handoff](docs/phase-3-handoff.md)
+- [Phase 4 handoff](docs/phase-4-handoff.md)
+- [Phase 5 handoff](docs/phase-5-handoff.md)
+- [Phase 6 handoff](docs/phase-6-handoff.md)
 
 Reference mockups live in `docs/design-references/` and are not served by the Vite app.
 
