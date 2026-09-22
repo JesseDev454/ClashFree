@@ -1095,6 +1095,15 @@ const PHASE6_PAGES = new Set([
   'admin-change-review',
 ])
 
+const PHASE7_PAGES = new Set([
+  'admin-disruption-centre',
+  'lecturer-report-unavailability',
+  'facilities-room-status',
+  'facilities-report-disruption',
+  'facilities-affected-classes',
+  'facilities-maintenance-schedule',
+])
+
 export function getAppHref(pageId: string): string {
   const page = getPageById(pageId)
   if (!page) {
@@ -1105,7 +1114,8 @@ export function getAppHref(pageId: string): string {
     PHASE3_ADMIN_PAGES.has(pageId) ||
     PHASE4_PAGES.has(pageId) ||
     PHASE5_PAGES.has(pageId) ||
-    PHASE6_PAGES.has(pageId)
+    PHASE6_PAGES.has(pageId) ||
+    PHASE7_PAGES.has(pageId)
   ) {
     return page.route
   }

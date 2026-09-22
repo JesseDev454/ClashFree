@@ -8,6 +8,7 @@ import { AcademicSessionsPage } from '../pages/admin/AcademicSessionsPage'
 import { AdminHomePage } from '../pages/admin/AdminHomePage'
 import { ChangeReviewPage } from '../pages/admin/ChangeReviewPage'
 import { ConflictMonitorPage } from '../pages/admin/ConflictMonitorPage'
+import { DisruptionCentrePage } from '../pages/admin/DisruptionCentrePage'
 import { ConstraintWeightsPage } from '../pages/admin/ConstraintWeightsPage'
 import { CourseAssignmentsPage } from '../pages/admin/CourseAssignmentsPage'
 import { CoursesPage } from '../pages/admin/CoursesPage'
@@ -28,10 +29,15 @@ import { ResetSuccessPage } from '../pages/auth/ResetSuccessPage'
 import { VerifyEmailPage } from '../pages/auth/VerifyEmailPage'
 import { CoordinatorHomePage } from '../pages/coordinator/CoordinatorHomePage'
 import { FacilitiesHomePage } from '../pages/facilities/FacilitiesHomePage'
+import { AffectedClassesPage } from '../pages/facilities/AffectedClassesPage'
+import { MaintenanceSchedulePage } from '../pages/facilities/MaintenanceSchedulePage'
+import { ReportDisruptionPage } from '../pages/facilities/ReportDisruptionPage'
 import { RoomAvailabilityPage } from '../pages/facilities/RoomAvailabilityPage'
+import { RoomStatusPage } from '../pages/facilities/RoomStatusPage'
 import { LecturerAvailabilityPage } from '../pages/lecturer/LecturerAvailabilityPage'
 import { LecturerHomePage } from '../pages/lecturer/LecturerHomePage'
 import { LecturerPreferencesPage } from '../pages/lecturer/LecturerPreferencesPage'
+import { ReportUnavailabilityPage } from '../pages/lecturer/ReportUnavailabilityPage'
 import { AdminDashboardPage } from '../pages/preview/AdminDashboardPage'
 import { ComponentGalleryPage } from '../pages/preview/ComponentGalleryPage'
 import { AppUnavailablePage, UnavailablePage } from '../pages/preview/UnavailablePage'
@@ -164,6 +170,14 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/admin/disruption-centre"
+        element={
+          <AdminRoute>
+            <DisruptionCentrePage />
+          </AdminRoute>
+        }
+      />
+      <Route
         path="/admin/publish-timetable"
         element={
           <AdminRoute>
@@ -220,6 +234,14 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/lecturer/report-unavailability"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <ReportUnavailabilityPage />
+          </RequireAuth>
+        }
+      />
+      <Route
         path="/facilities/dashboard"
         element={
           <RequireAuth roles={['facilities_manager']}>
@@ -232,6 +254,38 @@ export function AppRouter() {
         element={
           <RequireAuth roles={['facilities_manager']}>
             <RoomAvailabilityPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/room-status"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <RoomStatusPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/report-disruption"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <ReportDisruptionPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/affected-classes"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <AffectedClassesPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/maintenance-schedule"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <MaintenanceSchedulePage />
           </RequireAuth>
         }
       />

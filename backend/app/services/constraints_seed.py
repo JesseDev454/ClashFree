@@ -13,6 +13,7 @@ from app.models.constraints import (
     RoomAvailabilitySlot,
     SchedulingConstraint,
 )
+from app.models.disruption import Disruption
 from app.services.academic_seed import seed_phase3
 
 SEED_CONSTRAINTS = (
@@ -300,6 +301,12 @@ def seed_phase4(session: Session) -> None:
     else:
         for key, value in values.items():
             setattr(prefs, key, value)
+
+    session.query(Disruption).update(
+        {Disruption.block_id: None},
+        synchronize_session=False,
+    )
+    session.flush()
 
     rooms = {room.code: room for room in session.query(Room).all()}
     for room in rooms.values():

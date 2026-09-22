@@ -170,6 +170,10 @@ export function ConflictMonitorPage() {
         <Link className="font-medium text-primary" to="/admin/publish-timetable">
           Publish Timetable
         </Link>
+        . Operational incidents after publication live on{' '}
+        <Link className="font-medium text-primary" to="/admin/disruption-centre">
+          Disruption Centre
+        </Link>
         .
       </p>
     </RoleShell>

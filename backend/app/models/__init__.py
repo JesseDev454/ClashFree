@@ -16,6 +16,7 @@ from app.models.constraints import (
     RoomAvailabilitySlot,
     SchedulingConstraint,
 )
+from app.models.disruption import Disruption
 from app.models.health_probe import HealthProbe
 from app.models.identity import Department, EmailToken, Session, User
 from app.models.timetable import (
@@ -34,6 +35,7 @@ __all__ = [
     "Course",
     "CourseAssignment",
     "Department",
+    "Disruption",
     "EmailToken",
     "Faculty",
     "HealthProbe",

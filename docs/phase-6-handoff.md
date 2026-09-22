@@ -80,7 +80,6 @@ These remain later phases and are not on the production screens:
 
 ## Remaining later phases
 
-- Disruptions (Phase 7)
 - Repair / comparison (Phase 8)
 - Full coordinator / lecturer / facilities / student portals and Users & Roles CRUD (Phase 9)
 - Resend email and publish notifications (Phase 10)

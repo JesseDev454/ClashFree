@@ -40,6 +40,7 @@ type AdminDashboardContentProps = {
   helperText: string
   metrics?: typeof dashboardMetrics
   classChart?: typeof classesPerDay
+  disruptionRows?: DisruptionRow[]
 }
 
 export function AdminDashboardContent({
@@ -50,6 +51,7 @@ export function AdminDashboardContent({
   helperText,
   metrics = dashboardMetrics,
   classChart = classesPerDay,
+  disruptionRows: recentDisruptions = disruptionRows,
 }: AdminDashboardContentProps) {
   const generateButton = generateHref ? (
     <Button asChild>
@@ -135,7 +137,7 @@ export function AdminDashboardContent({
           <DataTable
             caption="Recent timetable disruptions"
             columns={disruptionColumns}
-            data={disruptionRows}
+            data={recentDisruptions}
             getRowId={(row) => row.id}
           />
         </Card>

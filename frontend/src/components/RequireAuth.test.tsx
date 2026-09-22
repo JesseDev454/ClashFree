@@ -27,6 +27,17 @@ const lecturer: AuthUser = {
   home_path: '/lecturer/dashboard',
 }
 
+const facilities: AuthUser = {
+  id: 4,
+  email: 'facilities@clashfree.test',
+  full_name: 'Facilities Manager',
+  role: 'facilities_manager',
+  department_id: null,
+  department_name: null,
+  capabilities: ['view', 'edit', 'reportDisruption'],
+  home_path: '/facilities/dashboard',
+}
+
 function LoginMarker() {
   const [params] = useSearchParams()
   return <p>Login screen {params.get('next')}</p>
@@ -101,6 +112,30 @@ function renderGuarded(path: string, user: AuthUser | null) {
             }
           />
           <Route
+            path="/admin/disruption-centre"
+            element={
+              <RequireAuth roles={['timetable_administrator']}>
+                <p>Disruption centre</p>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/lecturer/report-unavailability"
+            element={
+              <RequireAuth roles={['lecturer']}>
+                <p>Report unavailability</p>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/facilities/report-disruption"
+            element={
+              <RequireAuth roles={['facilities_manager']}>
+                <p>Report disruption</p>
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/lecturer/availability"
             element={
               <RequireAuth roles={['lecturer']}>
@@ -165,8 +200,36 @@ describe('RequireAuth', () => {
     expect(screen.queryByText('Change review')).not.toBeInTheDocument()
   })
 
+  it('sends a lecturer away from disruption centre', () => {
+    renderGuarded('/admin/disruption-centre', lecturer)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Disruption centre')).not.toBeInTheDocument()
+  })
+
   it('lets a lecturer stay on availability', () => {
     renderGuarded('/lecturer/availability', lecturer)
     expect(screen.getByText('Lecturer availability')).toBeInTheDocument()
+  })
+
+  it('lets a lecturer stay on report unavailability', () => {
+    renderGuarded('/lecturer/report-unavailability', lecturer)
+    expect(screen.getByText('Report unavailability')).toBeInTheDocument()
+  })
+
+  it('sends a lecturer away from facilities report disruption', () => {
+    renderGuarded('/facilities/report-disruption', lecturer)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Report disruption')).not.toBeInTheDocument()
+  })
+
+  it('sends facilities away from lecturer report unavailability', () => {
+    renderGuarded('/lecturer/report-unavailability', facilities)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Report unavailability')).not.toBeInTheDocument()
+  })
+
+  it('lets facilities stay on report disruption', () => {
+    renderGuarded('/facilities/report-disruption', facilities)
+    expect(screen.getByText('Report disruption')).toBeInTheDocument()
   })
 })
