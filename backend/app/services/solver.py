@@ -25,6 +25,9 @@ class MeetingDemand:
     course_code: str
     cohort_code: str
     lecturer_name: str
+    department_id: int = 0
+    blocked: set[tuple[str, str]] = field(default_factory=set)
+    preferred_periods: set[tuple[str, str]] = field(default_factory=set)
 
 
 @dataclass
@@ -79,6 +82,7 @@ class SolverSnapshot:
     alternative_count: int = 1
     random_seed: int | None = None
     published: dict[tuple[int, int], tuple[str, str, int]] = field(default_factory=dict)
+    locked: dict[tuple[int, int], tuple[str, str, int]] = field(default_factory=dict)
 
 
 @dataclass
@@ -283,6 +287,10 @@ def score_placements(
             ):
                 preserve_hits += 1
                 soft += snapshot.weights.schedule_stability
+        if snapshot.flags.lecturer_preferences and meeting.preferred_periods:
+            if (placement.weekday, placement.start_period) not in meeting.preferred_periods:
+                preference_hits += 1
+                soft += snapshot.weights.lecturer_preferences
 
     if preference_hits and snapshot.flags.lecturer_preferences:
         conflicts.append(
@@ -503,6 +511,18 @@ def _solve_once(
 
     for meeting in meetings:
         options: list[tuple[int, int, int, cp_model.IntVar]] = []
+        lock = snapshot.locked.get((meeting.assignment_id, meeting.meeting_index))
+        if lock is not None:
+            weekday, start_period, room_id = lock
+            day_idx = WEEKDAYS.index(weekday)
+            start_idx = PERIODS.index(start_period)
+            var = model.NewBoolVar(
+                f"lock{meeting.assignment_id}_{meeting.meeting_index}_{weekday}_{start_period}_r{room_id}"
+            )
+            options.append((day_idx, start_idx, room_id, var))
+            model.AddExactlyOne(option[3] for option in options)
+            choices[(meeting.assignment_id, meeting.meeting_index)] = options
+            continue
         eligible = [
             room
             for room in rooms
@@ -516,7 +536,10 @@ def _solve_once(
                 forbidden = False
                 for period_idx in occupied:
                     period = PERIODS[period_idx]
-                    if (weekday, period) in lecturer.forbidden:
+                    if (weekday, period) in lecturer.forbidden or (
+                        weekday,
+                        period,
+                    ) in meeting.blocked:
                         forbidden = True
                         break
                 if forbidden:
@@ -610,6 +633,9 @@ def _solve_once(
                 published = snapshot.published.get((meeting.assignment_id, meeting.meeting_index))
                 if published is not None and published != (weekday, period, room_id):
                     cost += snapshot.weights.schedule_stability
+            if snapshot.flags.lecturer_preferences and meeting.preferred_periods:
+                if (weekday, period) not in meeting.preferred_periods:
+                    cost += snapshot.weights.lecturer_preferences
             if cost:
                 penalties.append((var, cost))
 

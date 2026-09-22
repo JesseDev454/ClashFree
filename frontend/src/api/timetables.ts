@@ -29,7 +29,9 @@ export type TimetableSlot = {
   room_code: string | null
   course_code: string | null
   course_title: string | null
+  lecturer_id: number | null
   lecturer_name: string | null
+  cohort_id: number | null
   cohort_code: string | null
   department_id: number | null
   department_name: string | null
@@ -92,6 +94,8 @@ export type GenerateRequest = {
   time_limit_seconds: number
   alternative_count: number
   random_seed?: number | null
+  faculty_id?: number
+  department_id?: number
 }
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
@@ -190,6 +194,18 @@ export type TimetableChange = {
   to_weekday: string | null
   to_start_period: string | null
   to_room_code: string | null
+}
+
+export function fetchPublishedMine() {
+  return requestJson<TimetableVersion>('/api/timetables/published/mine')
+}
+
+export function fetchPublishedDepartment() {
+  return requestJson<TimetableVersion>('/api/timetables/published/department')
+}
+
+export function fetchMyChanges() {
+  return requestJson<TimetableChange[]>('/api/timetables/changes/mine')
 }
 
 export async function fetchPublished(): Promise<TimetableVersion | null> {

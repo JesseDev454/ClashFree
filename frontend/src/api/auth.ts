@@ -8,6 +8,8 @@ export type AuthUser = {
   role: Exclude<Role, 'unauthenticated'>
   department_id: number | null
   department_name: string | null
+  cohort_id?: number | null
+  is_active?: boolean
   capabilities: Capability[]
   home_path: string
 }

@@ -1,7 +1,7 @@
 """FastAPI backend for ClashFree.
 
-Phase 8 repairs one open disruption against the current published
-timetable and marks it repaired when that draft is published.
+Phase 9 adds role portals, personal timetables, and scoped generation.
+Phase 8 repair still publishes a new version and marks one disruption repaired.
 
 
 ## Setup
@@ -22,7 +22,7 @@ uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
 uv run python -m app.cli seed_phase6
-uv run python -m app.cli seed_phase8
+uv run python -m app.cli seed_phase9
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 

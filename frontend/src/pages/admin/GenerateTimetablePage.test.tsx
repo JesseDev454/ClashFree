@@ -54,12 +54,15 @@ describe('GenerateTimetablePage', () => {
   it('disables Start Generation while preflight is loading', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(
-        async () =>
-          new Promise<Response>((resolve) => {
-            window.setTimeout(() => resolve(jsonResponse(preflight)), 50)
-          }),
-      ),
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes('/api/faculties') || url.includes('/api/departments')) {
+          return jsonResponse([])
+        }
+        return new Promise<Response>((resolve) => {
+          window.setTimeout(() => resolve(jsonResponse(preflight)), 50)
+        })
+      }),
     )
     renderPage()
     expect(screen.getByRole('button', { name: 'Start Generation' })).toBeDisabled()
@@ -72,8 +75,12 @@ describe('GenerateTimetablePage', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: RequestInfo | URL) => {
-        if (String(input).includes('/api/timetables/preflight')) {
+        const url = String(input)
+        if (url.includes('/api/timetables/preflight')) {
           return jsonResponse(preflight)
+        }
+        if (url.includes('/api/faculties') || url.includes('/api/departments')) {
+          return jsonResponse([])
         }
         return jsonResponse({ detail: 'unexpected' }, 500)
       }),
@@ -83,5 +90,7 @@ describe('GenerateTimetablePage', () => {
       expect(screen.getByRole('button', { name: 'Start Generation' })).toBeEnabled()
     })
     expect(screen.getByText(/GST 203, CSC 201 skipped/)).toBeInTheDocument()
+    expect(screen.getByLabelText('Faculty')).toBeEnabled()
+    expect(screen.getByLabelText('Department')).toBeEnabled()
   })
 })

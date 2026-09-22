@@ -5,7 +5,14 @@ from datetime import UTC, datetime
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.schedule import PERIODS, WEEKDAYS
-from app.models.academic import AcademicSession, Course, CourseAssignment, Lecturer, Room
+from app.models.academic import (
+    AcademicSession,
+    Course,
+    CourseAssignment,
+    Department,
+    Lecturer,
+    Room,
+)
 from app.models.constraints import (
     ConstraintWeightProfile,
     LecturerAvailabilityException,
@@ -15,6 +22,7 @@ from app.models.constraints import (
     RoomAvailabilitySlot,
     SchedulingConstraint,
 )
+from app.models.portal import DepartmentConstraint
 from app.models.timetable import (
     TimetableConflict,
     TimetableRun,
@@ -133,6 +141,8 @@ def build_snapshot(
     time_limit_seconds: int,
     alternative_count: int,
     random_seed: int | None,
+    faculty_id: int | None = None,
+    department_id: int | None = None,
 ) -> SolverSnapshot:
     assignments = (
         db.query(CourseAssignment)
@@ -242,8 +252,33 @@ def build_snapshot(
                     course_code=course.code,
                     cohort_code=cohort.code,
                     lecturer_name=row.lecturer.full_name if row.lecturer else "",
+                    department_id=course.department_id,
                 )
             )
+
+    blocked_by_department: dict[int, set[tuple[str, str]]] = {}
+    preferred_by_department: dict[int, set[tuple[str, str]]] = {}
+    for rule in db.query(DepartmentConstraint).all():
+        if rule.kind == "blocked_period" and rule.weekday and rule.period:
+            blocked_by_department.setdefault(rule.department_id, set()).add(
+                (rule.weekday, rule.period)
+            )
+        elif rule.kind == "preferred_period" and rule.weekday and rule.period:
+            preferred_by_department.setdefault(rule.department_id, set()).add(
+                (rule.weekday, rule.period)
+            )
+    for meeting in meetings:
+        meeting.blocked = set(blocked_by_department.get(meeting.department_id, set()))
+        meeting.preferred_periods = set(preferred_by_department.get(meeting.department_id, set()))
+
+    scope_ids: set[int] | None = None
+    if department_id is not None:
+        scope_ids = {department_id}
+    elif faculty_id is not None:
+        scope_ids = {
+            row[0]
+            for row in db.query(Department.id).filter(Department.faculty_id == faculty_id).all()
+        }
 
     weights = Weights()
     if profile is not None:
@@ -282,6 +317,38 @@ def build_snapshot(
                     slot.start_period,
                     slot.room_id,
                 )
+    locked: dict[tuple[int, int], tuple[str, str, int]] = {}
+    if scope_ids is not None:
+        current = (
+            db.query(TimetableVersion)
+            .filter(TimetableVersion.is_current.is_(True))
+            .order_by(TimetableVersion.id.desc())
+            .first()
+        )
+        published_slots: dict[tuple[int, int], tuple[str, str, int]] = {}
+        if current is not None:
+            for slot in (
+                db.query(TimetableVersionSlot)
+                .filter(TimetableVersionSlot.version_id == current.id)
+                .all()
+            ):
+                published_slots[(slot.assignment_id, slot.meeting_index)] = (
+                    slot.weekday,
+                    slot.start_period,
+                    slot.room_id,
+                )
+        if current is None:
+            meetings = [item for item in meetings if item.department_id in scope_ids]
+        else:
+            kept: list[MeetingDemand] = []
+            for item in meetings:
+                key = (item.assignment_id, item.meeting_index)
+                if item.department_id in scope_ids:
+                    kept.append(item)
+                elif key in published_slots:
+                    locked[key] = published_slots[key]
+                    kept.append(item)
+            meetings = kept
     return SolverSnapshot(
         meetings=meetings,
         rooms=room_options,
@@ -293,6 +360,7 @@ def build_snapshot(
         alternative_count=alternative_count,
         random_seed=random_seed,
         published=published,
+        locked=locked,
     )
 
 
@@ -446,6 +514,8 @@ def run_generation(
     time_limit_seconds: int,
     alternative_count: int,
     random_seed: int | None,
+    faculty_id: int | None = None,
+    department_id: int | None = None,
 ) -> TimetableRun:
     session = active_session(db)
     profile = current_profile(db)
@@ -474,6 +544,8 @@ def run_generation(
             time_limit_seconds,
             alternative_count,
             random_seed,
+            faculty_id=faculty_id,
+            department_id=department_id,
         )
         result = solve_snapshot(snapshot)
         persist_result(db, run, result)

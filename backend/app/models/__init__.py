@@ -19,6 +19,7 @@ from app.models.constraints import (
 from app.models.disruption import Disruption
 from app.models.health_probe import HealthProbe
 from app.models.identity import Department, EmailToken, Session, User
+from app.models.portal import DepartmentConstraint, ScheduleRequest, UserSettings
 from app.models.timetable import (
     TimetableConflict,
     TimetableRun,
@@ -35,6 +36,7 @@ __all__ = [
     "Course",
     "CourseAssignment",
     "Department",
+    "DepartmentConstraint",
     "Disruption",
     "EmailToken",
     "Faculty",
@@ -47,6 +49,7 @@ __all__ = [
     "RoomAvailabilityBlock",
     "RoomAvailabilitySlot",
     "SchedulingConstraint",
+    "ScheduleRequest",
     "Session",
     "TimetableConflict",
     "TimetableRun",
@@ -55,4 +58,5 @@ __all__ = [
     "TimetableVersion",
     "TimetableVersionSlot",
     "User",
+    "UserSettings",
 ]

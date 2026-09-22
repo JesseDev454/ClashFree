@@ -51,10 +51,9 @@ These remain later phases:
 - Coordinator, lecturer, student, and facilities repair
 - Repairing every open disruption in one solve
 - Hard-pinning unaffected meetings
-- Export, unpublishing, restoring versions, Users & Roles, personal timetables (Phase 9)
+- Export, unpublishing, restoring versions (Phase 10)
 
 ## Remaining later phases
 
-- Full coordinator / lecturer / facilities / student portals and Users & Roles CRUD (Phase 9)
-- Resend email and publish notifications (Phase 10)
+- Resend email, in-app notifications, reports, and the audit log (Phase 10)
 - Public registration

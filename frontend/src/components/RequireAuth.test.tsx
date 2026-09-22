@@ -5,6 +5,17 @@ import type { AuthUser } from '../api/auth'
 import { AuthContext } from '../auth/useAuth'
 import { RequireAuth } from './RequireAuth'
 
+const admin: AuthUser = {
+  id: 1,
+  email: 'admin@clashfree.test',
+  full_name: 'Ada Okonkwo',
+  role: 'timetable_administrator',
+  department_id: null,
+  department_name: null,
+  capabilities: ['view', 'edit'],
+  home_path: '/admin/dashboard',
+}
+
 const student: AuthUser = {
   id: 5,
   email: 'student@clashfree.test',
@@ -159,6 +170,14 @@ function renderGuarded(path: string, user: AuthUser | null) {
               </RequireAuth>
             }
           />
+          <Route
+            path="/student/my-timetable"
+            element={
+              <RequireAuth roles={['student']}>
+                <p>Student timetable</p>
+              </RequireAuth>
+            }
+          />
           <Route path="/auth/login" element={<LoginMarker />} />
           <Route path="/forbidden" element={<p>Forbidden screen</p>} />
         </Routes>
@@ -254,6 +273,12 @@ describe('RequireAuth', () => {
     renderGuarded('/lecturer/report-unavailability', facilities)
     expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
     expect(screen.queryByText('Report unavailability')).not.toBeInTheDocument()
+  })
+
+  it('sends an administrator away from a student timetable', () => {
+    renderGuarded('/student/my-timetable', admin)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Student timetable')).not.toBeInTheDocument()
   })
 
   it('lets facilities stay on report disruption', () => {
