@@ -34,7 +34,7 @@ CONFLICT_KINDS = (
     "stability",
 )
 CONFLICT_SEVERITIES = ("high", "medium", "soft")
-VERSION_STATUSES = ("published", "superseded")
+VERSION_STATUSES = ("published", "superseded", "unpublished")
 
 
 class TimetableRun(Base):
@@ -66,6 +66,7 @@ class TimetableRun(Base):
         server_default="generate",
     )
     disruption_id: Mapped[int | None] = mapped_column(ForeignKey("disruptions.id"))
+    disruption_ids: Mapped[list | None] = mapped_column(JSONB)
 
     session: Mapped[AcademicSession] = relationship()
     weight_profile: Mapped[ConstraintWeightProfile] = relationship()

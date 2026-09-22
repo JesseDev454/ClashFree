@@ -1,16 +1,42 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { resendVerification } from '../../api/auth'
+import { resendVerification, verifyEmail } from '../../api/auth'
 import { AuthLayout } from '../../components/AuthLayout'
 import { Button } from '../../components/Button'
 
 export function VerifyEmailPage() {
   const [params] = useSearchParams()
   const email = params.get('email') ?? ''
+  const token = params.get('token') ?? ''
   const [message, setMessage] = useState(
     'Check your inbox for a ClashFree link. It expires after two hours.',
   )
   const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (!token) {
+      return
+    }
+    let cancelled = false
+    verifyEmail(token)
+      .then(() => {
+        if (!cancelled) {
+          setMessage('Email verified. You can sign in.')
+        }
+      })
+      .catch((caught: unknown) => {
+        if (!cancelled) {
+          setMessage(
+            caught instanceof Error
+              ? caught.message
+              : 'This verification link is not valid.',
+          )
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [token])
 
   async function resend() {
     if (!email) {

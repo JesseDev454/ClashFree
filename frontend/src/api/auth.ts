@@ -85,6 +85,67 @@ export async function resendVerification(email: string): Promise<void> {
   }
 }
 
+export async function registerAccount(body: {
+  email: string
+  password: string
+  full_name: string
+}): Promise<void> {
+  const response = await apiFetch('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+  if (!response.ok) {
+    throw new Error(await readError(response))
+  }
+}
+
+export async function verifyEmail(token: string): Promise<void> {
+  const response = await apiFetch('/api/auth/verify-email', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  })
+  if (!response.ok) {
+    throw new Error(await readError(response))
+  }
+}
+
+export async function fetchAuthConfig(): Promise<{ neon: boolean }> {
+  const response = await apiFetch('/api/auth/config')
+  if (!response.ok) {
+    return { neon: false }
+  }
+  const payload: unknown = await response.json()
+  if (
+    typeof payload === 'object' &&
+    payload !== null &&
+    'neon' in payload &&
+    typeof payload.neon === 'boolean'
+  ) {
+    return { neon: payload.neon }
+  }
+  return { neon: false }
+}
+
+export async function loginWithNeon(token: string): Promise<AuthUser> {
+  const response = await apiFetch('/api/auth/neon', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  })
+  if (!response.ok) {
+    throw new Error(await readError(response))
+  }
+  const payload: unknown = await response.json()
+  if (
+    typeof payload !== 'object' ||
+    payload === null ||
+    !('user' in payload) ||
+    !isAuthUser(payload.user)
+  ) {
+    throw new Error('Neon sign-in returned an unexpected payload')
+  }
+  return payload.user
+}
+
 export async function resetPassword(token: string, password: string): Promise<void> {
   const response = await apiFetch('/api/auth/reset-password', {
     method: 'POST',

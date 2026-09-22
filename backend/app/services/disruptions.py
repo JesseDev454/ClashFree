@@ -178,6 +178,7 @@ def compute_impact(
                 "end_period": slot.end_period,
                 "room_code": room.code if room is not None else None,
                 "lecturer_name": lecturer.full_name if lecturer is not None else None,
+                "department_id": course.department_id if course is not None else None,
             }
         )
     classes.sort(

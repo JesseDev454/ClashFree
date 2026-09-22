@@ -20,7 +20,6 @@ WEEKDAY_DATE = {
 DENIED = (
     "lecturer@clashfree.test",
     "facilities@clashfree.test",
-    "coordinator@clashfree.test",
     "student@clashfree.test",
 )
 
@@ -85,6 +84,12 @@ def test_non_admin_roles_cannot_repair(client: TestClient) -> None:
         login(client, email)
         response = client.post("/api/timetables/repair", json=repair_body(1))
         assert response.status_code == 403, email
+
+
+def test_coordinator_repair_is_department_scoped(client: TestClient) -> None:
+    login(client, "coordinator@clashfree.test")
+    response = client.post("/api/timetables/repair", json=repair_body(9_999_999))
+    assert response.status_code == 409
 
 
 def test_repair_without_published_version_is_conflict(client: TestClient) -> None:

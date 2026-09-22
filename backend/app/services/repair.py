@@ -5,6 +5,7 @@ from datetime import UTC, datetime
 from sqlalchemy.orm import Session
 
 from app.models.disruption import Disruption
+from app.models.identity import User
 from app.models.timetable import TimetableRun, TimetableSolution, TimetableVersionSlot
 from app.services.disruptions import impact_for, period_span, weekdays_in_window
 from app.services.publish import current_version
@@ -108,37 +109,104 @@ def load_published_map(db: Session) -> dict[tuple[int, int], tuple[str, str, int
     return published
 
 
-def run_repair(
+def locked_meetings(
+    published: dict[tuple[int, int], tuple[str, str, int]],
+    impacted: set[tuple[int, int]],
+) -> dict[tuple[int, int], tuple[str, str, int]]:
+    """Hard-pin published meetings that are outside the repair impact set."""
+    return {key: placed for key, placed in published.items() if key not in impacted}
+
+
+def _impacted_keys(impact: dict) -> set[tuple[int, int]]:
+    keys: set[tuple[int, int]] = set()
+    for item in impact.get("classes") or []:
+        assignment_id = item.get("assignment_id")
+        meeting_index = item.get("meeting_index")
+        if isinstance(assignment_id, int) and isinstance(meeting_index, int):
+            keys.add((assignment_id, meeting_index))
+    return keys
+
+
+def _hits_department(impact: dict, department_id: int) -> bool:
+    for item in impact.get("classes") or []:
+        if item.get("department_id") == department_id:
+            return True
+    return False
+
+
+def prepare_repair(
     db: Session,
-    user_id: int,
-    disruption_id: int,
+    user: User,
+    disruption_id: int | None,
+    all_open: bool,
     time_limit_seconds: int,
     alternative_count: int,
     random_seed: int | None,
-) -> TimetableRun:
+) -> tuple:
     session = active_session(db)
     if session is None:
         raise RepairError("No active academic session")
     profile = current_profile(db)
     if profile is None:
         raise RepairError("No current constraint weight profile")
-    version = current_version(db, session.id)
-    if version is None:
+    if current_version(db, session.id) is None:
         raise RepairError("No published timetable")
-    row = db.get(Disruption, disruption_id)
-    if row is None or row.session_id != session.id:
-        raise RepairError("Disruption not found")
-    if row.status not in REPAIRABLE:
-        raise RepairError("Only open or in-review disruptions can be repaired")
-    impact = impact_for(db, row)
-    if impact["classes_affected"] == 0:
+    query = db.query(Disruption).filter(
+        Disruption.session_id == session.id,
+        Disruption.status.in_(tuple(REPAIRABLE)),
+    )
+    if all_open:
+        rows = query.order_by(Disruption.id).all()
+    else:
+        row = query.filter(Disruption.id == disruption_id).one_or_none()
+        if row is None:
+            raise RepairError("Disruption not found")
+        rows = [row]
+    usable: list[tuple[Disruption, dict]] = []
+    for candidate in rows:
+        impact = impact_for(db, candidate)
+        if impact["classes_affected"] == 0:
+            continue
+        usable.append((candidate, impact))
+    if not usable:
         raise RepairError("Disruption does not overlap the published timetable")
-
+    if user.role == "department_coordinator":
+        if user.department_id is None:
+            raise RepairError("Your account has no department")
+        usable = [item for item in usable if _hits_department(item[1], user.department_id)]
+        if not usable:
+            raise RepairError("No open disruptions in your department", 403)
     snapshot = build_snapshot(db, time_limit_seconds, alternative_count, random_seed)
     snapshot.flags.preserve_published = True
     snapshot.published = load_published_map(db)
-    apply_disruption_forbid(snapshot, row, forbidden_cells(db, row))
+    impacted: set[tuple[int, int]] = set()
+    targets: list[Disruption] = []
+    for candidate, impact in usable:
+        impacted.update(_impacted_keys(impact))
+        apply_disruption_forbid(snapshot, candidate, forbidden_cells(db, candidate))
+        targets.append(candidate)
+    snapshot.locked = locked_meetings(snapshot.published, impacted)
+    return snapshot, targets, profile, session
 
+
+def run_repair(
+    db: Session,
+    user: User,
+    disruption_id: int | None,
+    all_open: bool,
+    time_limit_seconds: int,
+    alternative_count: int,
+    random_seed: int | None,
+) -> TimetableRun:
+    snapshot, targets, profile, session = prepare_repair(
+        db,
+        user,
+        disruption_id,
+        all_open,
+        time_limit_seconds,
+        alternative_count,
+        random_seed,
+    )
     started = datetime.now(UTC)
     run = TimetableRun(
         session_id=session.id,
@@ -148,9 +216,10 @@ def run_repair(
         alternative_count=alternative_count,
         random_seed=random_seed,
         started_at=started,
-        created_by=user_id,
+        created_by=user.id,
         purpose="repair",
-        disruption_id=row.id,
+        disruption_id=targets[0].id,
+        disruption_ids=[target.id for target in targets],
     )
     db.add(run)
     db.commit()

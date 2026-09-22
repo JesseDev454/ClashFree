@@ -18,7 +18,16 @@ class GenerateIn(BaseModel):
 
 
 class RepairIn(GenerateIn):
-    disruption_id: int
+    disruption_id: int | None = None
+    all_open: bool = False
+
+    @model_validator(mode="after")
+    def one_target(self):
+        if self.all_open and self.disruption_id is not None:
+            raise ValueError("Set disruption_id or all_open, not both")
+        if not self.all_open and self.disruption_id is None:
+            raise ValueError("Set disruption_id or all_open")
+        return self
 
 
 class PreflightOut(BaseModel):

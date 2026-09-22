@@ -30,7 +30,9 @@ ROLE_CAPABILITIES: Final[dict[str, frozenset[str]]] = {
             "publish",
         }
     ),
-    "department_coordinator": frozenset({"view", "edit", "submitRequest"}),
+    "department_coordinator": frozenset(
+        {"view", "edit", "submitRequest", "generate", "approveRepair"}
+    ),
     "lecturer": frozenset({"view", "edit", "submitRequest", "reportDisruption"}),
     "facilities_manager": frozenset({"view", "edit", "reportDisruption"}),
     "student": frozenset({"view"}),

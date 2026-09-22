@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import {
   fetchMe,
   login as loginRequest,
+  loginWithNeon as neonRequest,
   logout as logoutRequest,
   type AuthUser,
 } from '../api/auth'
@@ -44,6 +45,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return next
   }, [])
 
+  const loginWithNeon = useCallback(async (token: string) => {
+    const next = await neonRequest(token)
+    setUser(next)
+    return next
+  }, [])
+
   const logout = useCallback(async () => {
     await logoutRequest()
     setUser(null)
@@ -56,8 +63,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [])
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, login, logout, refresh }),
-    [user, loading, login, logout, refresh],
+    () => ({ user, loading, login, loginWithNeon, logout, refresh }),
+    [user, loading, login, loginWithNeon, logout, refresh],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

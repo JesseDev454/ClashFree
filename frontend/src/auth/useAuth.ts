@@ -5,6 +5,7 @@ export type AuthContextValue = {
   user: AuthUser | null
   loading: boolean
   login: (email: string, password: string) => Promise<AuthUser>
+  loginWithNeon?: (token: string) => Promise<AuthUser>
   logout: () => Promise<void>
   refresh?: () => Promise<AuthUser | null>
 }

@@ -179,6 +179,14 @@ function renderGuarded(path: string, user: AuthUser | null) {
             }
           />
           <Route
+            path="/facilities/rooms"
+            element={
+              <RequireAuth roles={['facilities_manager']}>
+                <p>Facilities rooms</p>
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/student/notifications"
             element={
               <RequireAuth roles={['student']}>
@@ -287,6 +295,12 @@ describe('RequireAuth', () => {
     renderGuarded('/student/my-timetable', admin)
     expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
     expect(screen.queryByText('Student timetable')).not.toBeInTheDocument()
+  })
+
+  it('sends an administrator away from facilities rooms', () => {
+    renderGuarded('/facilities/rooms', admin)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Facilities rooms')).not.toBeInTheDocument()
   })
 
   it('sends an administrator away from student notifications', () => {

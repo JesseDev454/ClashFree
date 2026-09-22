@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
 from sqlalchemy.orm import Session, joinedload
 
 from app.api.deps import require_capability, require_roles
@@ -32,6 +33,9 @@ from app.services.publish import (
     list_versions,
     load_version,
     publish_draft,
+    restore_version,
+    unpublish_version,
+    version_csv,
 )
 from app.services.repair import RepairError, run_repair, solution_movement
 from app.services.timetable import (
@@ -183,9 +187,29 @@ def generate(
             status_code=status.HTTP_409_CONFLICT,
             detail="No current constraint weight profile",
         )
-    if payload.faculty_id is not None and db.get(Faculty, payload.faculty_id) is None:
+    faculty_id = payload.faculty_id
+    department_id = payload.department_id
+    if user.role == "department_coordinator":
+        if faculty_id is not None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Coordinators can generate only their own department.",
+            )
+        if user.department_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Your account has no department",
+            )
+        if department_id not in (None, user.department_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Coordinators can generate only their own department.",
+            )
+        faculty_id = None
+        department_id = user.department_id
+    if faculty_id is not None and db.get(Faculty, faculty_id) is None:
         not_found("Faculty")
-    if payload.department_id is not None and db.get(Department, payload.department_id) is None:
+    if department_id is not None and db.get(Department, department_id) is None:
         not_found("Department")
     try:
         run = run_generation(
@@ -194,8 +218,8 @@ def generate(
             payload.time_limit_seconds,
             payload.alternative_count,
             payload.random_seed,
-            faculty_id=payload.faculty_id,
-            department_id=payload.department_id,
+            faculty_id=faculty_id,
+            department_id=department_id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
@@ -311,8 +335,7 @@ def validate_draft(
 @router.post("/repair", response_model=RunOut)
 def repair(
     db: Session = Depends(get_db),
-    user: User = Depends(admin_only),
-    _cap: User = Depends(require_capability("approveRepair")),
+    user: User = Depends(require_capability("approveRepair")),
     payload: RepairIn | None = None,
 ) -> RunOut:
     if payload is None:
@@ -323,8 +346,9 @@ def repair(
     try:
         row = run_repair(
             db,
-            user.id,
+            user,
             payload.disruption_id,
+            payload.all_open,
             payload.time_limit_seconds,
             payload.alternative_count,
             payload.random_seed,
@@ -436,6 +460,61 @@ def get_version(
         not_found("Timetable version")
         raise AssertionError
     return version_out(row)
+
+
+publish_only = require_capability("publish")
+
+
+@router.get("/versions/{version_id}/export")
+def export_version(
+    version_id: int,
+    db: Session = Depends(get_db),
+    _user: User = Depends(publish_only),
+) -> Response:
+    row = load_version(db, version_id)
+    if row is None:
+        not_found("Timetable version")
+        raise AssertionError
+    body = version_csv(row)
+    return Response(
+        content=body,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f'attachment; filename="timetable-v{row.version_number}.csv"'
+        },
+    )
+
+
+@router.post("/versions/{version_id}/unpublish", response_model=VersionOut)
+def unpublish(
+    version_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(publish_only),
+) -> VersionOut:
+    try:
+        row = unpublish_version(db, user.id, version_id)
+    except PublishError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    return version_out(row)
+
+
+@router.post("/versions/{version_id}/restore", response_model=SolutionOut)
+def restore(
+    version_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(publish_only),
+) -> SolutionOut:
+    try:
+        solution = restore_version(db, user.id, version_id)
+    except PublishError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    loaded = (
+        db.query(TimetableSolution)
+        .options(joinedload(TimetableSolution.slots))
+        .filter(TimetableSolution.id == solution.id)
+        .one()
+    )
+    return solution_out(db, loaded)
 
 
 @router.get("/changes", response_model=list[ChangeOut])

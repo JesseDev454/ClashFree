@@ -17,10 +17,10 @@ def test_generate_is_admin_only(client: TestClient) -> None:
     for email, expected in ROLES.items():
         client.post("/api/auth/logout")
         login(client, email)
-        response = client.post(
-            "/api/timetables/generate",
-            json={"time_limit_seconds": 8, "alternative_count": 1, "random_seed": 1},
-        )
+        body = {"time_limit_seconds": 8, "alternative_count": 1, "random_seed": 1}
+        if email.startswith("coordinator"):
+            body["department_id"] = 9_999_999
+        response = client.post("/api/timetables/generate", json=body)
         if expected is None:
             assert response.status_code == 200, email
             assert response.json()["status"] in {"feasible", "infeasible", "failed"}

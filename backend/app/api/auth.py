@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
@@ -10,15 +11,20 @@ from app.core.security import create_session, hash_token, verify_password
 from app.models.identity import Session as SessionModel
 from app.models.identity import User
 from app.schemas.auth import (
+    AuthConfigOut,
     AuthResponse,
     DebugTokenResponse,
     ForgotPasswordRequest,
     LoginRequest,
+    NeonLoginRequest,
+    RegisterRequest,
     ResendVerificationRequest,
     ResetPasswordRequest,
     UserOut,
+    VerifyEmailRequest,
 )
 from app.services.mailer import get_mailer
+from app.services.neon_auth import neon_configured, verify_neon_token
 from app.services.tokens import consume_email_token, get_debug_token, issue_email_token
 from app.services.users import get_user_by_email
 
@@ -59,6 +65,14 @@ def clear_session_cookie(response: Response) -> None:
     response.delete_cookie(key=settings.session_cookie_name, path="/")
 
 
+def reject_if_neon() -> None:
+    if neon_configured():
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Password accounts are disabled while Neon Auth is configured",
+        )
+
+
 def send_link(user: User, purpose: str, raw_token: str) -> None:
     settings = get_settings()
     if purpose == "reset":
@@ -69,6 +83,97 @@ def send_link(user: User, purpose: str, raw_token: str) -> None:
         subject = "Verify your ClashFree email"
     link = f"{settings.app_origin.rstrip('/')}{path}"
     get_mailer().send(user.email, subject, f"Use this link: {link}")
+
+
+@router.get("/config", response_model=AuthConfigOut)
+def auth_config() -> AuthConfigOut:
+    return AuthConfigOut(neon=neon_configured())
+
+
+@router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> AuthResponse:
+    reject_if_neon()
+    from app.core.security import hash_password
+    from app.services.activity import add_audit
+
+    if get_user_by_email(db, payload.email) is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Email is already registered"
+        )
+    now = datetime.now(UTC)
+    user = User(
+        email=payload.email,
+        password_hash=hash_password(payload.password),
+        full_name=payload.full_name.strip(),
+        role="student",
+        department_id=None,
+        cohort_id=None,
+        is_active=True,
+        email_verified_at=None,
+        created_at=now,
+    )
+    db.add(user)
+    db.flush()
+    raw = issue_email_token(db, user, "verify")
+    add_audit(
+        db,
+        actor_id=None,
+        action="user.registered",
+        entity_type="user",
+        entity_id=user.id,
+        summary=f"Student registered {user.email}",
+    )
+    db.commit()
+    db.refresh(user)
+    send_link(user, "verify", raw)
+    return AuthResponse(user=serialize_user(user))
+
+
+@router.post("/verify-email", status_code=status.HTTP_204_NO_CONTENT)
+def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)) -> None:
+    token = consume_email_token(db, payload.token, "verify")
+    if token is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This verification link is invalid or has expired",
+        )
+    user = db.get(User, token.user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This verification link is invalid or has expired",
+        )
+    user.email_verified_at = datetime.now(UTC)
+    db.commit()
+
+
+@router.post("/neon", response_model=AuthResponse)
+def neon_login(
+    payload: NeonLoginRequest,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> AuthResponse:
+    if not neon_configured():
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            detail="Neon Auth is not configured",
+        )
+    try:
+        claims = verify_neon_token(payload.token)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Neon token",
+        ) from exc
+    subject = str(claims.get("sub") or "")
+    user = db.query(User).filter(User.auth_subject == subject).one_or_none()
+    if user is None or not user.is_active:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unknown account")
+    raw = create_session(db, user.id)
+    db.commit()
+    db.refresh(user)
+    set_session_cookie(response, raw)
+    return AuthResponse(user=serialize_user(user))
 
 
 @router.post("/login", response_model=AuthResponse)
@@ -115,6 +220,7 @@ def logout(
 
 @router.post("/forgot-password", status_code=status.HTTP_204_NO_CONTENT)
 def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)) -> None:
+    reject_if_neon()
     user = get_user_by_email(db, payload.email)
     if user is None:
         return
@@ -135,6 +241,7 @@ def resend_verification(payload: ResendVerificationRequest, db: Session = Depend
 
 @router.post("/reset-password", status_code=status.HTTP_204_NO_CONTENT)
 def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)) -> None:
+    reject_if_neon()
     from app.core.security import hash_password
 
     token = consume_email_token(db, payload.token, "reset")

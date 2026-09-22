@@ -8,15 +8,15 @@ const repoRoot = path.resolve(process.cwd(), '..')
 const referencesRoot = path.join(repoRoot, 'docs/design-references')
 
 describe('page inventory', () => {
-  it('contains exactly 78 screen records', () => {
-    expect(pageInventory).toHaveLength(78)
+  it('contains exactly 81 screen records', () => {
+    expect(pageInventory).toHaveLength(81)
   })
 
   it('has unique ids and production routes', () => {
     const ids = pageInventory.map((page) => page.id)
     const routes = pageInventory.map((page) => page.route)
-    expect(new Set(ids).size).toBe(78)
-    expect(new Set(routes).size).toBe(78)
+    expect(new Set(ids).size).toBe(81)
+    expect(new Set(routes).size).toBe(81)
   })
 
   it('points at existing reference files with role assignments', () => {
@@ -31,7 +31,7 @@ describe('page inventory', () => {
         page.capabilities.every((capability) => capabilities.includes(capability)),
       ).toBe(true)
       expect(page.phase).toBeGreaterThanOrEqual(0)
-      expect(page.phase).toBeLessThanOrEqual(12)
+      expect(page.phase).toBeLessThanOrEqual(15)
       expect(page.width).toBeGreaterThan(0)
       expect(page.height).toBeGreaterThan(0)
     }
@@ -45,7 +45,16 @@ describe('page inventory', () => {
     )
     expect(privileged.length).toBeGreaterThan(0)
     for (const page of privileged) {
-      expect(page.roles).toEqual(['timetable_administrator'])
+      if (page.capabilities.includes('publish')) {
+        expect(page.roles).toEqual(['timetable_administrator'])
+      } else {
+        expect(
+          page.roles.every(
+            (role) =>
+              role === 'timetable_administrator' || role === 'department_coordinator',
+          ),
+        ).toBe(true)
+      }
     }
   })
 
@@ -106,7 +115,11 @@ describe('page inventory', () => {
     expect(getPreviewHref('admin-publish-timetable')).toBe(
       '/preview/unavailable/admin-publish-timetable',
     )
-    expect(getAppHref('facilities-rooms')).toBe('/unavailable/facilities-rooms')
+    expect(getAppHref('facilities-rooms')).toBe('/facilities/rooms')
+    expect(getAppHref('facilities-add-edit-room')).toBe('/facilities/rooms/edit')
+    for (const page of pageInventory.filter((item) => item.phase === 14)) {
+      expect(getAppHref(page.id)).toBe(page.route)
+    }
     expect(getPreviewHref('admin-rooms-facilities')).toBe(
       '/preview/unavailable/admin-rooms-facilities',
     )

@@ -47,4 +47,6 @@ def test_coordinator_has_department(client: TestClient) -> None:
     body = client.get("/api/me").json()
     assert body["department_id"] is not None
     assert body["department_name"] == "Software Engineering"
-    assert "generate" not in body["capabilities"]
+    assert "generate" in body["capabilities"]
+    assert "approveRepair" in body["capabilities"]
+    assert "publish" not in body["capabilities"]

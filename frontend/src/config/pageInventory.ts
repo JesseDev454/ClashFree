@@ -51,6 +51,19 @@ export const pageInventory: PageMeta[] = [
     'public',
   ),
   page(
+    'auth-register',
+    'Register',
+    'Public student registration. Staff accounts stay administrator-provisioned.',
+    '/auth/register',
+    '01_Authentication/login.png',
+    1182,
+    1144,
+    AUTH,
+    13,
+    ['view'],
+    'public',
+  ),
+  page(
     'auth-forgot-password',
     'Forgot Password',
     'Starts account recovery with an email or university identifier.',
@@ -568,6 +581,32 @@ export const pageInventory: PageMeta[] = [
     COORD,
     9,
     ['view', 'submitRequest'],
+    'department',
+  ),
+  page(
+    'coordinator-generate-timetable',
+    'Generate Timetable',
+    'Department-scoped timetable generation. Meetings outside the department stay pinned.',
+    '/coordinator/generate-timetable',
+    '03_Department_Coordinator/change-requests.png',
+    1600,
+    1000,
+    COORD,
+    14,
+    ['view', 'generate'],
+    'department',
+  ),
+  page(
+    'coordinator-repair-timetable',
+    'Repair Timetable',
+    'Repairs open disruptions that affect the coordinator department.',
+    '/coordinator/repair-timetable',
+    '03_Department_Coordinator/change-requests.png',
+    1600,
+    1000,
+    COORD,
+    14,
+    ['view', 'approveRepair'],
     'department',
   ),
   page(
@@ -1142,6 +1181,13 @@ const PHASE9_PAGES = new Set([
   'student-timetable-changes',
 ])
 
+const PHASE11_PAGES = new Set(['facilities-rooms', 'facilities-add-edit-room'])
+
+const PHASE14_PAGES = new Set([
+  'coordinator-generate-timetable',
+  'coordinator-repair-timetable',
+])
+
 const PHASE10_PAGES = new Set([
   'admin-reports-analytics',
   'admin-audit-log',
@@ -1169,7 +1215,9 @@ export function getAppHref(pageId: string): string {
     PHASE7_PAGES.has(pageId) ||
     PHASE8_PAGES.has(pageId) ||
     PHASE9_PAGES.has(pageId) ||
-    PHASE10_PAGES.has(pageId)
+    PHASE10_PAGES.has(pageId) ||
+    PHASE11_PAGES.has(pageId) ||
+    PHASE14_PAGES.has(pageId)
   ) {
     return page.route
   }

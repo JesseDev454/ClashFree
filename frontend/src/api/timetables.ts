@@ -120,7 +120,9 @@ export function generateTimetable(body: GenerateRequest) {
   })
 }
 
-export function repairTimetable(body: GenerateRequest & { disruption_id: number }) {
+export function repairTimetable(
+  body: GenerateRequest & { disruption_id?: number; all_open?: boolean },
+) {
   return requestJson<TimetableRun>('/api/timetables/repair', {
     method: 'POST',
     body: JSON.stringify(body),
@@ -225,6 +227,32 @@ export function fetchVersions() {
 
 export function fetchVersion(id: number) {
   return requestJson<TimetableVersion>(`/api/timetables/versions/${id}`)
+}
+
+export async function downloadVersionCsv(id: number, versionNumber: number) {
+  const response = await apiFetch(`/api/timetables/versions/${id}/export`)
+  if (!response.ok) {
+    throw new ApiError(response.status, await readError(response))
+  }
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `timetable-v${versionNumber}.csv`
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+export function unpublishVersion(id: number) {
+  return requestJson<TimetableVersion>(`/api/timetables/versions/${id}/unpublish`, {
+    method: 'POST',
+  })
+}
+
+export function restoreVersion(id: number) {
+  return requestJson<{ id: number }>(`/api/timetables/versions/${id}/restore`, {
+    method: 'POST',
+  })
 }
 
 export function publishTimetable(notes?: string) {

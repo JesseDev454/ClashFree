@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { ApiError } from '../../api/client'
 import {
+  downloadVersionCsv,
   fetchVersion,
   fetchVersions,
+  restoreVersion,
+  unpublishVersion,
   type TimetableSlot,
   type TimetableVersion,
 } from '../../api/timetables'
@@ -35,6 +39,21 @@ export function TimetableVersionsPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [state, setState] = useState<'loading' | 'empty' | 'error' | 'ready'>('loading')
   const [detailError, setDetailError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+
+  async function runAction(work: () => Promise<void>) {
+    setActionError(null)
+    try {
+      await work()
+      await load()
+    } catch (caught) {
+      setActionError(
+        caught instanceof ApiError
+          ? caught.detail
+          : 'That action could not be completed.',
+      )
+    }
+  }
 
   async function showVersion(id: number) {
     setDetailError(null)
@@ -109,13 +128,49 @@ export function TimetableVersionsPage() {
       id: 'view',
       header: 'Actions',
       accessor: (row) => (
-        <Button
-          size="sm"
-          variant={selectedId === row.id ? 'primary' : 'outline'}
-          onClick={() => void showVersion(row.id)}
-        >
-          View
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant={selectedId === row.id ? 'primary' : 'outline'}
+            onClick={() => void showVersion(row.id)}
+          >
+            View
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              void runAction(async () => {
+                await downloadVersionCsv(row.id, row.version_number)
+              })
+            }
+          >
+            Export
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => window.print()}>
+            Print
+          </Button>
+          {row.is_current ? (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                void runAction(() => unpublishVersion(row.id).then(() => undefined))
+              }
+            >
+              Unpublish
+            </Button>
+          ) : null}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              void runAction(() => restoreVersion(row.id).then(() => undefined))
+            }
+          >
+            Restore
+          </Button>
+        </div>
       ),
     },
   ]
@@ -126,13 +181,22 @@ export function TimetableVersionsPage() {
     <RoleShell>
       <PageHeader
         title="Timetable Versions"
-        description="Immutable published snapshots for the active session. History is view-only."
+        description="Published snapshots for the active session. Export, print, unpublish the current version, or restore one as a draft."
         actions={
           <Button variant="outline" asChild>
             <Link to="/admin/publish-timetable">Publish Timetable</Link>
           </Button>
         }
       />
+      <style>{`@media print { nav, aside, button, a { display: none !important; } }`}</style>
+      {actionError ? (
+        <p
+          className="mb-4 rounded-md bg-tint-rose px-3 py-2 text-sm text-danger"
+          role="alert"
+        >
+          {actionError}
+        </p>
+      ) : null}
       {state === 'error' ? (
         <p className="rounded-md bg-tint-rose px-3 py-2 text-sm text-danger" role="alert">
           Timetable versions could not be loaded.
