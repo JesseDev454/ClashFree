@@ -3,12 +3,19 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 from app.core.database import get_session_factory
+from app.models.academic import Cohort, Course, CourseAssignment, Room
 from app.models.activity import AuditEvent, Notification
 from app.models.identity import Department, User
 from app.models.portal import ScheduleRequest, UserSettings
-from app.models.timetable import TimetableVersion, TimetableVersionSlot
+from app.models.timetable import (
+    TimetableRun,
+    TimetableSlot,
+    TimetableSolution,
+    TimetableVersion,
+    TimetableVersionSlot,
+)
 from app.services.activity_seed import AUDIT_SUMMARY, STUDENT_NOTICE, seed_phase10
-from app.services.timetable import active_session
+from app.services.timetable import active_session, current_profile
 from fastapi.testclient import TestClient
 
 SETTINGS = {
@@ -23,21 +30,74 @@ def login(client: TestClient, email: str, password: str = "ClashFree!dev"):
     return client.post("/api/auth/login", json={"email": email, "password": password})
 
 
-def generate_and_publish(client: TestClient) -> None:
+def publish_owned_draft(client: TestClient) -> None:
+    """Publish one meeting for the seeded lecturer and student without the solver."""
     db = get_session_factory()()
     try:
         db.query(TimetableVersionSlot).delete()
         db.query(TimetableVersion).delete()
+        db.query(TimetableSolution).update(
+            {TimetableSolution.is_selected: False},
+            synchronize_session=False,
+        )
+        academic = active_session(db)
+        profile = current_profile(db)
+        admin = db.query(User).filter(User.email == "admin@clashfree.test").one()
+        assignment = (
+            db.query(CourseAssignment)
+            .join(Course, CourseAssignment.course_id == Course.id)
+            .join(Cohort, CourseAssignment.cohort_id == Cohort.id)
+            .filter(Course.code == "SWE 301", Cohort.code == "SWE-300-A")
+            .one()
+        )
+        room = db.query(Room).filter(Room.status == "available").order_by(Room.id).first()
+        assert academic is not None
+        assert profile is not None
+        assert room is not None
+        now = datetime.now(UTC)
+        run = TimetableRun(
+            session_id=academic.id,
+            weight_profile_id=profile.id,
+            status="feasible",
+            time_limit_seconds=1,
+            alternative_count=1,
+            random_seed=13,
+            started_at=now,
+            finished_at=now,
+            solve_time_ms=0,
+            message="Phase 10 notification draft",
+            created_by=admin.id,
+            purpose="generate",
+        )
+        db.add(run)
+        db.flush()
+        solution = TimetableSolution(
+            run_id=run.id,
+            label="A",
+            objective=0,
+            hard_violations=0,
+            soft_penalty=0,
+            room_utilization_percent=0,
+            student_gap_hours=0,
+            is_selected=True,
+        )
+        db.add(solution)
+        db.flush()
+        db.add(
+            TimetableSlot(
+                solution_id=solution.id,
+                assignment_id=assignment.id,
+                meeting_index=0,
+                weekday="mon",
+                start_period="08-10",
+                end_period="08-10",
+                room_id=room.id,
+            )
+        )
         db.commit()
     finally:
         db.close()
     login(client, "admin@clashfree.test")
-    generated = client.post(
-        "/api/timetables/generate",
-        json={"time_limit_seconds": 10, "alternative_count": 1, "random_seed": 13},
-    )
-    assert generated.status_code == 200, generated.text
-    assert generated.json()["status"] == "feasible"
     published = client.post("/api/timetables/publish", json={"notes": "Phase 10"})
     assert published.status_code == 200, published.text
 
@@ -85,7 +145,7 @@ def test_publish_notifies_without_email_when_toggle_is_off(client: TestClient, m
 
     monkeypatch.setattr("app.services.activity.get_mailer", fake_mailer)
     silence_timetable_mail()
-    generate_and_publish(client)
+    publish_owned_draft(client)
     assert sent == []
     client.post("/api/auth/logout")
     for email in ("lecturer@clashfree.test", "student@clashfree.test"):
