@@ -1,6 +1,7 @@
 """FastAPI backend for ClashFree.
 
-Phase 9 adds role portals, personal timetables, and scoped generation.
+Phase 10 adds notifications, reports, an audit log, and Resend-or-console email.
+Phase 9 portals, personal timetables, and scoped generation are still in place.
 Phase 8 repair still publishes a new version and marks one disruption repaired.
 
 
@@ -22,7 +23,7 @@ uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
 uv run python -m app.cli seed_phase6
-uv run python -m app.cli seed_phase9
+uv run python -m app.cli seed_phase10
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 

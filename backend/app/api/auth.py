@@ -18,7 +18,7 @@ from app.schemas.auth import (
     ResetPasswordRequest,
     UserOut,
 )
-from app.services.mailer import mailer
+from app.services.mailer import get_mailer
 from app.services.tokens import consume_email_token, get_debug_token, issue_email_token
 from app.services.users import get_user_by_email
 
@@ -68,7 +68,7 @@ def send_link(user: User, purpose: str, raw_token: str) -> None:
         path = f"/auth/verify-email?token={raw_token}"
         subject = "Verify your ClashFree email"
     link = f"{settings.app_origin.rstrip('/')}{path}"
-    mailer.send(user.email, subject, f"Use this link: {link}")
+    get_mailer().send(user.email, subject, f"Use this link: {link}")
 
 
 @router.post("/login", response_model=AuthResponse)

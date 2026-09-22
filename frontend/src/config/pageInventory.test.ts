@@ -97,6 +97,9 @@ describe('page inventory', () => {
     for (const page of pageInventory.filter((item) => item.phase === 9)) {
       expect(getAppHref(page.id)).toBe(page.route)
     }
+    for (const page of pageInventory.filter((item) => item.phase === 10)) {
+      expect(getAppHref(page.id)).toBe(page.route)
+    }
     expect(getPreviewHref('admin-generate-timetable')).toBe(
       '/preview/unavailable/admin-generate-timetable',
     )

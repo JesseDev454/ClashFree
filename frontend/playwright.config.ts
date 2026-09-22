@@ -14,6 +14,7 @@ export default defineConfig({
     '**/disruptions.spec.ts',
     '**/repair.spec.ts',
     '**/portals.spec.ts',
+    '**/activity.spec.ts',
   ],
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

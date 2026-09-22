@@ -7,6 +7,7 @@ from app.models.academic import (
     Lecturer,
     Room,
 )
+from app.models.activity import AuditEvent, Notification
 from app.models.constraints import (
     ConstraintWeightProfile,
     LecturerAvailabilityException,
@@ -31,6 +32,7 @@ from app.models.timetable import (
 
 __all__ = [
     "AcademicSession",
+    "AuditEvent",
     "Cohort",
     "ConstraintWeightProfile",
     "Course",
@@ -45,6 +47,7 @@ __all__ = [
     "LecturerAvailabilityException",
     "LecturerAvailabilitySlot",
     "LecturerPreference",
+    "Notification",
     "Room",
     "RoomAvailabilityBlock",
     "RoomAvailabilitySlot",

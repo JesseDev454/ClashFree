@@ -1142,6 +1142,19 @@ const PHASE9_PAGES = new Set([
   'student-timetable-changes',
 ])
 
+const PHASE10_PAGES = new Set([
+  'admin-reports-analytics',
+  'admin-audit-log',
+  'admin-notifications',
+  'coordinator-reports-analytics',
+  'coordinator-notifications',
+  'lecturer-notifications',
+  'facilities-room-utilization',
+  'facilities-facility-history',
+  'facilities-notifications',
+  'student-notifications',
+])
+
 export function getAppHref(pageId: string): string {
   const page = getPageById(pageId)
   if (!page) {
@@ -1155,7 +1168,8 @@ export function getAppHref(pageId: string): string {
     PHASE6_PAGES.has(pageId) ||
     PHASE7_PAGES.has(pageId) ||
     PHASE8_PAGES.has(pageId) ||
-    PHASE9_PAGES.has(pageId)
+    PHASE9_PAGES.has(pageId) ||
+    PHASE10_PAGES.has(pageId)
   ) {
     return page.route
   }

@@ -5,7 +5,9 @@ from app.api.deps import require_roles
 from app.core.database import get_db
 from app.models.constraints import RoomAvailabilityBlock
 from app.models.identity import User
+from app.schemas.activity import FacilityHistoryOut, RoomUtilizationOut
 from app.schemas.portal import MaintenanceBlockOut
+from app.services.activity import facility_history, room_utilization
 
 router = APIRouter(prefix="/api/facilities", tags=["facilities"])
 facilities_only = require_roles("facilities_manager", "timetable_administrator")
@@ -37,3 +39,19 @@ def list_maintenance_blocks(
         )
         for row in rows
     ]
+
+
+@router.get("/utilization", response_model=list[RoomUtilizationOut])
+def list_utilization(
+    db: Session = Depends(get_db),
+    _user: User = Depends(facilities_only),
+) -> list[RoomUtilizationOut]:
+    return [RoomUtilizationOut(**row) for row in room_utilization(db)]
+
+
+@router.get("/history", response_model=list[FacilityHistoryOut])
+def list_history(
+    db: Session = Depends(get_db),
+    _user: User = Depends(facilities_only),
+) -> list[FacilityHistoryOut]:
+    return [FacilityHistoryOut(**row) for row in facility_history(db)]

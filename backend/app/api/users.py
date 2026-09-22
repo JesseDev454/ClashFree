@@ -78,6 +78,16 @@ def create_user(
     except PortalError as exc:
         db.rollback()
         raise_portal(exc)
+    from app.services.activity import add_audit
+
+    add_audit(
+        db,
+        actor_id=_user.id,
+        action="user.created",
+        entity_type="user",
+        entity_id=row.id,
+        summary=f"Created {row.email}",
+    )
     db.commit()
     return serialize_user(load_user(db, row.id))
 
@@ -123,5 +133,16 @@ def update_user(
     except PortalError as exc:
         db.rollback()
         raise_portal(exc)
+    if "role" in fields or "is_active" in fields:
+        from app.services.activity import add_audit
+
+        add_audit(
+            db,
+            actor_id=_user.id,
+            action="user.updated",
+            entity_type="user",
+            entity_id=row.id,
+            summary=f"Updated {row.email}",
+        )
     db.commit()
     return serialize_user(load_user(db, row.id))
