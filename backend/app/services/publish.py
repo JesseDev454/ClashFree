@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from types import SimpleNamespace
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
@@ -218,13 +219,44 @@ def publish_draft(db: Session, user_id: int, notes: str | None) -> TimetableVers
             )
         )
     run = solution.run
+    repaired = None
     if run is not None and run.purpose == "repair" and run.disruption_id is not None:
         disruption = db.get(Disruption, run.disruption_id)
-        if disruption is not None:
+        if disruption is not None and disruption.status != "repaired":
             disruption.status = "repaired"
             disruption.updated_at = datetime.now(UTC)
+            repaired = disruption
+    previous_slots = _snap(existing.slots) if existing is not None else []
+    new_slots = _snap(solution.slots)
     db.commit()
     loaded = load_version(db, row.id)
     if loaded is None:
         raise PublishError("Published version could not be loaded")
+    from app.services.activity import notify_disruption, notify_publish
+
+    notify_publish(
+        db,
+        actor_id=user_id,
+        version=loaded,
+        previous_slots=previous_slots,
+        new_slots=new_slots,
+    )
+    if repaired is not None:
+        notify_disruption(db, actor_id=user_id, row=repaired, created=False)
     return loaded
+
+
+def _snap(slots) -> list[SimpleNamespace]:
+    return [
+        SimpleNamespace(
+            assignment_id=slot.assignment_id,
+            meeting_index=slot.meeting_index,
+            weekday=slot.weekday,
+            start_period=slot.start_period,
+            end_period=slot.end_period,
+            room_id=slot.room_id,
+            assignment=getattr(slot, "assignment", None),
+            room=getattr(slot, "room", None),
+        )
+        for slot in slots
+    ]

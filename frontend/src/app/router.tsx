@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
+import { fetchDepartmentReport, fetchUniversityReport } from '../api/activity'
 import { fetchPublishedDepartment, fetchPublishedMine } from '../api/timetables'
 import { RequireAuth } from '../components/RequireAuth'
 import { ForbiddenPage } from '../pages/ForbiddenPage'
@@ -22,6 +23,7 @@ import { PublishTimetablePage } from '../pages/admin/PublishTimetablePage'
 import { RepairComparisonPage } from '../pages/admin/RepairComparisonPage'
 import { RepairTimetablePage } from '../pages/admin/RepairTimetablePage'
 import { RoomsFacilitiesPage } from '../pages/admin/RoomsFacilitiesPage'
+import { AuditLogPage } from '../pages/admin/AuditLogPage'
 import { UsersRolesPage } from '../pages/admin/UsersRolesPage'
 import { SchedulingConstraintsPage } from '../pages/admin/SchedulingConstraintsPage'
 import { StudentCohortsPage } from '../pages/admin/StudentCohortsPage'
@@ -38,6 +40,8 @@ import { DepartmentAssignmentsPage } from '../pages/coordinator/DepartmentAssign
 import { DepartmentCohortsPage } from '../pages/coordinator/DepartmentCohortsPage'
 import { DepartmentConstraintsPage } from '../pages/coordinator/DepartmentConstraintsPage'
 import { DepartmentCoursesPage } from '../pages/coordinator/DepartmentCoursesPage'
+import { FacilityHistoryPage } from '../pages/facilities/FacilityHistoryPage'
+import { RoomUtilizationPage } from '../pages/facilities/RoomUtilizationPage'
 import { FacilitiesHomePage } from '../pages/facilities/FacilitiesHomePage'
 import { AffectedClassesPage } from '../pages/facilities/AffectedClassesPage'
 import { MaintenanceSchedulePage } from '../pages/facilities/MaintenanceSchedulePage'
@@ -60,6 +64,8 @@ import { HelpPage } from '../pages/shared/HelpPage'
 import { ProfilePage } from '../pages/shared/ProfilePage'
 import { PublishedTimetablePage } from '../pages/shared/PublishedTimetablePage'
 import { RequestsPage } from '../pages/shared/RequestsPage'
+import { NotificationsPage } from '../pages/shared/NotificationsPage'
+import { ReportsPage } from '../pages/shared/ReportsPage'
 import { SettingsPage } from '../pages/shared/SettingsPage'
 
 function AdminRoute({ children }: { children: ReactNode }) {
@@ -618,6 +624,109 @@ export function AppRouter() {
         element={
           <RequireAuth roles={['student']}>
             <ChangesPage description="Published changes that affect your cohort." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/reports-analytics"
+        element={
+          <AdminRoute>
+            <ReportsPage
+              title="Reports & Analytics"
+              description="University meetings, utilization, changes, disruptions, and requests."
+              load={fetchUniversityReport}
+            />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/audit-log"
+        element={
+          <AdminRoute>
+            <AuditLogPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/notifications"
+        element={
+          <AdminRoute>
+            <NotificationsPage
+              title="Notifications"
+              description="Alerts for timetable changes, requests, and disruptions."
+            />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/coordinator/reports-analytics"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <ReportsPage
+              title="Reports & Analytics"
+              description="Meetings, utilization, changes, and requests for your department."
+              load={fetchDepartmentReport}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/notifications"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <NotificationsPage
+              title="Notifications"
+              description="Alerts for your department's requests and timetable changes."
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/notifications"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <NotificationsPage
+              title="Notifications"
+              description="Alerts for your classes and change requests."
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/room-utilization"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <RoomUtilizationPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/facility-history"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <FacilityHistoryPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/notifications"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <NotificationsPage
+              title="Notifications"
+              description="Alerts for disruptions and maintenance that affect rooms."
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/student/notifications"
+        element={
+          <RequireAuth roles={['student']}>
+            <NotificationsPage
+              title="Notifications"
+              description="Alerts when the published timetable changes for your cohort."
+            />
           </RequireAuth>
         }
       />

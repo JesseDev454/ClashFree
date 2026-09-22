@@ -288,7 +288,10 @@ def create_request(db: Session, user: User, payload) -> ScheduleRequest:
         created_at=datetime.now(UTC),
     )
     db.add(row)
-    db.commit()
+    db.flush()
+    from app.services.activity import notify_request
+
+    notify_request(db, actor_id=user.id, row=row, created=True)
     db.refresh(row)
     return row
 
@@ -315,7 +318,9 @@ def decide_request(db: Session, user: User, request_id: int, status: str) -> Sch
     row.status = status
     row.decided_at = datetime.now(UTC)
     row.decided_by = user.id
-    db.commit()
+    from app.services.activity import notify_request
+
+    notify_request(db, actor_id=user.id, row=row, created=False)
     db.refresh(row)
     return row
 

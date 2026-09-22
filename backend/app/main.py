@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.academic import router as academic_router
+from app.api.activity import router as activity_router
 from app.api.auth import router as auth_router
 from app.api.constraints import router as constraints_router
 from app.api.department import router as department_router
@@ -19,8 +20,8 @@ def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(
         title="ClashFree API",
-        version="0.9.0",
-        summary="University timetable optimisation, repair, and role portals.",
+        version="0.10.0",
+        summary="University timetable optimisation, portals, notifications, and reports.",
     )
     application.add_middleware(
         CORSMiddleware,
@@ -40,6 +41,7 @@ def create_app() -> FastAPI:
     application.include_router(department_router)
     application.include_router(requests_router)
     application.include_router(facilities_router)
+    application.include_router(activity_router)
 
     @application.get("/")
     def root() -> dict[str, str]:

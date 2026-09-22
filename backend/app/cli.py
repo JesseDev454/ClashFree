@@ -2,6 +2,7 @@ import argparse
 
 from app.core.database import get_session_factory
 from app.services.academic_seed import seed_phase3
+from app.services.activity_seed import seed_phase10
 from app.services.constraints_seed import seed_phase4
 from app.services.disruption_seed import seed_phase7
 from app.services.portal_seed import seed_phase9
@@ -24,6 +25,7 @@ def main(argv: list[str] | None = None) -> int:
             "seed_phase7",
             "seed_phase8",
             "seed_phase9",
+            "seed_phase10",
         ],
     )
     args = parser.parse_args(argv)
@@ -53,6 +55,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "seed_phase9":
             seed_phase9(session)
             print("Seeded Phase 9 portal catalogue.")
+        elif args.command == "seed_phase10":
+            seed_phase10(session)
+            print("Seeded Phase 10 activity catalogue.")
     finally:
         session.close()
     return 0

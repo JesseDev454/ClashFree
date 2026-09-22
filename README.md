@@ -2,7 +2,7 @@
 
 Disruption-aware, constraint-based university timetable optimisation and repair.
 
-Phase 9 adds role portals and personal timetables. Coordinators edit their own department, lecturers and students see their published week, and faculty or department generation hard-locks meetings outside that scope. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap. Resend remains Phase 10.
+Phase 10 adds in-app notifications, reports, an audit log, and email when a user’s notification toggles are on. The console mailer is the default; Resend is used when `RESEND_API_KEY` and `RESEND_FROM` are set. Coordinators still edit their own department, and lecturers and students still see their published week. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap.
 
 ## Local setup
 
@@ -21,7 +21,7 @@ uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
 uv run python -m app.cli seed_phase6
-uv run python -m app.cli seed_phase9
+uv run python -m app.cli seed_phase10
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -60,7 +60,7 @@ Then open:
 
 The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures and keeps Generate, Repair, and Publish disabled. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary`, live disruption rows from `/api/disruptions`, and enables Generate (links to `/admin/generate-timetable`), Repair (links to `/admin/repair-timetable`), and Publish (links to `/admin/publish-timetable`).
 
-Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable`, `/admin/conflict-monitor`, `/admin/publish-timetable`, `/admin/timetable-versions`, `/admin/change-review`, `/admin/disruption-centre`, `/admin/repair-timetable`, `/admin/repair-comparison`, and `/admin/users-roles`, as well as the Phase 3–4 catalogue and rules screens. Coordinators edit their department under `/coordinator/`. Lecturers can open `/lecturer/availability`, `/lecturer/scheduling-preferences`, `/lecturer/report-unavailability`, `/lecturer/my-timetable`, and `/lecturer/my-courses`. Facilities managers can open `/facilities/room-availability`, `/facilities/room-status`, `/facilities/report-disruption`, `/facilities/affected-classes` and `/facilities/maintenance-schedule`. Students open `/student/my-timetable` and `/student/today`. Preview hrefs stay on `/preview/unavailable/...`.
+Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable`, `/admin/conflict-monitor`, `/admin/publish-timetable`, `/admin/timetable-versions`, `/admin/change-review`, `/admin/disruption-centre`, `/admin/repair-timetable`, `/admin/repair-comparison`, `/admin/users-roles`, `/admin/reports-analytics`, `/admin/audit-log`, and `/admin/notifications`, as well as the Phase 3–4 catalogue and rules screens. Coordinators edit their department under `/coordinator/` and can open `/coordinator/reports-analytics` and `/coordinator/notifications`. Lecturers can open `/lecturer/availability`, `/lecturer/scheduling-preferences`, `/lecturer/report-unavailability`, `/lecturer/my-timetable`, `/lecturer/my-courses`, and `/lecturer/notifications`. Facilities managers can open `/facilities/room-availability`, `/facilities/room-status`, `/facilities/report-disruption`, `/facilities/affected-classes`, `/facilities/maintenance-schedule`, `/facilities/room-utilization`, `/facilities/facility-history`, and `/facilities/notifications`. Students open `/student/my-timetable`, `/student/today`, and `/student/notifications`. Preview hrefs stay on `/preview/unavailable/...`.
 
 ## Checks
 
@@ -83,6 +83,7 @@ npm run test:e2e:publish
 npm run test:e2e:disruptions
 npm run test:e2e:repair
 npm run test:e2e:portals
+npm run test:e2e:activity
 ```
 
 Backend, from `backend/`:
@@ -112,6 +113,8 @@ uv run pytest
 
 `test:e2e:portals` starts FastAPI and runs the portal spec on port **4180**. Postgres must also be seeded with `seed_phase9`.
 
+`test:e2e:activity` starts FastAPI and runs the notifications, reports, and audit spec on port **4181**. Postgres must also be seeded with `seed_phase10`.
+
 ## Documentation
 
 - [Scope](docs/scope.md)
@@ -129,6 +132,7 @@ uv run pytest
 - [Phase 7 handoff](docs/phase-7-handoff.md)
 - [Phase 8 handoff](docs/phase-8-handoff.md)
 - [Phase 9 handoff](docs/phase-9-handoff.md)
+- [Phase 10 handoff](docs/phase-10-handoff.md)
 
 Reference mockups live in `docs/design-references/` and are not served by the Vite app.
 

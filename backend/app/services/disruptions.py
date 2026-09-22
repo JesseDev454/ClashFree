@@ -307,7 +307,10 @@ def create_disruption(db: Session, user: User, payload: dict) -> Disruption:
         updated_at=now,
     )
     db.add(row)
-    db.commit()
+    db.flush()
+    from app.services.activity import notify_disruption
+
+    notify_disruption(db, actor_id=user.id, row=row, created=True)
     loaded = load_disruption(db, row.id)
     if loaded is None:
         raise DisruptionError("Disruption could not be loaded")
@@ -329,7 +332,9 @@ def patch_disruption(db: Session, user: User, row: Disruption, payload: dict) ->
                 )
             row.status = "in_review"
             row.updated_at = now
-            db.commit()
+            from app.services.activity import notify_disruption
+
+            notify_disruption(db, actor_id=user.id, row=row, created=False)
             loaded = load_disruption(db, row.id)
             assert loaded is not None
             return loaded
@@ -338,6 +343,7 @@ def patch_disruption(db: Session, user: User, row: Disruption, payload: dict) ->
         raise DisruptionError("You cannot update this disruption", 403)
     if row.status not in {"open", "scheduled"}:
         raise DisruptionError("Only open or scheduled disruptions can be edited")
+    previous_status = row.status
     starts_on = payload.get("starts_on") or row.starts_on
     ends_on = payload.get("ends_on") or row.ends_on
     start_period = (
@@ -363,7 +369,12 @@ def patch_disruption(db: Session, user: User, row: Disruption, payload: dict) ->
     if row.status != "in_review":
         row.status = implied_status(starts_on)
     row.updated_at = now
-    db.commit()
+    if row.status != previous_status:
+        from app.services.activity import notify_disruption
+
+        notify_disruption(db, actor_id=user.id, row=row, created=False)
+    else:
+        db.commit()
     loaded = load_disruption(db, row.id)
     assert loaded is not None
     return loaded

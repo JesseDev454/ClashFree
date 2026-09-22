@@ -32,7 +32,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:4177,http://localhost:4177,"
         "http://127.0.0.1:4178,http://localhost:4178,"
         "http://127.0.0.1:4179,http://localhost:4179,"
-        "http://127.0.0.1:4180,http://localhost:4180"
+        "http://127.0.0.1:4180,http://localhost:4180,"
+        "http://127.0.0.1:4181,http://localhost:4181"
     )
     session_secret: str = "clashfree-dev-session-secret-change-me"
     session_ttl_hours: int = 12
@@ -41,6 +42,8 @@ class Settings(BaseSettings):
     seed_password: str = "ClashFree!dev"
     app_origin: str = "http://127.0.0.1:5173"
     session_cookie_name: str = "clashfree_session"
+    resend_api_key: str = ""
+    resend_from: str = ""
 
     @property
     def cors_origin_list(self) -> list[str]:

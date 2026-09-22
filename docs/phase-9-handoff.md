@@ -27,9 +27,8 @@ App version **0.9.0**. CORS includes port **4180**.
 
 ## Deferred
 
-These remain Phase 10:
+Notifications, reports, the audit log, and Resend-or-console email shipped in Phase 10. These remain later:
 
-- Notifications, reports, audit log, and Resend email
 - Export, print, unpublish, and restore version
 - Facilities Rooms and Add/Edit Room
 - Public registration
