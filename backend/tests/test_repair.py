@@ -198,6 +198,7 @@ def test_room_repair_moves_affected_meetings_and_preserves_others(client: TestCl
     assert run["solutions"]
     best = run["solutions"][0]
     assert best["preserved_count"] > 0
+    assert best["hard_violations"] == 0
     assert best["is_selected"] is True
 
     loaded = client.get(f"/api/timetables/runs/{run['id']}")
@@ -211,7 +212,7 @@ def test_room_repair_moves_affected_meetings_and_preserves_others(client: TestCl
         key = (item["assignment_id"], item["meeting_index"])
         if key not in affected:
             continue
-        if item["room_id"] != slot["room_id"]:
+        if item["weekday"] != slot["weekday"] or item["room_id"] != slot["room_id"]:
             continue
         occupied = period_span(item["start_period"], item["end_period"])
         assert occupied.isdisjoint(forbidden)
