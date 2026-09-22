@@ -13,6 +13,7 @@ export default defineConfig({
     '**/publish.spec.ts',
     '**/disruptions.spec.ts',
     '**/repair.spec.ts',
+    '**/portals.spec.ts',
   ],
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

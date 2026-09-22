@@ -33,7 +33,7 @@ const accounts = [
   {
     email: 'student@clashfree.test',
     path: /\/student\/dashboard$/,
-    heading: /Your schedule, Ngozi Eze/,
+    heading: /My timetable, Ngozi Eze/,
   },
 ] as const
 
