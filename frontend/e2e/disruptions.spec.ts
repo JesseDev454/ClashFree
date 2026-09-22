@@ -54,7 +54,9 @@ test('administrator can generate, publish, and see seed disruptions', async ({
   await expect(page.getByText('Electrical fault')).toBeVisible()
   await expect(page.getByText('Temporary absence')).toBeVisible()
   await expect(page.getByText('Scheduled maintenance')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Repair Timetable' })).toBeDisabled()
+  await expect(
+    page.getByRole('main').getByRole('link', { name: 'Repair Timetable' }),
+  ).toHaveAttribute('href', '/admin/repair-timetable')
 })
 
 test('facilities can report a published room disruption and see affected classes', async ({

@@ -12,6 +12,7 @@ export default defineConfig({
     '**/solver.spec.ts',
     '**/publish.spec.ts',
     '**/disruptions.spec.ts',
+    '**/repair.spec.ts',
   ],
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

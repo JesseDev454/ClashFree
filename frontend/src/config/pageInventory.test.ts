@@ -92,9 +92,8 @@ describe('page inventory', () => {
     expect(getAppHref('facilities-maintenance-schedule')).toBe(
       '/facilities/maintenance-schedule',
     )
-    expect(getAppHref('admin-repair-timetable')).toBe(
-      '/unavailable/admin-repair-timetable',
-    )
+    expect(getAppHref('admin-repair-timetable')).toBe('/admin/repair-timetable')
+    expect(getAppHref('admin-repair-comparison')).toBe('/admin/repair-comparison')
     expect(getPreviewHref('admin-generate-timetable')).toBe(
       '/preview/unavailable/admin-generate-timetable',
     )

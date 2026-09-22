@@ -57,6 +57,8 @@ export type TimetableSolution = {
   room_utilization_percent: number
   student_gap_hours: number
   is_selected: boolean
+  moved_count: number
+  preserved_count: number
 }
 
 export type TimetableRun = {
@@ -72,6 +74,8 @@ export type TimetableRun = {
   solve_time_ms: number | null
   message: string | null
   created_by: number
+  purpose: string
+  disruption_id: number | null
   profile_name: string | null
   session_label: string | null
   solutions: TimetableSolution[]
@@ -107,6 +111,13 @@ export function fetchPreflight() {
 
 export function generateTimetable(body: GenerateRequest) {
   return requestJson<TimetableRun>('/api/timetables/generate', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+}
+
+export function repairTimetable(body: GenerateRequest & { disruption_id: number }) {
+  return requestJson<TimetableRun>('/api/timetables/repair', {
     method: 'POST',
     body: JSON.stringify(body),
   })

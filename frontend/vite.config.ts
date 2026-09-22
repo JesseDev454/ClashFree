@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
 const dirname = fileURLToPath(new URL('.', import.meta.url))
-const apiTarget = 'http://127.0.0.1:8000'
+const apiTarget = process.env.API_PROXY_TARGET ?? 'http://127.0.0.1:8000'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],

@@ -9,6 +9,10 @@ class GenerateIn(BaseModel):
     random_seed: int | None = Field(default=None, ge=0, le=1_000_000)
 
 
+class RepairIn(GenerateIn):
+    disruption_id: int
+
+
 class PreflightOut(BaseModel):
     session_label: str | None
     semester: str | None
@@ -70,6 +74,8 @@ class SolutionOut(BaseModel):
     room_utilization_percent: int
     student_gap_hours: float
     is_selected: bool
+    moved_count: int = 0
+    preserved_count: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -87,6 +93,8 @@ class RunOut(BaseModel):
     solve_time_ms: int | None
     message: str | None
     created_by: int
+    purpose: str = "generate"
+    disruption_id: int | None = None
     profile_name: str | None = None
     session_label: str | None = None
     solutions: list[SolutionOut] = []

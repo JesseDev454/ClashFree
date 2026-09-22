@@ -45,12 +45,20 @@ def test_publish_is_admin_only(client: TestClient) -> None:
             assert response.status_code == expected, email
 
 
-def test_repair_remains_stub(client: TestClient) -> None:
+def test_repair_is_admin_only(client: TestClient) -> None:
     login(client, "admin@clashfree.test")
-    assert client.post("/api/timetables/repair").status_code == 501
+    missing = client.post(
+        "/api/timetables/repair",
+        json={"disruption_id": 9_999_999, "time_limit_seconds": 10, "alternative_count": 1},
+    )
+    assert missing.status_code == 409
     client.post("/api/auth/logout")
     login(client, "lecturer@clashfree.test")
-    assert client.post("/api/timetables/repair").status_code == 403
+    denied = client.post(
+        "/api/timetables/repair",
+        json={"disruption_id": 1, "time_limit_seconds": 10, "alternative_count": 1},
+    )
+    assert denied.status_code == 403
 
 
 def test_unauthenticated_capability_routes_are_401(client: TestClient) -> None:

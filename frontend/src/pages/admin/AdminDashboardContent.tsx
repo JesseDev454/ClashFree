@@ -36,6 +36,7 @@ type AdminDashboardContentProps = {
   reportsHref: string
   generateHref?: string
   publishHref?: string
+  repairHref?: string
   welcomeName?: string
   helperText: string
   metrics?: typeof dashboardMetrics
@@ -47,6 +48,7 @@ export function AdminDashboardContent({
   reportsHref,
   generateHref,
   publishHref,
+  repairHref,
   welcomeName = 'Timetable Administrator',
   helperText,
   metrics = dashboardMetrics,
@@ -110,9 +112,15 @@ export function AdminDashboardContent({
           <h2 className="mb-4 text-[0.95rem] font-semibold">Quick Actions</h2>
           <div className="grid gap-2">
             {generateQuickAction}
-            <Button variant="outline" disabled aria-describedby={solverUnavailableId}>
-              Repair Timetable
-            </Button>
+            {repairHref ? (
+              <Button variant="outline" asChild>
+                <Link to={repairHref}>Repair Timetable</Link>
+              </Button>
+            ) : (
+              <Button variant="outline" disabled aria-describedby={solverUnavailableId}>
+                Repair Timetable
+              </Button>
+            )}
             {publishHref ? (
               <Button variant="outline" asChild>
                 <Link to={publishHref}>Publish Timetable</Link>

@@ -82,7 +82,7 @@ afterEach(() => {
 })
 
 describe('DisruptionCentrePage', () => {
-  it('disables Repair Timetable and shows an empty catalogue', async () => {
+  it('links Repair Timetable and shows an empty catalogue', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: RequestInfo | URL) => {
@@ -104,7 +104,10 @@ describe('DisruptionCentrePage', () => {
       }),
     )
     renderPage()
-    expect(screen.getByRole('button', { name: 'Repair Timetable' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Repair Timetable' })).toHaveAttribute(
+      'href',
+      '/admin/repair-timetable',
+    )
     expect(
       await screen.findByText('No disruptions match the current filters.', undefined, {
         timeout: 10_000,
@@ -165,6 +168,9 @@ describe('DisruptionCentrePage', () => {
       expect(screen.getByText(/SWE 401/)).toBeInTheDocument()
     })
     expect(screen.getByText(/SWE 400/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Repair Timetable' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: 'Repair Timetable' })).toHaveAttribute(
+      'href',
+      '/admin/repair-timetable?disruptionId=1',
+    )
   })
 })

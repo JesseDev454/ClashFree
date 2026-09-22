@@ -6,6 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.academic import Course, CourseAssignment
+from app.models.disruption import Disruption
 from app.models.timetable import (
     TimetableVersion,
     TimetableVersionSlot,
@@ -216,6 +217,12 @@ def publish_draft(db: Session, user_id: int, notes: str | None) -> TimetableVers
                 room_id=slot.room_id,
             )
         )
+    run = solution.run
+    if run is not None and run.purpose == "repair" and run.disruption_id is not None:
+        disruption = db.get(Disruption, run.disruption_id)
+        if disruption is not None:
+            disruption.status = "repaired"
+            disruption.updated_at = datetime.now(UTC)
     db.commit()
     loaded = load_version(db, row.id)
     if loaded is None:

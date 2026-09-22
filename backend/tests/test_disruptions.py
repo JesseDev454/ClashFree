@@ -301,9 +301,13 @@ def test_admin_can_acknowledge_open_disruption(client: TestClient) -> None:
     assert patched.json()["status"] == "in_review"
 
 
-def test_repair_remains_unimplemented(client: TestClient) -> None:
+def test_repair_unknown_disruption_is_conflict(client: TestClient) -> None:
     login(client, "admin@clashfree.test")
-    assert client.post("/api/timetables/repair").status_code == 501
+    response = client.post(
+        "/api/timetables/repair",
+        json={"disruption_id": 9_999_999, "time_limit_seconds": 10, "alternative_count": 1},
+    )
+    assert response.status_code == 409
 
 
 def test_facilities_summary_is_room_only(client: TestClient) -> None:

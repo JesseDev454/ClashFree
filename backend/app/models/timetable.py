@@ -59,6 +59,13 @@ class TimetableRun(Base):
     solve_time_ms: Mapped[int | None] = mapped_column(Integer)
     message: Mapped[str | None] = mapped_column(Text)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    purpose: Mapped[str] = mapped_column(
+        String(16),
+        nullable=False,
+        default="generate",
+        server_default="generate",
+    )
+    disruption_id: Mapped[int | None] = mapped_column(ForeignKey("disruptions.id"))
 
     session: Mapped[AcademicSession] = relationship()
     weight_profile: Mapped[ConstraintWeightProfile] = relationship()

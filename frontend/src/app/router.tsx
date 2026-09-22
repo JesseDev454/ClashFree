@@ -18,6 +18,8 @@ import { GenerationResultsPage } from '../pages/admin/GenerationResultsPage'
 import { LecturersPage } from '../pages/admin/LecturersPage'
 import { MasterTimetablePage } from '../pages/admin/MasterTimetablePage'
 import { PublishTimetablePage } from '../pages/admin/PublishTimetablePage'
+import { RepairComparisonPage } from '../pages/admin/RepairComparisonPage'
+import { RepairTimetablePage } from '../pages/admin/RepairTimetablePage'
 import { RoomsFacilitiesPage } from '../pages/admin/RoomsFacilitiesPage'
 import { SchedulingConstraintsPage } from '../pages/admin/SchedulingConstraintsPage'
 import { StudentCohortsPage } from '../pages/admin/StudentCohortsPage'
@@ -174,6 +176,22 @@ export function AppRouter() {
         element={
           <AdminRoute>
             <DisruptionCentrePage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/repair-timetable"
+        element={
+          <AdminRoute>
+            <RepairTimetablePage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/repair-comparison"
+        element={
+          <AdminRoute>
+            <RepairComparisonPage />
           </AdminRoute>
         }
       />

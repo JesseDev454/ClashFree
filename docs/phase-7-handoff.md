@@ -58,7 +58,8 @@ These remain later phases and are not on the production screens:
 
 ## Remaining later phases
 
-- Repair / comparison (Phase 8)
+Phase 8 repair is done. See [phase-8-handoff.md](phase-8-handoff.md).
+
 - Full coordinator / lecturer / facilities / student portals and Users & Roles CRUD (Phase 9)
 - Resend email and publish notifications (Phase 10)
 - Public registration
