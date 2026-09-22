@@ -23,7 +23,7 @@ uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
 uv run python -m app.cli seed_phase6
-uv run python -m app.cli seed_phase10
+uv run python -m app.cli seed_phase15
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 

@@ -33,7 +33,12 @@ class Settings(BaseSettings):
         "http://127.0.0.1:4178,http://localhost:4178,"
         "http://127.0.0.1:4179,http://localhost:4179,"
         "http://127.0.0.1:4180,http://localhost:4180,"
-        "http://127.0.0.1:4181,http://localhost:4181"
+        "http://127.0.0.1:4181,http://localhost:4181,"
+        "http://127.0.0.1:4182,http://localhost:4182,"
+        "http://127.0.0.1:4183,http://localhost:4183,"
+        "http://127.0.0.1:4184,http://localhost:4184,"
+        "http://127.0.0.1:4185,http://localhost:4185,"
+        "http://127.0.0.1:4186,http://localhost:4186"
     )
     session_secret: str = "clashfree-dev-session-secret-change-me"
     session_ttl_hours: int = 12
@@ -44,6 +49,9 @@ class Settings(BaseSettings):
     session_cookie_name: str = "clashfree_session"
     resend_api_key: str = ""
     resend_from: str = ""
+    neon_auth_issuer: str = ""
+    neon_auth_audience: str = ""
+    neon_auth_jwks_url: str = ""
 
     @property
     def cors_origin_list(self) -> list[str]:

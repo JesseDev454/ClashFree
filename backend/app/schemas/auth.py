@@ -33,6 +33,26 @@ class ResetPasswordRequest(BaseModel):
     password: str = Field(min_length=8)
 
 
+class RegisterRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    email: EmailAddress
+    password: str = Field(min_length=8)
+    full_name: str = Field(min_length=1, max_length=255)
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str = Field(min_length=1)
+
+
+class NeonLoginRequest(BaseModel):
+    token: str = Field(min_length=1)
+
+
+class AuthConfigOut(BaseModel):
+    neon: bool
+
+
 class DepartmentOut(BaseModel):
     id: int
     code: str

@@ -2,7 +2,7 @@
 
 Disruption-aware, constraint-based university timetable optimisation and repair.
 
-Phase 10 adds in-app notifications, reports, an audit log, and email when a user’s notification toggles are on. The console mailer is the default; Resend is used when `RESEND_API_KEY` and `RESEND_FROM` are set. Coordinators still edit their own department, and lecturers and students still see their published week. Identity is still FastAPI email/password. Neon Auth is not used yet; `users.auth_subject` is reserved for a later identity swap.
+Phases 11–15 add facilities room editing, timetable export/print/unpublish/restore, public student registration, department-scoped generate and repair, and optional Neon Auth. Email/password stays the default. Neon is used only when `NEON_AUTH_ISSUER`, `NEON_AUTH_AUDIENCE`, and `NEON_AUTH_JWKS_URL` are all set. Publishing stays with the timetable administrator.
 
 ## Local setup
 
@@ -21,7 +21,7 @@ uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
 uv run python -m app.cli seed_phase6
-uv run python -m app.cli seed_phase10
+uv run python -m app.cli seed_phase15
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -115,6 +115,16 @@ uv run pytest
 
 `test:e2e:activity` starts FastAPI and runs the notifications, reports, and audit spec on port **4181**. Postgres must also be seeded with `seed_phase10`.
 
+`test:e2e:rooms` runs the facilities rooms spec on port **4182** (`seed_phase11`).
+
+`test:e2e:versions` runs the export and version actions spec on port **4183** (`seed_phase12`).
+
+`test:e2e:registration` runs the student registration spec on port **4184** (`seed_phase13`).
+
+`test:e2e:solver-access` runs the coordinator generate spec on port **4185** (`seed_phase14`).
+
+`test:e2e:identity` runs the password sign-in spec on port **4186** (`seed_phase15`). Neon secrets are not set in CI.
+
 ## Documentation
 
 - [Scope](docs/scope.md)
@@ -133,6 +143,11 @@ uv run pytest
 - [Phase 8 handoff](docs/phase-8-handoff.md)
 - [Phase 9 handoff](docs/phase-9-handoff.md)
 - [Phase 10 handoff](docs/phase-10-handoff.md)
+- [Phase 11 handoff](docs/phase-11-handoff.md)
+- [Phase 12 handoff](docs/phase-12-handoff.md)
+- [Phase 13 handoff](docs/phase-13-handoff.md)
+- [Phase 14 handoff](docs/phase-14-handoff.md)
+- [Phase 15 handoff](docs/phase-15-handoff.md)
 
 Reference mockups live in `docs/design-references/` and are not served by the Vite app.
 

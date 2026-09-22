@@ -41,7 +41,12 @@ import { DepartmentCohortsPage } from '../pages/coordinator/DepartmentCohortsPag
 import { DepartmentConstraintsPage } from '../pages/coordinator/DepartmentConstraintsPage'
 import { DepartmentCoursesPage } from '../pages/coordinator/DepartmentCoursesPage'
 import { FacilityHistoryPage } from '../pages/facilities/FacilityHistoryPage'
+import { FacilitiesRoomEditPage } from '../pages/facilities/FacilitiesRoomEditPage'
+import { FacilitiesRoomsPage } from '../pages/facilities/FacilitiesRoomsPage'
 import { RoomUtilizationPage } from '../pages/facilities/RoomUtilizationPage'
+import { CoordinatorGeneratePage } from '../pages/coordinator/CoordinatorGeneratePage'
+import { CoordinatorRepairPage } from '../pages/coordinator/CoordinatorRepairPage'
+import { RegisterPage } from '../pages/auth/RegisterPage'
 import { FacilitiesHomePage } from '../pages/facilities/FacilitiesHomePage'
 import { AffectedClassesPage } from '../pages/facilities/AffectedClassesPage'
 import { MaintenanceSchedulePage } from '../pages/facilities/MaintenanceSchedulePage'
@@ -77,6 +82,7 @@ export function AppRouter() {
     <Routes>
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/auth/login" element={<LoginPage />} />
+      <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
       <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
@@ -689,6 +695,38 @@ export function AppRouter() {
               title="Notifications"
               description="Alerts for your classes and change requests."
             />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/generate-timetable"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <CoordinatorGeneratePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/repair-timetable"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <CoordinatorRepairPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/rooms"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <FacilitiesRoomsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/rooms/edit"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <FacilitiesRoomEditPage />
           </RequireAuth>
         }
       />

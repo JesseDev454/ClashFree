@@ -20,9 +20,4 @@ App version **0.10.0**. CORS includes port **4181**.
 
 ## Deferred
 
-These remain later:
-
-- Export, print, unpublish, and restore version
-- Facilities Rooms and Add/Edit Room
-- Public registration
-- Repair or generate for non-admin roles
+Phases 11–15 cover the items that were still open after this phase: facilities rooms, version export and lifecycle, student registration, department generate and repair, and Neon Auth.

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import io
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
@@ -9,14 +11,19 @@ from sqlalchemy.orm import Session, joinedload
 from app.models.academic import Course, CourseAssignment
 from app.models.disruption import Disruption
 from app.models.timetable import (
+    TimetableRun,
+    TimetableSlot,
+    TimetableSolution,
     TimetableVersion,
     TimetableVersionSlot,
 )
-from app.services.timetable import active_session, selected_solution
+from app.services.timetable import active_session, current_profile, selected_solution
 
 
 class PublishError(ValueError):
-    pass
+    def __init__(self, message: str, status_code: int = 409) -> None:
+        super().__init__(message)
+        self.status_code = status_code
 
 
 def version_slot_options():
@@ -219,13 +226,7 @@ def publish_draft(db: Session, user_id: int, notes: str | None) -> TimetableVers
             )
         )
     run = solution.run
-    repaired = None
-    if run is not None and run.purpose == "repair" and run.disruption_id is not None:
-        disruption = db.get(Disruption, run.disruption_id)
-        if disruption is not None and disruption.status != "repaired":
-            disruption.status = "repaired"
-            disruption.updated_at = datetime.now(UTC)
-            repaired = disruption
+    repaired_rows = mark_repaired_disruptions(db, run)
     previous_slots = _snap(existing.slots) if existing is not None else []
     new_slots = _snap(solution.slots)
     db.commit()
@@ -241,9 +242,30 @@ def publish_draft(db: Session, user_id: int, notes: str | None) -> TimetableVers
         previous_slots=previous_slots,
         new_slots=new_slots,
     )
-    if repaired is not None:
+    for repaired in repaired_rows:
         notify_disruption(db, actor_id=user_id, row=repaired, created=False)
     return loaded
+
+
+def mark_repaired_disruptions(db: Session, run) -> list[Disruption]:
+    if run is None or run.purpose != "repair":
+        return []
+    ids: list[int] = []
+    raw = run.disruption_ids or []
+    if isinstance(raw, list):
+        ids.extend(int(item) for item in raw)
+    if run.disruption_id is not None and run.disruption_id not in ids:
+        ids.append(run.disruption_id)
+    repaired: list[Disruption] = []
+    now = datetime.now(UTC)
+    for disruption_id in ids:
+        disruption = db.get(Disruption, disruption_id)
+        if disruption is None or disruption.status == "repaired":
+            continue
+        disruption.status = "repaired"
+        disruption.updated_at = now
+        repaired.append(disruption)
+    return repaired
 
 
 def _snap(slots) -> list[SimpleNamespace]:
@@ -260,3 +282,139 @@ def _snap(slots) -> list[SimpleNamespace]:
         )
         for slot in slots
     ]
+
+
+def version_csv(row: TimetableVersion) -> str:
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(
+        [
+            "course_code",
+            "cohort",
+            "lecturer",
+            "weekday",
+            "start_period",
+            "end_period",
+            "room_code",
+        ]
+    )
+    for slot in row.slots:
+        assignment = slot.assignment
+        course = assignment.course if assignment is not None else None
+        cohort = assignment.cohort if assignment is not None else None
+        lecturer = assignment.lecturer if assignment is not None else None
+        room = slot.room
+        writer.writerow(
+            [
+                course.code if course is not None else "",
+                cohort.code if cohort is not None else "",
+                lecturer.full_name if lecturer is not None else "",
+                slot.weekday,
+                slot.start_period,
+                slot.end_period,
+                room.code if room is not None else "",
+            ]
+        )
+    return buffer.getvalue()
+
+
+def unpublish_version(db: Session, user_id: int, version_id: int) -> TimetableVersion:
+    row = load_version(db, version_id)
+    if row is None:
+        raise PublishError("Timetable version not found", 404)
+    if not row.is_current:
+        raise PublishError("Only the current version can be unpublished")
+    row.is_current = False
+    row.status = "unpublished"
+    from app.services.activity import _active_ids, add_audit, add_notifications, deliver_email
+
+    add_audit(
+        db,
+        actor_id=user_id,
+        action="timetable.unpublished",
+        entity_type="timetable_version",
+        entity_id=row.id,
+        summary=f"Unpublished timetable v{row.version_number}",
+    )
+    note_ids = add_notifications(
+        db,
+        _active_ids(db, "timetable_administrator"),
+        kind="timetable_change",
+        title=f"Timetable v{row.version_number} unpublished",
+        body="The current published timetable was taken down.",
+        href_for_role={"timetable_administrator": "/admin/timetable-versions"},
+    )
+    db.commit()
+    deliver_email(db, note_ids, "notify_timetable_changes")
+    loaded = load_version(db, row.id)
+    if loaded is None:
+        raise PublishError("Unpublished version could not be loaded")
+    return loaded
+
+
+def restore_version(db: Session, user_id: int, version_id: int) -> TimetableSolution:
+    row = load_version(db, version_id)
+    if row is None or not row.slots:
+        raise PublishError("Timetable version not found", 404)
+    academic = active_session(db)
+    profile = current_profile(db)
+    if academic is None or profile is None:
+        raise PublishError("No active academic session")
+    db.query(TimetableSolution).update(
+        {TimetableSolution.is_selected: False},
+        synchronize_session=False,
+    )
+    now = datetime.now(UTC)
+    run = TimetableRun(
+        session_id=academic.id,
+        weight_profile_id=profile.id,
+        status="feasible",
+        time_limit_seconds=1,
+        alternative_count=1,
+        random_seed=0,
+        started_at=now,
+        finished_at=now,
+        solve_time_ms=0,
+        message=f"Restored from v{row.version_number}",
+        created_by=user_id,
+        purpose="generate",
+    )
+    db.add(run)
+    db.flush()
+    solution = TimetableSolution(
+        run_id=run.id,
+        label="A",
+        objective=0,
+        hard_violations=row.hard_violations,
+        soft_penalty=row.soft_penalty,
+        room_utilization_percent=row.room_utilization_percent,
+        student_gap_hours=0,
+        is_selected=True,
+    )
+    db.add(solution)
+    db.flush()
+    for slot in row.slots:
+        db.add(
+            TimetableSlot(
+                solution_id=solution.id,
+                assignment_id=slot.assignment_id,
+                meeting_index=slot.meeting_index,
+                weekday=slot.weekday,
+                start_period=slot.start_period,
+                end_period=slot.end_period,
+                room_id=slot.room_id,
+            )
+        )
+    from app.services.activity import add_audit
+
+    add_audit(
+        db,
+        actor_id=user_id,
+        action="timetable.restored",
+        entity_type="timetable_version",
+        entity_id=row.id,
+        summary=f"Restored timetable v{row.version_number} as a draft",
+    )
+    db.commit()
+    db.refresh(solution)
+    return solution

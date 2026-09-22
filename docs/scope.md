@@ -14,13 +14,13 @@ ClashFree’s core loop is **generate → preserve → repair**.
 
 | Role | Responsibility | Central solver access |
 | --- | --- | --- |
-| Timetable Administrator | University-wide data, constraints, generation, repair approval, publishing | Yes — exclusive |
-| Department Coordinator | Department courses, cohorts, assignments, local constraints, requests | No |
+| Timetable Administrator | University-wide data, constraints, generation, repair approval, publishing | Yes — university-wide, and the only role that publishes |
+| Department Coordinator | Department courses, cohorts, assignments, local constraints, requests, department generate and repair | Yes — own department only |
 | Lecturer | Personal timetable, availability, preferences, unavailability reports | No |
 | Facilities Manager | Rooms, maintenance, room disruptions, utilisation | No |
 | Student | Personal timetable, today’s classes, change alerts | No |
 
-Only the Timetable Administrator may generate a timetable, approve a repair, or publish a version. That rule is a documented contract for later backend enforcement; Phase 0 does not implement authentication.
+The Timetable Administrator may generate a timetable, approve a repair, or publish a version for the whole university. A Department Coordinator may generate and approve a repair only for their own department. Publishing stays with the administrator. Lecturer, facilities, and student roles do not run the solver.
 
 ## Principal workflows
 

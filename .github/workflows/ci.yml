@@ -69,7 +69,7 @@ jobs:
           python-version-file: backend/.python-version
       - run: uv sync --group dev
       - run: uv run alembic upgrade head
-      - run: uv run python -m app.cli seed_phase10
+      - run: uv run python -m app.cli seed_phase15
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest
@@ -601,6 +601,301 @@ jobs:
         if: failure()
         with:
           name: playwright-activity-output
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+
+  rooms-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: clashfree
+          POSTGRES_PASSWORD: clashfree
+          POSTGRES_DB: clashfree
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clashfree -d clashfree"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://clashfree:clashfree@127.0.0.1:5432/clashfree
+      AUTH_DEBUG: "true"
+      VITE_API_BASE_URL: ""
+      SESSION_SECRET: ci-session-secret
+      COOKIE_SECURE: "false"
+      APP_ORIGIN: http://127.0.0.1:4182
+      SEED_PASSWORD: ClashFree!dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Migrate and seed API
+        working-directory: backend
+        run: |
+          uv sync --group dev
+          uv run alembic upgrade head
+          uv run python -m app.cli seed_phase11
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright
+        working-directory: frontend
+        run: npx playwright install chromium --with-deps
+      - name: Run rooms e2e
+        working-directory: frontend
+        run: npm run test:e2e:rooms
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-rooms-output
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+
+  versions-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: clashfree
+          POSTGRES_PASSWORD: clashfree
+          POSTGRES_DB: clashfree
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clashfree -d clashfree"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://clashfree:clashfree@127.0.0.1:5432/clashfree
+      AUTH_DEBUG: "true"
+      VITE_API_BASE_URL: ""
+      SESSION_SECRET: ci-session-secret
+      COOKIE_SECURE: "false"
+      APP_ORIGIN: http://127.0.0.1:4183
+      SEED_PASSWORD: ClashFree!dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Migrate and seed API
+        working-directory: backend
+        run: |
+          uv sync --group dev
+          uv run alembic upgrade head
+          uv run python -m app.cli seed_phase12
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright
+        working-directory: frontend
+        run: npx playwright install chromium --with-deps
+      - name: Run versions e2e
+        working-directory: frontend
+        run: npm run test:e2e:versions
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-versions-output
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+
+  registration-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: clashfree
+          POSTGRES_PASSWORD: clashfree
+          POSTGRES_DB: clashfree
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clashfree -d clashfree"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://clashfree:clashfree@127.0.0.1:5432/clashfree
+      AUTH_DEBUG: "true"
+      VITE_API_BASE_URL: ""
+      SESSION_SECRET: ci-session-secret
+      COOKIE_SECURE: "false"
+      APP_ORIGIN: http://127.0.0.1:4184
+      SEED_PASSWORD: ClashFree!dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Migrate and seed API
+        working-directory: backend
+        run: |
+          uv sync --group dev
+          uv run alembic upgrade head
+          uv run python -m app.cli seed_phase13
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright
+        working-directory: frontend
+        run: npx playwright install chromium --with-deps
+      - name: Run registration e2e
+        working-directory: frontend
+        run: npm run test:e2e:registration
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-registration-output
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+
+  solver-access-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: clashfree
+          POSTGRES_PASSWORD: clashfree
+          POSTGRES_DB: clashfree
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clashfree -d clashfree"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://clashfree:clashfree@127.0.0.1:5432/clashfree
+      AUTH_DEBUG: "true"
+      VITE_API_BASE_URL: ""
+      SESSION_SECRET: ci-session-secret
+      COOKIE_SECURE: "false"
+      APP_ORIGIN: http://127.0.0.1:4185
+      SEED_PASSWORD: ClashFree!dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Migrate and seed API
+        working-directory: backend
+        run: |
+          uv sync --group dev
+          uv run alembic upgrade head
+          uv run python -m app.cli seed_phase14
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright
+        working-directory: frontend
+        run: npx playwright install chromium --with-deps
+      - name: Run solver access e2e
+        working-directory: frontend
+        run: npm run test:e2e:solver-access
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-solver-access-output
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          if-no-files-found: ignore
+
+  identity-e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: clashfree
+          POSTGRES_PASSWORD: clashfree
+          POSTGRES_DB: clashfree
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U clashfree -d clashfree"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://clashfree:clashfree@127.0.0.1:5432/clashfree
+      AUTH_DEBUG: "true"
+      VITE_API_BASE_URL: ""
+      SESSION_SECRET: ci-session-secret
+      COOKIE_SECURE: "false"
+      APP_ORIGIN: http://127.0.0.1:4186
+      SEED_PASSWORD: ClashFree!dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Migrate and seed API
+        working-directory: backend
+        run: |
+          uv sync --group dev
+          uv run alembic upgrade head
+          uv run python -m app.cli seed_phase15
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright
+        working-directory: frontend
+        run: npx playwright install chromium --with-deps
+      - name: Run identity e2e
+        working-directory: frontend
+        run: npm run test:e2e:identity
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-identity-output
           path: |
             frontend/playwright-report
             frontend/test-results

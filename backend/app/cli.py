@@ -5,6 +5,13 @@ from app.services.academic_seed import seed_phase3
 from app.services.activity_seed import seed_phase10
 from app.services.constraints_seed import seed_phase4
 from app.services.disruption_seed import seed_phase7
+from app.services.later_seed import (
+    seed_phase11,
+    seed_phase12,
+    seed_phase13,
+    seed_phase14,
+    seed_phase15,
+)
 from app.services.portal_seed import seed_phase9
 from app.services.publish_seed import seed_phase6
 from app.services.repair_seed import seed_phase8
@@ -26,6 +33,11 @@ def main(argv: list[str] | None = None) -> int:
             "seed_phase8",
             "seed_phase9",
             "seed_phase10",
+            "seed_phase11",
+            "seed_phase12",
+            "seed_phase13",
+            "seed_phase14",
+            "seed_phase15",
         ],
     )
     args = parser.parse_args(argv)
@@ -58,6 +70,21 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "seed_phase10":
             seed_phase10(session)
             print("Seeded Phase 10 activity catalogue.")
+        elif args.command == "seed_phase11":
+            seed_phase11(session)
+            print("Seeded Phase 11 rooms catalogue.")
+        elif args.command == "seed_phase12":
+            seed_phase12(session)
+            print("Seeded Phase 12 timetable versions.")
+        elif args.command == "seed_phase13":
+            seed_phase13(session)
+            print("Seeded Phase 13 registration catalogue.")
+        elif args.command == "seed_phase14":
+            seed_phase14(session)
+            print("Seeded Phase 14 solver catalogue.")
+        elif args.command == "seed_phase15":
+            seed_phase15(session)
+            print("Seeded Phase 15 identity catalogue.")
     finally:
         session.close()
     return 0

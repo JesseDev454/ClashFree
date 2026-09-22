@@ -232,6 +232,20 @@ export const coordinatorNavGroups: NavGroup[] = withAppHrefs([
         pageId: 'coordinator-dashboard',
       },
       {
+        id: 'coordinator-generate-timetable',
+        label: 'Generate',
+        href: '',
+        icon: 'play',
+        pageId: 'coordinator-generate-timetable',
+      },
+      {
+        id: 'coordinator-repair-timetable',
+        label: 'Repair',
+        href: '',
+        icon: 'wrench',
+        pageId: 'coordinator-repair-timetable',
+      },
+      {
         id: 'coordinator-department-courses',
         label: 'Department Courses',
         href: '',
