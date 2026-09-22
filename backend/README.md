@@ -1,7 +1,7 @@
 """FastAPI backend for ClashFree.
 
-Phase 7 records operational disruptions against the current
-published timetable. Repair stays later.
+Phase 8 repairs one open disruption against the current published
+timetable and marks it repaired when that draft is published.
 
 
 ## Setup
@@ -22,7 +22,7 @@ uv run python -m app.cli seed_phase3
 uv run python -m app.cli seed_phase4
 uv run python -m app.cli seed_phase5
 uv run python -m app.cli seed_phase6
-uv run python -m app.cli seed_phase7
+uv run python -m app.cli seed_phase8
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 

@@ -114,6 +114,10 @@ describe('AdminHomePage', () => {
     })
     expect(screen.getByText('3')).toBeInTheDocument()
     expect(screen.queryByText('Dr. A. Yusuf unavailable')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Repair Timetable' })).toBeDisabled()
+    const repairLinks = screen.getAllByRole('link', { name: 'Repair Timetable' })
+    expect(repairLinks.length).toBeGreaterThan(0)
+    for (const link of repairLinks) {
+      expect(link).toHaveAttribute('href', '/admin/repair-timetable')
+    }
   })
 })

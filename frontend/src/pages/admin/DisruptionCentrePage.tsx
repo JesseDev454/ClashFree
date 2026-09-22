@@ -221,12 +221,21 @@ export function DisruptionCentrePage() {
     <RoleShell>
       <PageHeader
         title="Disruption Centre"
-        description="Room closures and lecturer unavailability after publication. Repair stays Phase 8."
+        description="Room closures and lecturer unavailability after publication. Repair one open disruption from the published timetable."
         actions={
           <>
             <Button onClick={() => setRegisterOpen(true)}>Register Disruption</Button>
-            <Button variant="outline" disabled>
-              Repair Timetable
+            <Button variant="outline" asChild>
+              <Link
+                to={
+                  selected &&
+                  (selected.status === 'open' || selected.status === 'in_review')
+                    ? `/admin/repair-timetable?disruptionId=${selected.id}`
+                    : '/admin/repair-timetable'
+                }
+              >
+                Repair Timetable
+              </Link>
             </Button>
           </>
         }
@@ -354,8 +363,8 @@ export function DisruptionCentrePage() {
         </Card>
       ) : null}
       <p className="mt-4 rounded-xl border border-border bg-tint-blue px-4 py-3 text-sm text-muted-foreground">
-        Submitting a disruption alerts the administrator here. Repair Timetable is Phase
-        8.{' '}
+        Submitting a disruption alerts the administrator here. Repair Timetable moves the
+        classes that clash with one open disruption.{' '}
         <Link className="font-medium text-primary" to="/admin/master-timetable">
           Master Timetable
         </Link>{' '}

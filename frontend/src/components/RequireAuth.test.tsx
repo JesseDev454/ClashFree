@@ -112,6 +112,22 @@ function renderGuarded(path: string, user: AuthUser | null) {
             }
           />
           <Route
+            path="/admin/repair-timetable"
+            element={
+              <RequireAuth roles={['timetable_administrator']}>
+                <p>Repair timetable</p>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin/repair-comparison"
+            element={
+              <RequireAuth roles={['timetable_administrator']}>
+                <p>Repair comparison</p>
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/admin/disruption-centre"
             element={
               <RequireAuth roles={['timetable_administrator']}>
@@ -198,6 +214,18 @@ describe('RequireAuth', () => {
     renderGuarded('/admin/change-review', lecturer)
     expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
     expect(screen.queryByText('Change review')).not.toBeInTheDocument()
+  })
+
+  it('sends a lecturer away from repair timetable', () => {
+    renderGuarded('/admin/repair-timetable', lecturer)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Repair timetable')).not.toBeInTheDocument()
+  })
+
+  it('sends a lecturer away from repair comparison', () => {
+    renderGuarded('/admin/repair-comparison', lecturer)
+    expect(screen.getByText('Forbidden screen')).toBeInTheDocument()
+    expect(screen.queryByText('Repair comparison')).not.toBeInTheDocument()
   })
 
   it('sends a lecturer away from disruption centre', () => {

@@ -1104,6 +1104,8 @@ const PHASE7_PAGES = new Set([
   'facilities-maintenance-schedule',
 ])
 
+const PHASE8_PAGES = new Set(['admin-repair-timetable', 'admin-repair-comparison'])
+
 export function getAppHref(pageId: string): string {
   const page = getPageById(pageId)
   if (!page) {
@@ -1115,7 +1117,8 @@ export function getAppHref(pageId: string): string {
     PHASE4_PAGES.has(pageId) ||
     PHASE5_PAGES.has(pageId) ||
     PHASE6_PAGES.has(pageId) ||
-    PHASE7_PAGES.has(pageId)
+    PHASE7_PAGES.has(pageId) ||
+    PHASE8_PAGES.has(pageId)
   ) {
     return page.route
   }

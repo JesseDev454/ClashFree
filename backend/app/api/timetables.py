@@ -12,6 +12,7 @@ from app.schemas.timetable import (
     GenerateIn,
     PreflightOut,
     PublishIn,
+    RepairIn,
     RunOut,
     SlotOut,
     SolutionOut,
@@ -25,6 +26,7 @@ from app.services.publish import (
     load_version,
     publish_draft,
 )
+from app.services.repair import RepairError, run_repair, solution_movement
 from app.services.timetable import (
     active_session,
     build_preflight,
@@ -46,7 +48,24 @@ def not_found(entity: str) -> None:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{entity} not found")
 
 
-def run_out(row: TimetableRun) -> RunOut:
+def solution_out(db: Session, row: TimetableSolution) -> SolutionOut:
+    moved, preserved = solution_movement(db, row)
+    return SolutionOut(
+        id=row.id,
+        run_id=row.run_id,
+        label=row.label,
+        objective=row.objective,
+        hard_violations=row.hard_violations,
+        soft_penalty=row.soft_penalty,
+        room_utilization_percent=row.room_utilization_percent,
+        student_gap_hours=row.student_gap_hours,
+        is_selected=row.is_selected,
+        moved_count=moved,
+        preserved_count=preserved,
+    )
+
+
+def run_out(db: Session, row: TimetableRun) -> RunOut:
     solutions = sorted(row.solutions, key=lambda item: item.label)
     return RunOut(
         id=row.id,
@@ -61,9 +80,11 @@ def run_out(row: TimetableRun) -> RunOut:
         solve_time_ms=row.solve_time_ms,
         message=row.message,
         created_by=row.created_by,
+        purpose=row.purpose,
+        disruption_id=row.disruption_id,
         profile_name=row.weight_profile.name if row.weight_profile is not None else None,
         session_label=row.session.label if row.session is not None else None,
-        solutions=[SolutionOut.model_validate(item) for item in solutions],
+        solutions=[solution_out(db, item) for item in solutions],
     )
 
 
@@ -167,7 +188,7 @@ def generate(
     if loaded is None:
         not_found("Timetable run")
         raise AssertionError
-    return run_out(loaded)
+    return run_out(db, loaded)
 
 
 @router.get("/runs", response_model=list[RunOut])
@@ -185,7 +206,7 @@ def list_runs(
         .order_by(TimetableRun.id.desc())
         .all()
     )
-    return [run_out(row) for row in rows]
+    return [run_out(db, row) for row in rows]
 
 
 @router.get("/runs/{run_id}", response_model=RunOut)
@@ -198,7 +219,7 @@ def get_run(
     if row is None:
         not_found("Timetable run")
         raise AssertionError
-    return run_out(row)
+    return run_out(db, row)
 
 
 @router.post("/solutions/{solution_id}/select", response_model=SolutionOut)
@@ -231,7 +252,7 @@ def get_draft(
         not_found("Timetable run")
         raise AssertionError
     return DraftOut(
-        run=run_out(run),
+        run=run_out(db, run),
         solution=SolutionOut.model_validate(solution),
         slots=[slot_out(slot) for slot in solution.slots],
         conflicts=[ConflictOut.model_validate(item) for item in solution.conflicts],
@@ -272,12 +293,34 @@ def validate_draft(
     return [ConflictOut.model_validate(row) for row in rows]
 
 
-@router.post("/repair")
-def repair(_user: User = Depends(require_capability("approveRepair"))) -> None:
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Timetable repair is not implemented until Phase 8.",
-    )
+@router.post("/repair", response_model=RunOut)
+def repair(
+    db: Session = Depends(get_db),
+    user: User = Depends(admin_only),
+    _cap: User = Depends(require_capability("approveRepair")),
+    payload: RepairIn | None = None,
+) -> RunOut:
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Request body is required",
+        )
+    try:
+        row = run_repair(
+            db,
+            user.id,
+            payload.disruption_id,
+            payload.time_limit_seconds,
+            payload.alternative_count,
+            payload.random_seed,
+        )
+    except RepairError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    loaded = load_run(db, row.id)
+    if loaded is None:
+        not_found("Timetable run")
+        raise AssertionError
+    return run_out(db, loaded)
 
 
 @router.post("/publish", response_model=VersionOut)

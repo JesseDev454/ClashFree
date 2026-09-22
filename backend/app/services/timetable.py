@@ -463,6 +463,7 @@ def run_generation(
         random_seed=random_seed,
         started_at=started,
         created_by=user_id,
+        purpose="generate",
     )
     db.add(run)
     db.commit()

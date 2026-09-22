@@ -103,7 +103,8 @@ export function AdminHomePage() {
         reportsHref="/unavailable/admin-reports-analytics"
         generateHref="/admin/generate-timetable"
         publishHref="/admin/publish-timetable"
-        helperText="Generate, Publish and Disruption Centre are live for the active session. Repair is Phase 8. Course, lecturer, cohort and room counts come from the academic catalogue."
+        repairHref="/admin/repair-timetable"
+        helperText="Generate, Repair, Publish and Disruption Centre are live for the active session. Course, lecturer, cohort and room counts come from the academic catalogue."
         metrics={metrics}
         classChart={classChart}
         disruptionRows={recentDisruptions}
