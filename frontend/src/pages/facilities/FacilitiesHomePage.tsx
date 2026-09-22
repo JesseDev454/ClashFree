@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchRooms } from '../../api/academic'
 import { fetchDisruptionSummary } from '../../api/disruptions'
+import { fetchMaintenanceBlocks } from '../../api/portals'
 import { ThinDashboardPage } from '../role/ThinDashboardPage'
 
 export function FacilitiesHomePage() {
@@ -13,14 +14,20 @@ export function FacilitiesHomePage() {
     scheduled: '—',
     classes: '—',
   })
+  const [maintenance, setMaintenance] = useState('—')
 
   useEffect(() => {
     let cancelled = false
-    void Promise.all([fetchRooms(), fetchDisruptionSummary().catch(() => null)])
-      .then(([rooms, summary]) => {
+    void Promise.all([
+      fetchRooms(),
+      fetchDisruptionSummary().catch(() => null),
+      fetchMaintenanceBlocks().catch(() => []),
+    ])
+      .then(([rooms, summary, blocks]) => {
         if (cancelled) {
           return
         }
+        setMaintenance(String(blocks.length))
         setRoomsOnline({
           value: String(rooms.length),
           hint: 'Teaching spaces in catalogue',
@@ -58,8 +65,8 @@ export function FacilitiesHomePage() {
         {
           id: 'maintenance',
           label: 'Maintenance windows',
-          value: disruptionStats.scheduled,
-          hint: 'Scheduled room disruptions',
+          value: maintenance,
+          hint: `${disruptionStats.scheduled} scheduled disruptions`,
           tint: 'amber',
         },
         {

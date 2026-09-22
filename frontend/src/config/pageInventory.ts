@@ -1106,6 +1106,42 @@ const PHASE7_PAGES = new Set([
 
 const PHASE8_PAGES = new Set(['admin-repair-timetable', 'admin-repair-comparison'])
 
+const PHASE9_PAGES = new Set([
+  'admin-users-roles',
+  'admin-settings',
+  'admin-help-support',
+  'coordinator-dashboard',
+  'coordinator-department-courses',
+  'coordinator-course-assignments',
+  'coordinator-student-cohorts',
+  'coordinator-lecturer-availability',
+  'coordinator-department-constraints',
+  'coordinator-scheduling-requests',
+  'coordinator-department-timetable',
+  'coordinator-conflict-review',
+  'coordinator-change-requests',
+  'coordinator-profile',
+  'coordinator-settings',
+  'coordinator-help-support',
+  'lecturer-dashboard',
+  'lecturer-my-timetable',
+  'lecturer-my-courses',
+  'lecturer-change-requests',
+  'lecturer-timetable-changes',
+  'lecturer-profile',
+  'lecturer-settings',
+  'lecturer-help-support',
+  'facilities-dashboard',
+  'facilities-profile',
+  'facilities-settings',
+  'facilities-help-support',
+  'student-dashboard',
+  'student-my-timetable',
+  'student-todays-schedule',
+  'student-course-schedule',
+  'student-timetable-changes',
+])
+
 export function getAppHref(pageId: string): string {
   const page = getPageById(pageId)
   if (!page) {
@@ -1118,7 +1154,8 @@ export function getAppHref(pageId: string): string {
     PHASE5_PAGES.has(pageId) ||
     PHASE6_PAGES.has(pageId) ||
     PHASE7_PAGES.has(pageId) ||
-    PHASE8_PAGES.has(pageId)
+    PHASE8_PAGES.has(pageId) ||
+    PHASE9_PAGES.has(pageId)
   ) {
     return page.route
   }

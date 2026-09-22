@@ -48,6 +48,8 @@ class UserOut(BaseModel):
     role: str
     department_id: int | None
     department_name: str | None
+    cohort_id: int | None = None
+    is_active: bool = True
     capabilities: list[str]
     home_path: str
 

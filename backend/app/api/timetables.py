@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.api.deps import require_capability, require_roles
 from app.core.database import get_db
-from app.models.identity import User
+from app.models.academic import Faculty
+from app.models.identity import Department, User
 from app.models.timetable import TimetableConflict, TimetableRun, TimetableSolution
 from app.schemas.timetable import (
     ChangeOut,
@@ -17,6 +18,12 @@ from app.schemas.timetable import (
     SlotOut,
     SolutionOut,
     VersionOut,
+)
+from app.services.portals import (
+    PortalError,
+    assignment_ids_for_viewer,
+    filter_slots,
+    personal_changes,
 )
 from app.services.publish import (
     PublishError,
@@ -107,7 +114,9 @@ def slot_out(slot) -> SlotOut:
         room_code=slot.room.code if slot.room is not None else None,
         course_code=course.code if course is not None else None,
         course_title=course.title if course is not None else None,
+        lecturer_id=lecturer.id if lecturer is not None else None,
         lecturer_name=lecturer.full_name if lecturer is not None else None,
+        cohort_id=cohort.id if cohort is not None else None,
         cohort_code=cohort.code if cohort is not None else None,
         department_id=department.id if department is not None else None,
         department_name=department.name if department is not None else None,
@@ -174,6 +183,10 @@ def generate(
             status_code=status.HTTP_409_CONFLICT,
             detail="No current constraint weight profile",
         )
+    if payload.faculty_id is not None and db.get(Faculty, payload.faculty_id) is None:
+        not_found("Faculty")
+    if payload.department_id is not None and db.get(Department, payload.department_id) is None:
+        not_found("Department")
     try:
         run = run_generation(
             db,
@@ -181,6 +194,8 @@ def generate(
             payload.time_limit_seconds,
             payload.alternative_count,
             payload.random_seed,
+            faculty_id=payload.faculty_id,
+            department_id=payload.department_id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
@@ -334,6 +349,59 @@ def publish(
     except PublishError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return version_out(row)
+
+
+def scoped_version(row, slots) -> VersionOut:
+    payload = version_out(row, include_slots=False)
+    payload.slots = [slot_out(slot) for slot in slots]
+    payload.slot_count = len(slots)
+    return payload
+
+
+@router.get("/published/mine", response_model=VersionOut)
+def get_published_mine(
+    db: Session = Depends(get_db),
+    user: User = Depends(require_roles("lecturer", "student")),
+) -> VersionOut:
+    session = active_session(db)
+    row = current_version(db, session.id if session is not None else None)
+    if row is None:
+        not_found("Published timetable")
+        raise AssertionError
+    try:
+        allowed = assignment_ids_for_viewer(db, user)
+    except PortalError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    return scoped_version(row, filter_slots(row.slots, assignment_ids=allowed))
+
+
+@router.get("/published/department", response_model=VersionOut)
+def get_published_department(
+    db: Session = Depends(get_db),
+    user: User = Depends(require_roles("department_coordinator")),
+) -> VersionOut:
+    if user.department_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="This account has no department"
+        )
+    session = active_session(db)
+    row = current_version(db, session.id if session is not None else None)
+    if row is None:
+        not_found("Published timetable")
+        raise AssertionError
+    return scoped_version(row, filter_slots(row.slots, department_id=user.department_id))
+
+
+@router.get("/changes/mine", response_model=list[ChangeOut])
+def get_personal_changes(
+    db: Session = Depends(get_db),
+    user: User = Depends(require_roles("lecturer", "student")),
+) -> list[ChangeOut]:
+    try:
+        rows = personal_changes(db, user)
+    except PortalError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    return [ChangeOut.model_validate(row) for row in rows]
 
 
 @router.get("/published", response_model=VersionOut)

@@ -24,7 +24,7 @@ def test_summary_matches_seed(client: TestClient) -> None:
     assert body["hard"] == 6
     assert body["soft"] == 5
     assert body["soft_enabled"] == 5
-    assert body["department_rules"] == 0
+    assert body["department_rules"] >= 1
     assert body["current_profile"] == "Balanced"
     assert body["validation_percent"] == 100
 

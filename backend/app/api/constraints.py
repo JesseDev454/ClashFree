@@ -22,6 +22,7 @@ from app.models.constraints import (
     SchedulingConstraint,
 )
 from app.models.identity import User
+from app.models.portal import DepartmentConstraint
 from app.schemas.constraints import (
     AvailabilityExceptionIn,
     AvailabilityExceptionOut,
@@ -170,7 +171,7 @@ def constraints_summary(
         hard=len(hard),
         soft=len(soft),
         soft_enabled=sum(1 for row in soft if row.enabled),
-        department_rules=0,
+        department_rules=db.query(DepartmentConstraint).count(),
         current_profile=current.name if current is not None else None,
         validation_percent=100 if rows and valid else 0,
     )

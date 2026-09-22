@@ -31,7 +31,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:4176,http://localhost:4176,"
         "http://127.0.0.1:4177,http://localhost:4177,"
         "http://127.0.0.1:4178,http://localhost:4178,"
-        "http://127.0.0.1:4179,http://localhost:4179"
+        "http://127.0.0.1:4179,http://localhost:4179,"
+        "http://127.0.0.1:4180,http://localhost:4180"
     )
     session_secret: str = "clashfree-dev-session-secret-change-me"
     session_ttl_hours: int = 12

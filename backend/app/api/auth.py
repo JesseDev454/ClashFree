@@ -34,6 +34,8 @@ def serialize_user(user: User) -> UserOut:
         role=user.role,
         department_id=user.department_id,
         department_name=department_name,
+        cohort_id=user.cohort_id,
+        is_active=user.is_active,
         capabilities=capabilities_for(user.role),
         home_path=ROLE_HOME_PATH[user.role],
     )
@@ -72,7 +74,11 @@ def send_link(user: User, purpose: str, raw_token: str) -> None:
 @router.post("/login", response_model=AuthResponse)
 def login(payload: LoginRequest, response: Response, db: Session = Depends(get_db)) -> AuthResponse:
     user = get_user_by_email(db, payload.email)
-    if user is None or not verify_password(payload.password, user.password_hash):
+    if (
+        user is None
+        or not user.is_active
+        or not verify_password(payload.password, user.password_hash)
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",

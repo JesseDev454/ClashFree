@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { fetchDepartments, fetchFaculties } from '../../api/academic'
 import { fetchPreflight, generateTimetable } from '../../api/timetables'
 import { ApiError } from '../../api/client'
 import { Button } from '../../components/Button'
@@ -22,7 +23,7 @@ const ALTERNATIVES = [
   { value: '2', label: '2 candidates' },
   { value: '3', label: '3 candidates' },
 ]
-const ALL_OPTION = [{ value: 'all', label: 'All' }]
+const ALL_OPTION = { value: 'all', label: 'All' }
 
 export function GenerateTimetablePage() {
   const navigate = useNavigate()
@@ -32,6 +33,14 @@ export function GenerateTimetablePage() {
   const [state, setState] = useState<'loading' | 'error' | 'ready'>('loading')
   const [timeLimit, setTimeLimit] = useState('30')
   const [alternatives, setAlternatives] = useState('1')
+  const [faculty, setFaculty] = useState('all')
+  const [department, setDepartment] = useState('all')
+  const [faculties, setFaculties] = useState<Array<{ value: string; label: string }>>([
+    ALL_OPTION,
+  ])
+  const [departments, setDepartments] = useState<Array<{ value: string; label: string }>>(
+    [ALL_OPTION],
+  )
   const [generating, setGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,7 +48,20 @@ export function GenerateTimetablePage() {
     setState('loading')
     setError(null)
     try {
-      setPreflight(await fetchPreflight())
+      const [checks, facultyRows, departmentRows] = await Promise.all([
+        fetchPreflight(),
+        fetchFaculties(),
+        fetchDepartments(),
+      ])
+      setPreflight(checks)
+      setFaculties([
+        ALL_OPTION,
+        ...facultyRows.map((row) => ({ value: String(row.id), label: row.name })),
+      ])
+      setDepartments([
+        ALL_OPTION,
+        ...departmentRows.map((row) => ({ value: String(row.id), label: row.name })),
+      ])
       setState('ready')
     } catch {
       setState('error')
@@ -60,6 +82,8 @@ export function GenerateTimetablePage() {
       await generateTimetable({
         time_limit_seconds: Number(timeLimit),
         alternative_count: Number(alternatives),
+        ...(faculty !== 'all' ? { faculty_id: Number(faculty) } : {}),
+        ...(department !== 'all' ? { department_id: Number(department) } : {}),
       })
       void navigate('/admin/generation-results')
     } catch (caught) {
@@ -178,17 +202,25 @@ export function GenerateTimetablePage() {
             <div className="grid gap-3">
               <Select
                 label="Faculty"
-                value="all"
-                options={ALL_OPTION}
-                onValueChange={() => undefined}
-                disabled
+                value={faculty}
+                options={faculties}
+                onValueChange={(value) => {
+                  setFaculty(value)
+                  if (value !== 'all') {
+                    setDepartment('all')
+                  }
+                }}
               />
               <Select
                 label="Department"
-                value="all"
-                options={ALL_OPTION}
-                onValueChange={() => undefined}
-                disabled
+                value={department}
+                options={departments}
+                onValueChange={(value) => {
+                  setDepartment(value)
+                  if (value !== 'all') {
+                    setFaculty('all')
+                  }
+                }}
               />
               <p className="text-sm">
                 <span className="text-xs font-medium text-muted-foreground">

@@ -8,12 +8,14 @@ type ThinDashboardPageProps = {
   title: string
   description: string
   metrics: DashboardMetric[]
+  showPhaseNote?: boolean
 }
 
 export function ThinDashboardPage({
   title,
   description,
   metrics,
+  showPhaseNote = false,
 }: ThinDashboardPageProps) {
   const { user } = useAuth()
   return (
@@ -22,10 +24,12 @@ export function ThinDashboardPage({
         title={`${title}${user ? `, ${user.full_name}` : ''}`}
         description={description}
       />
-      <p className="mb-4 text-sm text-muted-foreground">
-        This landing is Phase 2 only. Remaining screens for this role belong to later
-        phases.
-      </p>
+      {showPhaseNote ? (
+        <p className="mb-4 text-sm text-muted-foreground">
+          This landing is Phase 2 only. Remaining screens for this role belong to later
+          phases.
+        </p>
+      ) : null}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((metric) => (
           <MetricCard

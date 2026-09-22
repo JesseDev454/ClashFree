@@ -1,12 +1,20 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class GenerateIn(BaseModel):
     time_limit_seconds: int = Field(default=30, ge=5, le=120)
     alternative_count: int = Field(default=1, ge=1, le=3)
     random_seed: int | None = Field(default=None, ge=0, le=1_000_000)
+    faculty_id: int | None = None
+    department_id: int | None = None
+
+    @model_validator(mode="after")
+    def one_scope(self):
+        if self.faculty_id is not None and self.department_id is not None:
+            raise ValueError("Set faculty or department, not both")
+        return self
 
 
 class RepairIn(GenerateIn):
@@ -42,7 +50,9 @@ class SlotOut(BaseModel):
     room_code: str | None = None
     course_code: str | None = None
     course_title: str | None = None
+    lecturer_id: int | None = None
     lecturer_name: str | None = None
+    cohort_id: int | None = None
     cohort_code: str | None = None
     department_id: int | None = None
     department_name: str | None = None

@@ -1,32 +1,82 @@
 import { useEffect, useState } from 'react'
 import { fetchMyAvailability } from '../../api/constraints'
+import { fetchMyCourses } from '../../api/portals'
+import { fetchMyChanges, fetchPublishedMine } from '../../api/timetables'
+import type { DashboardMetric } from '../../fixtures/adminDashboard'
 import { ThinDashboardPage } from '../role/ThinDashboardPage'
 
-export function LecturerHomePage() {
-  const [availability, setAvailability] = useState({
+const INITIAL: DashboardMetric[] = [
+  { id: 'courses', label: 'Courses', value: '—', hint: 'Loading', tint: 'blue' },
+  {
+    id: 'classes',
+    label: 'Published meetings',
     value: '—',
-    hint: 'Loading weekly grid',
-  })
+    hint: 'Loading',
+    tint: 'green',
+  },
+  {
+    id: 'changes',
+    label: 'Published changes',
+    value: '—',
+    hint: 'Loading',
+    tint: 'amber',
+  },
+  {
+    id: 'availability',
+    label: 'Availability',
+    value: '—',
+    hint: 'Loading',
+    tint: 'purple',
+  },
+]
+
+export function LecturerHomePage() {
+  const [metrics, setMetrics] = useState(INITIAL)
 
   useEffect(() => {
     let cancelled = false
-    void fetchMyAvailability()
-      .then((body) => {
-        if (cancelled) {
-          return
-        }
-        setAvailability({
-          value: body.submitted ? 'Submitted' : 'Missing',
-          hint: body.submitted
-            ? `${body.coverage_percent}% coverage`
+    void Promise.all([
+      fetchMyCourses().catch(() => []),
+      fetchPublishedMine().catch(() => null),
+      fetchMyChanges().catch(() => []),
+      fetchMyAvailability().catch(() => null),
+    ]).then(([courses, published, changes, availability]) => {
+      if (cancelled) {
+        return
+      }
+      setMetrics([
+        {
+          id: 'courses',
+          label: 'Courses',
+          value: String(courses.length),
+          hint: 'Assigned to you',
+          tint: 'blue',
+        },
+        {
+          id: 'classes',
+          label: 'Published meetings',
+          value: String(published?.slots.length ?? 0),
+          hint: published ? `Version ${published.version_number}` : 'Nothing published',
+          tint: 'green',
+        },
+        {
+          id: 'changes',
+          label: 'Published changes',
+          value: String(changes.length),
+          hint: 'Since the previous version',
+          tint: 'amber',
+        },
+        {
+          id: 'availability',
+          label: 'Availability',
+          value: availability?.submitted ? 'Submitted' : 'Missing',
+          hint: availability?.submitted
+            ? `${availability.coverage_percent}% coverage`
             : 'No weekly grid saved',
-        })
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setAvailability({ value: 'Missing', hint: 'Could not load availability' })
-        }
-      })
+          tint: 'purple',
+        },
+      ])
+    })
     return () => {
       cancelled = true
     }
@@ -35,37 +85,8 @@ export function LecturerHomePage() {
   return (
     <ThinDashboardPage
       title="Teaching workspace"
-      description="Review your timetable, availability and unavailability reports. You cannot run the solver."
-      metrics={[
-        {
-          id: 'classes',
-          label: 'Classes this week',
-          value: '8',
-          hint: 'Sample fixture',
-          tint: 'blue',
-        },
-        {
-          id: 'hours',
-          label: 'Contact hours',
-          value: '14',
-          hint: 'Two pending labs',
-          tint: 'green',
-        },
-        {
-          id: 'changes',
-          label: 'Recent changes',
-          value: '1',
-          hint: 'Room moved',
-          tint: 'amber',
-        },
-        {
-          id: 'availability',
-          label: 'Availability',
-          value: availability.value,
-          hint: availability.hint,
-          tint: 'purple',
-        },
-      ]}
+      description="Your courses, published timetable, availability and recent changes."
+      metrics={metrics}
     />
   )
 }

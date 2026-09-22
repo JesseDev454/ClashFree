@@ -22,7 +22,7 @@ def pytest_configure() -> None:
 def apply_migrations() -> None:
     from app.core.config import get_settings
     from app.core.database import get_session_factory, reset_engine
-    from app.services.repair_seed import seed_phase8
+    from app.services.portal_seed import seed_phase9
     from app.services.seed import seed_phase2
 
     get_settings.cache_clear()
@@ -32,7 +32,7 @@ def apply_migrations() -> None:
     session = get_session_factory()()
     try:
         seed_phase2(session)
-        seed_phase8(session)
+        seed_phase9(session)
     finally:
         session.close()
 

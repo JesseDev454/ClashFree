@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
+import { fetchPublishedDepartment, fetchPublishedMine } from '../api/timetables'
 import { RequireAuth } from '../components/RequireAuth'
 import { ForbiddenPage } from '../pages/ForbiddenPage'
 import { HomeRedirect } from '../pages/HomeRedirect'
@@ -21,6 +22,7 @@ import { PublishTimetablePage } from '../pages/admin/PublishTimetablePage'
 import { RepairComparisonPage } from '../pages/admin/RepairComparisonPage'
 import { RepairTimetablePage } from '../pages/admin/RepairTimetablePage'
 import { RoomsFacilitiesPage } from '../pages/admin/RoomsFacilitiesPage'
+import { UsersRolesPage } from '../pages/admin/UsersRolesPage'
 import { SchedulingConstraintsPage } from '../pages/admin/SchedulingConstraintsPage'
 import { StudentCohortsPage } from '../pages/admin/StudentCohortsPage'
 import { TimetableVersionsPage } from '../pages/admin/TimetableVersionsPage'
@@ -29,7 +31,13 @@ import { LoginPage } from '../pages/auth/LoginPage'
 import { ResetPasswordPage } from '../pages/auth/ResetPasswordPage'
 import { ResetSuccessPage } from '../pages/auth/ResetSuccessPage'
 import { VerifyEmailPage } from '../pages/auth/VerifyEmailPage'
+import { ConflictReviewPage } from '../pages/coordinator/ConflictReviewPage'
 import { CoordinatorHomePage } from '../pages/coordinator/CoordinatorHomePage'
+import { CoordinatorLecturerAvailabilityPage } from '../pages/coordinator/CoordinatorLecturerAvailabilityPage'
+import { DepartmentAssignmentsPage } from '../pages/coordinator/DepartmentAssignmentsPage'
+import { DepartmentCohortsPage } from '../pages/coordinator/DepartmentCohortsPage'
+import { DepartmentConstraintsPage } from '../pages/coordinator/DepartmentConstraintsPage'
+import { DepartmentCoursesPage } from '../pages/coordinator/DepartmentCoursesPage'
 import { FacilitiesHomePage } from '../pages/facilities/FacilitiesHomePage'
 import { AffectedClassesPage } from '../pages/facilities/AffectedClassesPage'
 import { MaintenanceSchedulePage } from '../pages/facilities/MaintenanceSchedulePage'
@@ -38,12 +46,21 @@ import { RoomAvailabilityPage } from '../pages/facilities/RoomAvailabilityPage'
 import { RoomStatusPage } from '../pages/facilities/RoomStatusPage'
 import { LecturerAvailabilityPage } from '../pages/lecturer/LecturerAvailabilityPage'
 import { LecturerHomePage } from '../pages/lecturer/LecturerHomePage'
+import { MyCoursesPage } from '../pages/lecturer/MyCoursesPage'
 import { LecturerPreferencesPage } from '../pages/lecturer/LecturerPreferencesPage'
 import { ReportUnavailabilityPage } from '../pages/lecturer/ReportUnavailabilityPage'
 import { AdminDashboardPage } from '../pages/preview/AdminDashboardPage'
 import { ComponentGalleryPage } from '../pages/preview/ComponentGalleryPage'
 import { AppUnavailablePage, UnavailablePage } from '../pages/preview/UnavailablePage'
+import { CourseSchedulePage } from '../pages/student/CourseSchedulePage'
 import { StudentHomePage } from '../pages/student/StudentHomePage'
+import { TodayPage } from '../pages/student/TodayPage'
+import { ChangesPage } from '../pages/shared/ChangesPage'
+import { HelpPage } from '../pages/shared/HelpPage'
+import { ProfilePage } from '../pages/shared/ProfilePage'
+import { PublishedTimetablePage } from '../pages/shared/PublishedTimetablePage'
+import { RequestsPage } from '../pages/shared/RequestsPage'
+import { SettingsPage } from '../pages/shared/SettingsPage'
 
 function AdminRoute({ children }: { children: ReactNode }) {
   return <RequireAuth roles={['timetable_administrator']}>{children}</RequireAuth>
@@ -312,6 +329,295 @@ export function AppRouter() {
         element={
           <RequireAuth roles={['student']}>
             <StudentHomePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/users-roles"
+        element={
+          <AdminRoute>
+            <UsersRolesPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <AdminRoute>
+            <SettingsPage description="Administrator display preferences. Email delivery is not active." />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/help-support"
+        element={
+          <AdminRoute>
+            <HelpPage
+              title="Administrator workflows"
+              points={[
+                'Maintain academic data, generate, review, repair, and publish.',
+                'Users & Roles creates accounts for every role.',
+                'Faculty or department generation keeps other published meetings locked.',
+              ]}
+            />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/coordinator/department-courses"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <DepartmentCoursesPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/course-assignments"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <DepartmentAssignmentsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/student-cohorts"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <DepartmentCohortsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/lecturer-availability"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <CoordinatorLecturerAvailabilityPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/department-constraints"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <DepartmentConstraintsPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/scheduling-requests"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <RequestsPage
+              title="Scheduling Requests"
+              description="Ask for room changes, extra classes, or reassignment."
+              kind="scheduling"
+              canDecide
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/department-timetable"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <PublishedTimetablePage
+              title="Department Timetable"
+              description="Published meetings for your department."
+              load={fetchPublishedDepartment}
+              emptyLabel="No published meetings for this department."
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/conflict-review"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <ConflictReviewPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/change-requests"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <RequestsPage
+              title="Change Requests"
+              description="Timetable-change requests for this department."
+              kind="change"
+              canDecide
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/profile"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <ProfilePage description="Your coordinator identity and department." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/settings"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <SettingsPage description="Display preferences without university-wide controls." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coordinator/help-support"
+        element={
+          <RequireAuth roles={['department_coordinator']}>
+            <HelpPage
+              title="Coordinator workflows"
+              points={[
+                'Edit courses, cohorts, and assignments in your department only.',
+                'Blocked periods are hard solver rules. Preferred periods are soft.',
+                'Approve lecturer change requests from this department.',
+              ]}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/my-timetable"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <PublishedTimetablePage
+              title="My Timetable"
+              description="Your published teaching week."
+              load={fetchPublishedMine}
+              emptyLabel="No published meetings are assigned to you."
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/my-courses"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <MyCoursesPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/change-requests"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <RequestsPage
+              title="Change Requests"
+              description="Your timetable-change requests and their status."
+              kind="change"
+              canDecide={false}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/timetable-changes"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <ChangesPage description="Published before-and-after changes that affect your classes." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/profile"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <ProfilePage description="Your lecturer identity and department." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/settings"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <SettingsPage description="Display and alert preferences." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/lecturer/help-support"
+        element={
+          <RequireAuth roles={['lecturer']}>
+            <HelpPage
+              title="Lecturer workflows"
+              points={[
+                'My Timetable shows only meetings assigned to you.',
+                'Availability and preferences stay on their existing pages.',
+                'Change requests go to your department coordinator.',
+              ]}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/profile"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <ProfilePage description="Your facilities identity." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/settings"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <SettingsPage description="Display preferences for the facilities workspace." />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/facilities/help-support"
+        element={
+          <RequireAuth roles={['facilities_manager']}>
+            <HelpPage
+              title="Facilities workflows"
+              points={[
+                'Room status, availability, and disruptions stay on their existing pages.',
+                'The dashboard counts rooms, open disruptions, and maintenance blocks.',
+              ]}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/student/my-timetable"
+        element={
+          <RequireAuth roles={['student']}>
+            <PublishedTimetablePage
+              title="My Timetable"
+              description="The published week for your cohort."
+              load={fetchPublishedMine}
+              emptyLabel="No published meetings for your cohort."
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/student/today"
+        element={
+          <RequireAuth roles={['student']}>
+            <TodayPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/student/course-schedule"
+        element={
+          <RequireAuth roles={['student']}>
+            <CourseSchedulePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/student/timetable-changes"
+        element={
+          <RequireAuth roles={['student']}>
+            <ChangesPage description="Published changes that affect your cohort." />
           </RequireAuth>
         }
       />
