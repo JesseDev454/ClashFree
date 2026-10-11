@@ -35,6 +35,9 @@ export default defineConfig({
   },
   use: {
     baseURL,
+    // Fixed locale and zone so demo timestamps render identically on every machine.
+    locale: 'en-GB',
+    timezoneId: 'Africa/Lagos',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },

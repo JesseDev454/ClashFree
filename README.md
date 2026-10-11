@@ -55,10 +55,12 @@ Then open:
 
 - http://localhost:5173/ — login, or the signed-in role dashboard
 - http://localhost:5173/auth/login
-- http://localhost:5173/preview/admin/dashboard — unauthenticated design lab
-- http://localhost:5173/preview/components
+- http://localhost:5173/preview/admin/dashboard — unauthenticated design lab (Precision Motion)
+- http://localhost:5173/preview/admin/master-timetable — interactive timetable: filters, drag-to-move with live validation, draft and publish
+- http://localhost:5173/preview/admin/repair-studio — Room B12 closure → repair options → before/after → approve → publish
+- http://localhost:5173/preview/components — design tokens and component gallery
 
-The preview banner reports **API connected** when FastAPI and Postgres are running. `/preview/admin/dashboard` keeps sample fixtures and keeps Generate, Repair, and Publish disabled. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary`, live disruption rows from `/api/disruptions`, and enables Generate (links to `/admin/generate-timetable`), Repair (links to `/admin/repair-timetable`), and Publish (links to `/admin/publish-timetable`).
+The design lab runs on the coherent demo dataset in `frontend/src/demo/`. Its constraint checks and repair options are computed in the browser by a small demo engine and are labelled as such; they are not CP-SAT solver output. State is kept per browser tab and can be reset from the banner. Generation stays disabled in the lab. The preview banner reports **API connected** when FastAPI and Postgres are running. Production `/admin/dashboard` loads catalogue counts from `/api/academic/summary`, live disruption rows from `/api/disruptions`, and enables Generate (links to `/admin/generate-timetable`), Repair (links to `/admin/repair-timetable`), and Publish (links to `/admin/publish-timetable`).
 
 Signed-in administrators can open `/admin/generate-timetable`, `/admin/generation-results`, `/admin/master-timetable`, `/admin/conflict-monitor`, `/admin/publish-timetable`, `/admin/timetable-versions`, `/admin/change-review`, `/admin/disruption-centre`, `/admin/repair-timetable`, `/admin/repair-comparison`, `/admin/users-roles`, `/admin/reports-analytics`, `/admin/audit-log`, and `/admin/notifications`, as well as the Phase 3–4 catalogue and rules screens. Coordinators edit their department under `/coordinator/` and can open `/coordinator/reports-analytics` and `/coordinator/notifications`. Lecturers can open `/lecturer/availability`, `/lecturer/scheduling-preferences`, `/lecturer/report-unavailability`, `/lecturer/my-timetable`, `/lecturer/my-courses`, and `/lecturer/notifications`. Facilities managers can open `/facilities/room-availability`, `/facilities/room-status`, `/facilities/report-disruption`, `/facilities/affected-classes`, `/facilities/maintenance-schedule`, `/facilities/room-utilization`, `/facilities/facility-history`, and `/facilities/notifications`. Students open `/student/my-timetable`, `/student/today`, and `/student/notifications`. Preview hrefs stay on `/preview/unavailable/...`.
 

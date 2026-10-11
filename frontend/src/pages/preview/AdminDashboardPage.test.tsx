@@ -1,15 +1,20 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { resetDemoStoreForTests } from '../../demo/store'
 import { renderWithProviders } from '../../test/providers'
 import { AdminDashboardPage } from './AdminDashboardPage'
+
+beforeEach(() => {
+  resetDemoStoreForTests()
+})
 
 afterEach(() => {
   vi.unstubAllGlobals()
 })
 
 describe('administrator dashboard preview', () => {
-  it('labels sample data and does not activate solver actions', async () => {
+  it('labels demo data, keeps generation inert and links to the design-lab screens', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
     const user = userEvent.setup()
     renderWithProviders(<AdminDashboardPage />)
@@ -23,10 +28,15 @@ describe('administrator dashboard preview', () => {
       screen.queryByText(/timetable generated successfully/i),
     ).not.toBeInTheDocument()
     expect(screen.getByText(/workflows are unavailable/i)).toBeInTheDocument()
-    const publishButton = screen.getByRole('button', { name: 'Publish Timetable' })
-    expect(publishButton).toBeDisabled()
-    expect(publishButton.tagName).toBe('BUTTON')
-    expect(screen.getByRole('button', { name: 'Repair Timetable' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: /Repair Timetable/ })).toHaveAttribute(
+      'href',
+      '/preview/admin/repair-studio',
+    )
+    expect(screen.getAllByRole('link', { name: /Open Timetable/ })[0]).toHaveAttribute(
+      'href',
+      '/preview/admin/master-timetable',
+    )
+    expect(screen.getByText('Room A08 double-booked')).toBeInTheDocument()
     await waitFor(() => {
       expect(screen.getByTestId('backend-status')).toHaveTextContent('API unreachable')
     })

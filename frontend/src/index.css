@@ -1,65 +1,277 @@
+@import '@fontsource-variable/geist';
 @import '@fontsource-variable/inter';
 @import 'tailwindcss';
 
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * ClashFree · Precision Motion design tokens.
+ * Specification: docs/design-specification.md. Components reference these
+ * variables (directly or through the Tailwind theme below); never repeat raw
+ * hex values inside components.
+ */
 :root {
-  --sidebar: #0d223b;
-  --sidebar-accent: #0e2642;
-  --sidebar-foreground: #d7e3f2;
-  --sidebar-muted: #8aa0b8;
-  --primary: #126bd3;
-  --primary-foreground: #ffffff;
-  --background: #f5f8fc;
-  --foreground: #0f172a;
-  --muted-foreground: #5c6b80;
+  color-scheme: light;
+
+  /* Brand */
+  --brand-midnight: #0b1220;
+  --brand-deep-navy: #172554;
+  --brand-electric: #2563eb;
+  --brand-bright: #3b82f6;
+  --brand-sky: #38bdf8;
+
+  /* Surfaces and text */
+  --background: #f8fafc;
   --card: #ffffff;
+  --muted: #f1f5f9;
   --border: #e2e8f0;
-  --ring: #1575e5;
-  --success: #0f9f6e;
-  --warning: #b45309;
-  --danger: #e11d48;
-  --info: #2563eb;
-  --tint-blue: #f2f8ff;
-  --tint-green: #f1fbf6;
-  --tint-purple: #f5f1ff;
-  --tint-lavender: #f8f6ff;
-  --tint-amber: #fff8ee;
-  --tint-rose: #fff4f5;
-  --sidebar-width: 16.5rem;
+  --border-strong: #cbd5e1;
+  --foreground: #0f172a;
+  --muted-foreground: #5b6b80; /* #64748B darkened to stay ≥ 4.5:1 on tinted surfaces */
+  --subtle-foreground: #94a3b8;
+
+  /* Primary */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --primary-subtle: #eff6ff;
+  --primary-border: #bfdbfe;
+  --primary-text: #1d4ed8;
+  --ring: #3b82f6;
+
+  /* Semantic: base (icons, bars), subtle (fills), border, text (≥ 4.5:1 on subtle) */
+  --success: #059669;
+  --success-subtle: #ecfdf5;
+  --success-border: #a7f3d0;
+  --success-text: #047857;
+  --warning: #d97706;
+  --warning-subtle: #fffbeb;
+  --warning-border: #fde68a;
+  --warning-text: #b45309;
+  --danger: #dc2626;
+  --danger-subtle: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #b91c1c;
+  --danger-solid: #dc2626;
+  --info: #0284c7;
+  --info-subtle: #f0f9ff;
+  --info-border: #bae6fd;
+  --info-text: #0369a1;
+
+  /* Legacy tint aliases kept so earlier screens adopt the new palette. */
+  --tint-blue: var(--primary-subtle);
+  --tint-green: var(--success-subtle);
+  --tint-purple: #eef2ff;
+  --tint-lavender: var(--muted);
+  --tint-amber: var(--warning-subtle);
+  --tint-rose: var(--danger-subtle);
+
+  /* Navigation */
+  --sidebar: #0b1220;
+  --sidebar-accent: #131c2f;
+  --sidebar-active: #1a2744;
+  --sidebar-border: #1c2638;
+  --sidebar-foreground: #cbd5e1;
+  --sidebar-muted: #8592a8;
+
+  /* Timetable event hues — one per department, used consistently app-wide. */
+  --event-blue-bg: #eff6ff;
+  --event-blue-border: #2563eb;
+  --event-blue-text: #1e3a8a;
+  --event-sky-bg: #ecfeff;
+  --event-sky-border: #0891b2;
+  --event-sky-text: #164e63;
+  --event-indigo-bg: #eef2ff;
+  --event-indigo-border: #4f46e5;
+  --event-indigo-text: #312e81;
+  --event-teal-bg: #f0fdfa;
+  --event-teal-border: #0d9488;
+  --event-teal-text: #134e4a;
+  --event-slate-bg: #f8fafc;
+  --event-slate-border: #64748b;
+  --event-slate-text: #1e293b;
+
+  /* Layout */
+  --sidebar-width: 15.5rem;
+  --sidebar-collapsed-width: 4.5rem;
   --topbar-height: 4rem;
-  --page-padding: 1.5rem;
+  --page-padding: 1rem;
   --card-padding: 1.25rem;
-  --radius: 0.9rem;
-  --radius-sm: 0.55rem;
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.04);
+  --content-max-width: 96rem;
+
+  /* Radii */
+  --radius: 0.875rem;
+  --radius-sm: 0.625rem;
+  --radius-control: 0.625rem;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.03);
+  --shadow-raised: 0 1px 2px rgb(15 23 42 / 0.05), 0 8px 24px -6px rgb(15 23 42 / 0.1);
+  --shadow-overlay:
+    0 24px 64px -12px rgb(15 23 42 / 0.28), 0 2px 6px rgb(15 23 42 / 0.06);
+  --shadow-lift: 0 18px 36px -10px rgb(37 99 235 / 0.35), 0 4px 10px rgb(15 23 42 / 0.12);
+  --overlay: rgb(11 18 32 / 0.48);
+
+  /* Motion */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-press: 100ms;
+  --duration-hover: 140ms;
+  --duration-menu: 180ms;
+  --duration-modal: 220ms;
+  --duration-page: 220ms;
+  --duration-panel: 260ms;
+  --duration-move: 360ms;
+  --duration-success: 320ms;
+
+  /* Chart series */
+  --chart-1: #2563eb;
+  --chart-2: #38bdf8;
+  --chart-3: #94a3b8;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --page-padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --page-padding: 2rem;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --background: #070b14;
+  --card: #0d1424;
+  --muted: #131c2e;
+  --border: #1e293b;
+  --border-strong: #334155;
+  --foreground: #e2e8f0;
+  --muted-foreground: #94a3b8;
+  --subtle-foreground: #64748b;
+
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --primary-foreground: #0b1220;
+  --primary-subtle: #0f1d3a;
+  --primary-border: #1e3a8a;
+  --primary-text: #93c5fd;
+  --ring: #60a5fa;
+
+  --success: #10b981;
+  --success-subtle: #062a20;
+  --success-border: #065f46;
+  --success-text: #6ee7b7;
+  --warning: #f59e0b;
+  --warning-subtle: #2a1d06;
+  --warning-border: #78350f;
+  --warning-text: #fcd34d;
+  --danger: #ef4444;
+  --danger-subtle: #2c0f12;
+  --danger-border: #7f1d1d;
+  --danger-text: #fca5a5;
+  --info: #38bdf8;
+  --info-subtle: #082236;
+  --info-border: #075985;
+  --info-text: #7dd3fc;
+
+  --tint-purple: #171a3d;
+
+  --sidebar: #05080f;
+  --sidebar-accent: #0f1626;
+  --sidebar-active: #15203a;
+  --sidebar-border: #141c2c;
+
+  --event-blue-bg: #0f1d3a;
+  --event-blue-border: #3b82f6;
+  --event-blue-text: #bfdbfe;
+  --event-sky-bg: #082a33;
+  --event-sky-border: #22d3ee;
+  --event-sky-text: #a5f3fc;
+  --event-indigo-bg: #1a1b45;
+  --event-indigo-border: #818cf8;
+  --event-indigo-text: #c7d2fe;
+  --event-teal-bg: #062b28;
+  --event-teal-border: #2dd4bf;
+  --event-teal-text: #99f6e4;
+  --event-slate-bg: #131c2e;
+  --event-slate-border: #94a3b8;
+  --event-slate-text: #e2e8f0;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-raised: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -6px rgb(0 0 0 / 0.5);
+  --shadow-overlay: 0 24px 64px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.04);
+  --shadow-lift: 0 18px 36px -10px rgb(59 130 246 / 0.45), 0 4px 10px rgb(0 0 0 / 0.5);
+  --overlay: rgb(0 0 0 / 0.6);
+
+  --chart-1: #3b82f6;
+  --chart-2: #38bdf8;
+  --chart-3: #475569;
 }
 
 @theme inline {
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Geist Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-border: var(--primary-border);
+  --color-primary-text: var(--primary-text);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-border: var(--success-border);
+  --color-success-text: var(--success-text);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-border: var(--warning-border);
+  --color-warning-text: var(--warning-text);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-danger-border: var(--danger-border);
+  --color-danger-text: var(--danger-text);
+  --color-danger-solid: var(--danger-solid);
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+  --color-info-border: var(--info-border);
+  --color-info-text: var(--info-text);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-muted: var(--sidebar-muted);
-  --color-card: var(--card);
-  --color-border: var(--border);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger: var(--danger);
-  --color-info: var(--info);
   --color-tint-blue: var(--tint-blue);
   --color-tint-green: var(--tint-green);
   --color-tint-purple: var(--tint-purple);
   --color-tint-lavender: var(--tint-lavender);
   --color-tint-amber: var(--tint-amber);
   --color-tint-rose: var(--tint-rose);
-  --color-ring: var(--ring);
+  --color-brand-sky: var(--brand-sky);
+  --color-brand-midnight: var(--brand-midnight);
   --radius-lg: var(--radius);
   --radius-md: var(--radius-sm);
+  --radius-control: var(--radius-control);
   --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+  --shadow-overlay: var(--shadow-overlay);
+  --shadow-lift: var(--shadow-lift);
+  --ease-standard: var(--ease-standard);
+  --ease-out: var(--ease-out);
 }
 
 html,
@@ -73,11 +285,110 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
 }
 
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
+}
+
+/* Conflict hatching: a non-colour cue that accompanies the red border and icon. */
+.cf-hatch-danger {
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 14%, transparent) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+.cf-hatch-muted {
+  background-image: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--muted-foreground) 12%, transparent) 0 5px,
+    transparent 5px 10px
+  );
+}
+
+.cf-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* Radix dialog / menu entrance animations driven by data-state. */
+@keyframes cf-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes cf-pop-in {
+  from {
+    opacity: 0;
+    /* Tailwind positions dialogs with the translate property; this composes on top. */
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes cf-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+@keyframes cf-sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes cf-drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+.cf-overlay[data-state='open'] {
+  animation: cf-fade-in var(--duration-modal) var(--ease-out);
+}
+
+.cf-dialog[data-state='open'] {
+  animation: cf-pop-in var(--duration-modal) var(--ease-out);
+}
+
+.cf-menu[data-state='open'],
+.cf-menu[data-state='delayed-open'] {
+  animation: cf-menu-in var(--duration-menu) var(--ease-out);
+}
+
+.cf-sheet[data-state='open'] {
+  animation: cf-sheet-in var(--duration-panel) var(--ease-out);
+}
+
+.cf-drawer[data-state='open'] {
+  animation: cf-drawer-in var(--duration-panel) var(--ease-out);
+}
+
+@media print {
+  :root {
+    --background: #ffffff;
+  }
+
+  .cf-no-print {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

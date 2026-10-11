@@ -1,72 +1,22 @@
-import {
-  BarChart3,
-  Bell,
-  BookOpen,
-  Building2,
-  CalendarDays,
-  CalendarRange,
-  CircleQuestionMark,
-  DoorOpen,
-  GitCompare,
-  GitMerge,
-  History,
-  LayoutDashboard,
-  ListChecks,
-  Play,
-  Scale,
-  ScrollText,
-  Settings,
-  Shield,
-  SlidersHorizontal,
-  TriangleAlert,
-  Upload,
-  UserRound,
-  Users,
-  Wrench,
-  Zap,
-  ChartNoAxesCombined,
-} from 'lucide-react'
-import type { ComponentType, SVGProps } from 'react'
+import { ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { motion } from 'motion/react'
+import { useId } from 'react'
 import { NavLink } from 'react-router'
+import { transitions } from '../lib/motion'
 import { cn } from '../lib/utils'
 import type { NavGroup, PreviewUser } from '../types/navigation'
-
-type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
-
-const icons: Record<string, IconComponent> = {
-  'layout-dashboard': LayoutDashboard,
-  'calendar-range': CalendarRange,
-  'building-2': Building2,
-  'book-open': BookOpen,
-  users: Users,
-  'user-round': UserRound,
-  'door-open': DoorOpen,
-  'git-merge': GitMerge,
-  'sliders-horizontal': SlidersHorizontal,
-  scale: Scale,
-  play: Play,
-  'chart-no-axes-combined': ChartNoAxesCombined,
-  'calendar-days': CalendarDays,
-  'triangle-alert': TriangleAlert,
-  zap: Zap,
-  wrench: Wrench,
-  'git-compare': GitCompare,
-  'list-checks': ListChecks,
-  upload: Upload,
-  history: History,
-  'bar-chart-3': BarChart3,
-  shield: Shield,
-  'scroll-text': ScrollText,
-  bell: Bell,
-  settings: Settings,
-  'circle-help': CircleQuestionMark,
-}
+import { Logo, LogoMark } from './Logo'
+import { navIcon } from './navIcons'
+import { Tooltip } from './Tooltip'
 
 type SidebarProps = {
   groups: NavGroup[]
   user: PreviewUser
   navLabel?: string
   onNavigate?: () => void
+  collapsed?: boolean
+  onToggleCollapsed?: () => void
+  sessionLabel?: string
 }
 
 export function Sidebar({
@@ -74,60 +24,102 @@ export function Sidebar({
   user,
   navLabel = 'Administrator',
   onNavigate,
+  collapsed = false,
+  onToggleCollapsed,
+  sessionLabel,
 }: SidebarProps) {
+  const indicatorId = useId()
+
   return (
-    <div className="flex h-full min-h-0 flex-col bg-sidebar text-sidebar-foreground">
-      <div className="border-b border-white/10 px-5 py-5">
-        <p className="text-lg font-bold tracking-tight text-white">ClashFree</p>
-        <p className="text-[11px] text-sidebar-muted">
-          Smarter Timetables. Smoother Campuses.
-        </p>
+    <div className="flex h-full min-h-0 w-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+      <div
+        className={cn(
+          'flex h-[var(--topbar-height)] shrink-0 items-center',
+          collapsed ? 'justify-center px-2' : 'justify-between px-5',
+        )}
+      >
+        {collapsed ? <LogoMark /> : <Logo tone="light" />}
       </div>
-      <div className="flex items-center gap-3 px-4 py-4">
-        <div className="flex size-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold">
-          {user.initials}
-        </div>
-        <div>
-          <p className="text-sm font-medium text-white">{user.name}</p>
-          <p className="flex items-center gap-1.5 text-xs text-sidebar-muted">
+
+      {sessionLabel && !collapsed ? (
+        <div className="mx-3 mb-2 rounded-[var(--radius-sm)] border border-sidebar-border bg-sidebar-accent px-3 py-2.5">
+          <p className="text-[11px] font-medium tracking-wide text-sidebar-muted uppercase">
+            Active session
+          </p>
+          <p className="mt-0.5 flex items-center gap-2 text-[13px] font-medium text-white">
             <span className="size-1.5 rounded-full bg-success" aria-hidden="true" />
-            {user.online ? 'Online' : 'Offline'}
+            {sessionLabel}
           </p>
         </div>
-      </div>
-      <nav className="min-h-0 flex-1 overflow-y-auto px-3 pb-6" aria-label={navLabel}>
-        {groups.map((group) => (
-          <div key={group.id} className="mb-4">
-            <p className="px-3 pt-2 pb-1 text-[11px] font-semibold tracking-wide text-sidebar-muted uppercase">
-              {group.label}
-            </p>
+      ) : null}
+
+      <nav
+        className="cf-scroll min-h-0 flex-1 overflow-y-auto px-3 pt-2 pb-6 [scrollbar-color:var(--sidebar-active)_transparent]"
+        aria-label={navLabel}
+      >
+        {groups.map((group, index) => (
+          <div key={group.id} className="mb-4 last:mb-0">
+            {collapsed ? (
+              index > 0 ? (
+                <div className="mx-3 mb-3 h-px bg-sidebar-border" aria-hidden="true" />
+              ) : null
+            ) : (
+              <p className="px-3 pt-1 pb-1.5 text-[11px] font-medium tracking-[0.06em] text-sidebar-muted uppercase">
+                {group.label}
+              </p>
+            )}
             <ul className="grid gap-0.5">
               {group.items.map((item) => {
-                const Icon = icons[item.icon] ?? LayoutDashboard
+                const Icon = navIcon(item.icon)
                 return (
                   <li key={item.id}>
-                    <NavLink
-                      to={item.href}
-                      onClick={onNavigate}
-                      className={({ isActive }) =>
-                        cn(
-                          'flex items-center gap-2 rounded-full px-3 py-2 text-[13px] font-medium',
-                          isActive
-                            ? 'bg-primary text-white'
-                            : 'text-sidebar-foreground hover:bg-white/5',
-                        )
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <Icon className="size-4 shrink-0" aria-hidden="true" />
-                          <span>{item.label}</span>
-                          {isActive ? (
-                            <span className="sr-only">(current page)</span>
-                          ) : null}
-                        </>
-                      )}
-                    </NavLink>
+                    <Tooltip content={item.label} side="right" disabled={!collapsed}>
+                      <span className="block">
+                        <NavLink
+                          to={item.href}
+                          onClick={onNavigate}
+                          aria-label={collapsed ? item.label : undefined}
+                          className={({ isActive }) =>
+                            cn(
+                              'group relative flex h-9 items-center gap-3 rounded-[var(--radius-sm)] text-[13.5px] font-medium',
+                              'transition-colors duration-[var(--duration-hover)]',
+                              collapsed ? 'justify-center px-0' : 'px-3',
+                              isActive
+                                ? 'bg-sidebar-active text-white'
+                                : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-white',
+                            )
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              {isActive ? (
+                                <motion.span
+                                  layoutId={`nav-indicator-${indicatorId}`}
+                                  transition={transitions.panel}
+                                  className="absolute top-2 bottom-2 left-0 w-[3px] rounded-full bg-primary"
+                                  aria-hidden="true"
+                                />
+                              ) : null}
+                              <Icon
+                                className={cn(
+                                  'size-[18px] shrink-0',
+                                  isActive
+                                    ? 'text-brand-sky'
+                                    : 'text-sidebar-muted group-hover:text-sidebar-foreground',
+                                )}
+                                aria-hidden="true"
+                              />
+                              {collapsed ? null : (
+                                <span className="truncate">{item.label}</span>
+                              )}
+                              {isActive ? (
+                                <span className="sr-only">(current page)</span>
+                              ) : null}
+                            </>
+                          )}
+                        </NavLink>
+                      </span>
+                    </Tooltip>
                   </li>
                 )
               })}
@@ -135,6 +127,60 @@ export function Sidebar({
           </div>
         ))}
       </nav>
+
+      <div
+        className={cn(
+          'flex shrink-0 items-center gap-3 border-t border-sidebar-border py-3',
+          collapsed ? 'flex-col px-2' : 'px-4',
+        )}
+      >
+        <div
+          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--brand-electric)] to-[var(--brand-deep-navy)] text-[13px] font-semibold text-white ring-1 ring-white/10"
+          aria-hidden="true"
+        >
+          {user.initials}
+        </div>
+        {collapsed ? (
+          <span className="sr-only">
+            Signed in as {user.name}, {user.roleLabel}
+          </span>
+        ) : (
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-medium text-white">{user.name}</p>
+            <p className="flex items-center gap-1.5 truncate text-xs text-sidebar-muted">
+              <span
+                className={cn(
+                  'size-1.5 rounded-full',
+                  user.online ? 'bg-success' : 'bg-sidebar-muted',
+                )}
+                aria-hidden="true"
+              />
+              {user.roleLabel}
+              <span className="sr-only">{user.online ? ', online' : ', offline'}</span>
+            </p>
+          </div>
+        )}
+        {onToggleCollapsed ? (
+          <Tooltip
+            content={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            side="right"
+          >
+            <button
+              type="button"
+              onClick={onToggleCollapsed}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-expanded={!collapsed}
+              className="inline-flex size-8 items-center justify-center rounded-md text-sidebar-muted transition-colors hover:bg-sidebar-accent hover:text-white"
+            >
+              {collapsed ? (
+                <ChevronsRight className="size-4" aria-hidden="true" />
+              ) : (
+                <ChevronsLeft className="size-4" aria-hidden="true" />
+              )}
+            </button>
+          </Tooltip>
+        ) : null}
+      </div>
     </div>
   )
 }
