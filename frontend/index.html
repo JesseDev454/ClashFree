@@ -4,7 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ClashFree Phase 0 Preview</title>
+    <meta name="theme-color" content="#0b1220" />
+    <meta
+      name="description"
+      content="ClashFree — smarter timetables, fewer conflicts. University scheduling and conflict resolution."
+    />
+    <title>ClashFree · Smarter Timetables. Fewer Conflicts.</title>
+    <script>
+      try {
+        if (localStorage.getItem('clashfree-theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      } catch (error) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

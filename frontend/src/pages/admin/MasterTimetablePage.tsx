@@ -12,11 +12,9 @@ import { PageHeader } from '../../components/PageHeader'
 import { RoleShell } from '../../components/RoleShell'
 import { Select } from '../../components/Select'
 import { StatusBadge } from '../../components/StatusBadge'
-import { TimetableGrid } from '../../components/TimetableGrid'
+import { WeekGrid } from '../../components/timetable/WeekGrid'
 import { useReload } from '../../hooks/useReload'
-import { slotsToEntries } from '../../lib/timetableEntries'
-
-const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+import { slotsToGridEvents, weekdayGridDays } from '../../lib/slotEvents'
 
 type Source = 'draft' | 'published'
 
@@ -135,7 +133,7 @@ export function MasterTimetablePage() {
             </StatusBadge>
             {draft && published ? (
               <div
-                className="flex rounded-full border border-border bg-card p-1"
+                className="flex rounded-[var(--radius-control)] border border-border bg-muted p-0.5"
                 role="group"
                 aria-label="Timetable source"
               >
@@ -208,14 +206,18 @@ export function MasterTimetablePage() {
                 No classes match the current filters.
               </p>
             ) : (
-              <TimetableGrid
-                entries={slotsToEntries(filtered)}
+              <WeekGrid
                 caption={
                   source === 'published'
                     ? 'Published master timetable'
                     : 'Draft master timetable'
                 }
-                days={WEEKDAYS}
+                days={weekdayGridDays(filtered)}
+                events={slotsToGridEvents(
+                  filtered,
+                  source === 'draft' ? (draft?.conflicts ?? []) : [],
+                )}
+                layoutPrefix="master-live"
               />
             )}
           </Card>

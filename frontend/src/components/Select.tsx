@@ -41,7 +41,7 @@ export function Select({
         <SelectPrimitive.Trigger
           id={selectId}
           className={cn(
-            'inline-flex h-10 w-full items-center justify-between rounded-full border border-border bg-card px-3 text-sm text-foreground disabled:cursor-not-allowed disabled:opacity-50',
+            'inline-flex h-10 w-full items-center justify-between gap-2 rounded-[var(--radius-control)] border border-border bg-card px-3 text-left text-sm text-foreground shadow-[0_1px_2px_rgb(15_23_42/0.04)] transition-[border-color] duration-[var(--duration-hover)] hover:border-border-strong disabled:cursor-not-allowed disabled:opacity-50 [&>span:first-child]:truncate',
           )}
         >
           <SelectPrimitive.Value placeholder={placeholder} />
@@ -52,14 +52,15 @@ export function Select({
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
             position="popper"
-            className="z-50 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border border-border bg-card shadow-card"
+            className="cf-menu z-50 max-h-[var(--radix-select-content-available-height)] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-[var(--radius-sm)] border border-border bg-card shadow-overlay"
+            sideOffset={4}
           >
             <SelectPrimitive.Viewport className="p-1">
               {options.map((option) => (
                 <SelectPrimitive.Item
                   key={option.value}
                   value={option.value}
-                  className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm outline-none data-highlighted:bg-background"
+                  className="flex cursor-pointer items-center justify-between rounded-md px-2.5 py-2 text-sm outline-none data-highlighted:bg-muted"
                 >
                   <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
                   <SelectPrimitive.ItemIndicator>

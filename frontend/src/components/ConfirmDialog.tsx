@@ -29,9 +29,9 @@ export function ConfirmDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {trigger ? <Dialog.Trigger asChild>{trigger}</Dialog.Trigger> : null}
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-slate-950/40" />
+        <Dialog.Overlay className="cf-overlay fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-[2px]" />
         <Dialog.Content
-          className="fixed top-1/2 left-1/2 z-50 w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-card p-6 shadow-card"
+          className="fixed top-1/2 left-1/2 z-50 w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 cf-dialog rounded-[var(--radius)] border border-border bg-card p-6 shadow-overlay"
           onCloseAutoFocus={(event) => {
             if (restoreFocusRef?.current) {
               event.preventDefault()
@@ -39,7 +39,9 @@ export function ConfirmDialog({
             }
           }}
         >
-          <Dialog.Title className="text-lg font-semibold">{title}</Dialog.Title>
+          <Dialog.Title className="text-lg font-semibold tracking-[-0.01em]">
+            {title}
+          </Dialog.Title>
           <Dialog.Description className="mt-2 text-sm text-muted-foreground">
             {description}
           </Dialog.Description>

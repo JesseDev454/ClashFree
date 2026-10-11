@@ -38,7 +38,7 @@ export function TodayPage() {
           type="date"
           value={date}
           onChange={(event) => setDate(event.target.value)}
-          className="h-10 rounded-full border border-border px-3"
+          className="h-10 rounded-[var(--radius-control)] border border-border bg-card px-3"
         />
       </label>
       {error ? (

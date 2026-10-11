@@ -4,16 +4,16 @@ import type { Role } from '../types/permissions'
 
 export const previewAdminUser: PreviewUser = {
   initials: 'TA',
-  name: 'Timetable Administrator',
-  roleLabel: 'Administrator',
+  name: 'Tolu Adebayo',
+  roleLabel: 'Timetable Administrator',
   role: 'timetable_administrator',
   online: true,
 }
 
 export const adminNavGroups: NavGroup[] = [
   {
-    id: 'main',
-    label: 'Main',
+    id: 'overview',
+    label: 'Overview',
     items: [
       {
         id: 'admin-dashboard',
@@ -22,6 +22,101 @@ export const adminNavGroups: NavGroup[] = [
         icon: 'layout-dashboard',
         pageId: 'admin-dashboard',
       },
+    ],
+  },
+  {
+    id: 'scheduling',
+    label: 'Scheduling',
+    items: [
+      {
+        id: 'admin-master-timetable',
+        label: 'Master Timetable',
+        href: getPreviewHref('admin-master-timetable'),
+        icon: 'calendar-days',
+        pageId: 'admin-master-timetable',
+      },
+      {
+        id: 'admin-conflict-monitor',
+        label: 'Conflict Monitor',
+        href: getPreviewHref('admin-conflict-monitor'),
+        icon: 'triangle-alert',
+        pageId: 'admin-conflict-monitor',
+      },
+      {
+        id: 'admin-repair-timetable',
+        label: 'Repair Studio',
+        href: getPreviewHref('admin-repair-timetable'),
+        icon: 'wrench',
+        pageId: 'admin-repair-timetable',
+      },
+      {
+        id: 'admin-repair-comparison',
+        label: 'Repair Comparison',
+        href: getPreviewHref('admin-repair-comparison'),
+        icon: 'git-compare',
+        pageId: 'admin-repair-comparison',
+      },
+      {
+        id: 'admin-change-review',
+        label: 'Timetable Change Review',
+        href: getPreviewHref('admin-change-review'),
+        icon: 'list-checks',
+        pageId: 'admin-change-review',
+      },
+      {
+        id: 'admin-publish-timetable',
+        label: 'Publish Timetable',
+        href: getPreviewHref('admin-publish-timetable'),
+        icon: 'upload',
+        pageId: 'admin-publish-timetable',
+      },
+      {
+        id: 'admin-timetable-versions',
+        label: 'Timetable Versions',
+        href: getPreviewHref('admin-timetable-versions'),
+        icon: 'history',
+        pageId: 'admin-timetable-versions',
+      },
+    ],
+  },
+  {
+    id: 'generation',
+    label: 'Generation',
+    items: [
+      {
+        id: 'admin-generate-timetable',
+        label: 'Generate Timetable',
+        href: getPreviewHref('admin-generate-timetable'),
+        icon: 'play',
+        pageId: 'admin-generate-timetable',
+      },
+      {
+        id: 'admin-generation-results',
+        label: 'Generation Results',
+        href: getPreviewHref('admin-generation-results'),
+        icon: 'chart-no-axes-combined',
+        pageId: 'admin-generation-results',
+      },
+      {
+        id: 'admin-scheduling-constraints',
+        label: 'Scheduling Constraints',
+        href: getPreviewHref('admin-scheduling-constraints'),
+        icon: 'sliders-horizontal',
+        pageId: 'admin-scheduling-constraints',
+      },
+      {
+        id: 'admin-constraint-weights',
+        label: 'Constraint Weights',
+        href: getPreviewHref('admin-constraint-weights'),
+        icon: 'scale',
+        pageId: 'admin-constraint-weights',
+      },
+    ],
+  },
+  {
+    id: 'resources',
+    label: 'Academic data',
+    items: [
       {
         id: 'admin-academic-sessions',
         label: 'Academic Sessions',
@@ -71,89 +166,18 @@ export const adminNavGroups: NavGroup[] = [
         icon: 'git-merge',
         pageId: 'admin-course-assignments',
       },
-      {
-        id: 'admin-scheduling-constraints',
-        label: 'Scheduling Constraints',
-        href: getPreviewHref('admin-scheduling-constraints'),
-        icon: 'sliders-horizontal',
-        pageId: 'admin-scheduling-constraints',
-      },
-      {
-        id: 'admin-constraint-weights',
-        label: 'Constraint Weights',
-        href: getPreviewHref('admin-constraint-weights'),
-        icon: 'scale',
-        pageId: 'admin-constraint-weights',
-      },
-      {
-        id: 'admin-generate-timetable',
-        label: 'Generate Timetable',
-        href: getPreviewHref('admin-generate-timetable'),
-        icon: 'play',
-        pageId: 'admin-generate-timetable',
-      },
-      {
-        id: 'admin-generation-results',
-        label: 'Generation Results',
-        href: getPreviewHref('admin-generation-results'),
-        icon: 'chart-no-axes-combined',
-        pageId: 'admin-generation-results',
-      },
-      {
-        id: 'admin-master-timetable',
-        label: 'Master Timetable',
-        href: getPreviewHref('admin-master-timetable'),
-        icon: 'calendar-days',
-        pageId: 'admin-master-timetable',
-      },
-      {
-        id: 'admin-conflict-monitor',
-        label: 'Conflict Monitor',
-        href: getPreviewHref('admin-conflict-monitor'),
-        icon: 'triangle-alert',
-        pageId: 'admin-conflict-monitor',
-      },
+    ],
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    items: [
       {
         id: 'admin-disruption-centre',
         label: 'Disruption Centre',
         href: getPreviewHref('admin-disruption-centre'),
         icon: 'zap',
         pageId: 'admin-disruption-centre',
-      },
-      {
-        id: 'admin-repair-timetable',
-        label: 'Repair Timetable',
-        href: getPreviewHref('admin-repair-timetable'),
-        icon: 'wrench',
-        pageId: 'admin-repair-timetable',
-      },
-      {
-        id: 'admin-repair-comparison',
-        label: 'Repair Comparison',
-        href: getPreviewHref('admin-repair-comparison'),
-        icon: 'git-compare',
-        pageId: 'admin-repair-comparison',
-      },
-      {
-        id: 'admin-change-review',
-        label: 'Timetable Change Review',
-        href: getPreviewHref('admin-change-review'),
-        icon: 'list-checks',
-        pageId: 'admin-change-review',
-      },
-      {
-        id: 'admin-publish-timetable',
-        label: 'Publish Timetable',
-        href: getPreviewHref('admin-publish-timetable'),
-        icon: 'upload',
-        pageId: 'admin-publish-timetable',
-      },
-      {
-        id: 'admin-timetable-versions',
-        label: 'Timetable Versions',
-        href: getPreviewHref('admin-timetable-versions'),
-        icon: 'history',
-        pageId: 'admin-timetable-versions',
       },
       {
         id: 'admin-reports-analytics',

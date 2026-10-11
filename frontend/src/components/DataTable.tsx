@@ -25,7 +25,9 @@ export function DataTable<T>({
   return (
     <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={caption}>
       {state === 'loading' ? <p role="status">{loadingMessage}</p> : null}
-      {state === 'empty' ? <p>{emptyMessage}</p> : null}
+      {state === 'empty' ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">{emptyMessage}</p>
+      ) : null}
       {state === 'error' ? <p role="alert">{errorMessage}</p> : null}
       {state === 'populated' ? (
         <table className="w-full min-w-[40rem] border-collapse text-left text-sm">

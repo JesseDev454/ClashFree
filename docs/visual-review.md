@@ -39,3 +39,11 @@ There are no official mobile mockups. The desktop structure is preserved with:
 - Tab order reaches search, session/identity controls, primary content and disabled solver actions.
 - Gallery modal: focus enters the dialog, Escape closes it, focus returns to the trigger.
 - Mobile drawer: Escape dismisses navigation.
+
+## Precision Motion redesign (design phases 1–2)
+
+The admin mockup PNGs are superseded by `docs/design-specification.md`. Baselines in `frontend/e2e/preview.spec.ts-snapshots/` were regenerated on Linux Chromium with `locale: en-GB` and `timezoneId: Africa/Lagos` pinned in `playwright.config.ts`, and now include `master-timetable-1440.png` and `repair-studio-empty-1440.png`.
+
+- Axe (serious/critical) is clean on the dashboard, master timetable, repair studio and gallery.
+- `--muted-foreground` is `#5B6B80` rather than the brief's `#64748B`, which measured 4.34–4.46:1 on tinted surfaces.
+- No page-level horizontal overflow at 1600, 1280, 768 or 390px on the three signature routes; the week grid scrolls inside its card, and phones default to the day view.

@@ -1097,10 +1097,12 @@ export function getPageById(id: string): PageMeta | undefined {
 }
 
 export function getPreviewHref(pageId: string): string {
-  if (pageId === 'admin-dashboard') {
-    return '/preview/admin/dashboard'
+  const designLab: Record<string, string> = {
+    'admin-dashboard': '/preview/admin/dashboard',
+    'admin-master-timetable': '/preview/admin/master-timetable',
+    'admin-repair-timetable': '/preview/admin/repair-studio',
   }
-  return `/preview/unavailable/${pageId}`
+  return designLab[pageId] ?? `/preview/unavailable/${pageId}`
 }
 
 const PHASE3_ADMIN_PAGES = new Set([

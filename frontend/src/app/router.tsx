@@ -60,6 +60,8 @@ import { LecturerPreferencesPage } from '../pages/lecturer/LecturerPreferencesPa
 import { ReportUnavailabilityPage } from '../pages/lecturer/ReportUnavailabilityPage'
 import { AdminDashboardPage } from '../pages/preview/AdminDashboardPage'
 import { ComponentGalleryPage } from '../pages/preview/ComponentGalleryPage'
+import { DemoMasterTimetablePage } from '../pages/preview/demo/DemoMasterTimetablePage'
+import { DemoRepairStudioPage } from '../pages/preview/demo/DemoRepairStudioPage'
 import { AppUnavailablePage, UnavailablePage } from '../pages/preview/UnavailablePage'
 import { CourseSchedulePage } from '../pages/student/CourseSchedulePage'
 import { StudentHomePage } from '../pages/student/StudentHomePage'
@@ -777,6 +779,11 @@ export function AppRouter() {
         }
       />
       <Route path="/preview/admin/dashboard" element={<AdminDashboardPage />} />
+      <Route
+        path="/preview/admin/master-timetable"
+        element={<DemoMasterTimetablePage />}
+      />
+      <Route path="/preview/admin/repair-studio" element={<DemoRepairStudioPage />} />
       <Route path="/preview/components" element={<ComponentGalleryPage />} />
       <Route path="/preview/unavailable/:pageId" element={<UnavailablePage />} />
       <Route

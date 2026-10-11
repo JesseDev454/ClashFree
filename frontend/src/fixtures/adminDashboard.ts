@@ -7,6 +7,7 @@ export type DashboardMetric = {
   value: string
   hint: string
   tint: 'blue' | 'green' | 'purple' | 'lavender' | 'amber' | 'rose'
+  href?: string
 }
 
 export type DisruptionRow = {
